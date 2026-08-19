@@ -2,22 +2,24 @@ import { appState } from '../../state/app-state.js';
 import { HOTELS, PARKS } from '../../domain/sites.js';
 import { classifyOccupancy } from '../../domain/occupancy.js';
 import { escapeHTML } from '../html.js';
+import { monthLabel } from '../global-filters.js';
 
 const SEVERITY_RANK = { red: 0, amber: 1, green: 2, gray: 3 };
 
 export function renderDashboard(){
+  const filters = appState.filters;
   const inventoryRows = latestInventoryRows();
   const hotelRows = inventoryRows.filter(row => row.tipo_sede === 'hotel');
   const alertItems = inventoryRows
     .map(row => ({ row, status: classifyOccupancy(row.ocupacion_porcentaje, row.fecha) }))
     .filter(item => ['red', 'amber'].includes(item.status.severity));
   const avgOccupancy = average(hotelRows.map(row => Number(row.ocupacion_porcentaje)));
-  const budgetRows = budgetSummaryRows().sort((a, b) => a.pct - b.pct);
+  const budgetRows = budgetSummaryRows().filter(matchesSeverityFilter).sort((a, b) => a.pct - b.pct);
   const budgetTotal = budgetTotals(budgetRows);
   const urgent = alertItems.filter(item => item.status.severity === 'red').length;
 
-  const hotelItems = HOTELS.map(site => siteOccupancy(site)).sort(bySeverity);
-  const parkItems = PARKS.map(site => siteOccupancy(site)).sort(bySeverity);
+  const hotelItems = filters.unitType === 'parque' ? [] : HOTELS.map(site => siteOccupancy(site)).filter(matchesSeverityFilter).sort(bySeverity);
+  const parkItems = filters.unitType === 'hotel' ? [] : PARKS.map(site => siteOccupancy(site)).filter(matchesSeverityFilter).sort(bySeverity);
 
   return `
     <section class="powerbi-hero">
@@ -33,8 +35,6 @@ export function renderDashboard(){
       ${score('Presupuesto ejecutado', budgetTotal.budget ? `${budgetTotal.pct.toFixed(0)}%` : 'Sin dato', `${formatCOP(budgetTotal.executed)} de ${formatCOP(budgetTotal.budget)}`, budgetTotal.severity)}
     </div>
 
-    ${renderConventions()}
-
     <div class="dashboard-stack">
       ${occupancyPanel('Hoteles — ocupacion', 'Ordenado de mas critico a mas alto. Detalle diario en la pestana Hoteles.', hotelItems)}
       ${occupancyPanel('Parques — ocupacion / uso', 'Ordenado de mas critico a mas alto. Detalle diario en la pestana Parques.', parkItems)}
@@ -44,9 +44,10 @@ export function renderDashboard(){
       <div class="section-head">
         <div>
           <h2>Presupuesto ejecutado vs. proyectado</h2>
-          <p class="metric-note">Ordenado de menor a mayor cumplimiento, todas las sedes con dato cargado.</p>
+          <p class="metric-note">${escapeHTML(monthLabel(filters.period))} · ordenado de menor a mayor cumplimiento.</p>
         </div>
       </div>
+      ${renderBudgetConvention()}
       <div class="budget-compare-list">
         ${budgetRows.length ? budgetRows.map(budgetCompareRow).join('') : '<p class="metric-note">Sin datos de presupuesto cargados.</p>'}
       </div>
@@ -73,48 +74,54 @@ function occupancyPanel(title, note, items){
           <p class="metric-note">${escapeHTML(note)}</p>
         </div>
       </div>
-      <div class="bar-chart occupancy-chart">
-        ${items.map(occupancyRow).join('')}
+      <div class="occupancy-panel-body">
+        <div class="bar-chart occupancy-chart">
+          ${items.length ? items.map(occupancyRow).join('') : '<p class="metric-note">Sin sedes para los filtros aplicados.</p>'}
+        </div>
+        ${renderOccupancyConvention()}
       </div>
     </section>
   `;
 }
 
-function renderConventions(){
+function renderOccupancyConvention(){
   return `
-    <section class="panel convention-panel">
-      <h2>Convenciones</h2>
-      <div class="convention-grid">
-        ${conventionGroup('Ocupacion / uso', [
-          ['green', 'Verde', '70% o mas: tarifa estandar / proteger precio'],
-          ['amber', 'Amarillo', '40% a 69%: Preventa / comunicacion preventiva'],
-          ['red', 'Rojo', 'Menos de 40%: Mas cerca / campana de choque'],
-          ['gray', 'Gris', 'Sin dato o cierre operativo normal']
-        ])}
-        ${conventionGroup('Presupuesto', [
-          ['green', 'Verde', '90% o mas de ejecucion'],
-          ['amber', 'Amarillo', '70% a 89% de ejecucion'],
-          ['red', 'Rojo', 'Menos de 70% de ejecucion'],
-          ['gray', 'Gris', 'Sin presupuesto cargado']
-        ])}
-      </div>
-    </section>
+    <aside class="inline-convention">
+      <strong>Convenciones</strong>
+      ${conventionItems([
+        ['green', 'Verde', '70% o mas'],
+        ['amber', 'Amarillo', '40% a 69%'],
+        ['red', 'Rojo', 'Menos de 40%'],
+        ['gray', 'Gris', 'Sin dato / cierre']
+      ])}
+    </aside>
   `;
 }
 
-function conventionGroup(title, items){
+function renderBudgetConvention(){
   return `
-    <div class="convention-group">
-      <strong>${escapeHTML(title)}</strong>
-      <div class="convention-items">
-        ${items.map(([severity, label, text]) => `
-          <span class="convention-item">
-            <i class="legend-dot ${severity}"></i>
-            <b>${escapeHTML(label)}</b>
-            <em>${escapeHTML(text)}</em>
-          </span>
-        `).join('')}
-      </div>
+    <div class="budget-convention">
+      <strong>Convenciones presupuesto</strong>
+      ${conventionItems([
+        ['green', 'Verde', '90% o mas'],
+        ['amber', 'Amarillo', '70% a 89%'],
+        ['red', 'Rojo', 'Menos de 70%'],
+        ['gray', 'Gris', 'Sin presupuesto']
+      ])}
+    </div>
+  `;
+}
+
+function conventionItems(items){
+  return `
+    <div class="convention-items">
+      ${items.map(([severity, label, text]) => `
+        <span class="convention-item">
+          <i class="legend-dot ${severity}"></i>
+          <b>${escapeHTML(label)}</b>
+          <em>${escapeHTML(text)}</em>
+        </span>
+      `).join('')}
     </div>
   `;
 }
@@ -141,7 +148,9 @@ function occupancyRow(item){
 }
 
 function siteOccupancy(site){
-  const rows = appState.occupancyInventoryRows.filter(row => row.sede === site.name);
+  const rows = appState.occupancyInventoryRows
+    .filter(row => row.sede === site.name)
+    .filter(row => appState.filters.period === 'all' || String(row.fecha).startsWith(appState.filters.period));
   const latest = rows[rows.length - 1];
   if(!latest){
     return { name: site.name, hasData: false, severity: 'gray', pct: null, trendPoints: [] };
@@ -175,7 +184,7 @@ function sparkline(points, severity){
 
 function latestInventoryRows(){
   const bySite = new Map();
-  appState.occupancyInventoryRows.forEach(row => {
+  appState.occupancyInventoryRows.filter(matchesGlobalPeriod).filter(matchesGlobalUnit).forEach(row => {
     const key = `${row.sede}__${row.tipo_unidad}`;
     const previous = bySite.get(key);
     if(!previous || String(row.fecha) > String(previous.fecha)){
@@ -199,12 +208,14 @@ function budgetCompareRow(row){
         <div class="budget-compare-bar">
           <span class="budget-compare-label">Proyectado</span>
           <div class="bar-track"><div class="bar-fill" style="width:${projectedWidth}%"></div></div>
+          <span class="bar-inline-pct"></span>
           <strong>${formatCOP(row.presupuesto)}</strong>
         </div>
         <div class="budget-compare-bar">
           <span class="budget-compare-label">Real cumplido</span>
           <div class="bar-track"><div class="bar-fill ${row.severity}" style="width:${actualWidth}%"></div></div>
-          <strong>${formatCOP(row.ejecutado)} · ${row.pct.toFixed(0)}%</strong>
+          <span class="bar-inline-pct ${row.severity}">${row.pct.toFixed(0)}%</span>
+          <strong>${formatCOP(row.ejecutado)}</strong>
         </div>
       </div>
     </div>
@@ -212,7 +223,9 @@ function budgetCompareRow(row){
 }
 
 function budgetSummaryRows(){
-  return appState.budgetRows.map(row => {
+  return appState.budgetRows.filter(row => {
+    return (appState.filters.period === 'all' || row.periodo === appState.filters.period) && matchesBudgetUnit(row);
+  }).map(row => {
     const presupuesto = Number(row.presupuesto);
     const ejecutado = Number(row.ejecutado);
     const pct = presupuesto ? (ejecutado / presupuesto) * 100 : 0;
@@ -225,6 +238,24 @@ function budgetSummaryRows(){
       severity: pct >= 90 ? 'green' : pct >= 70 ? 'amber' : 'red'
     };
   });
+}
+
+function matchesSeverityFilter(item){
+  return appState.filters.severity === 'all' || item.severity === appState.filters.severity;
+}
+
+function matchesGlobalPeriod(row){
+  return appState.filters.period === 'all' || String(row.fecha).startsWith(appState.filters.period);
+}
+
+function matchesGlobalUnit(row){
+  return appState.filters.unitType === 'all' || row.tipo_sede === appState.filters.unitType;
+}
+
+function matchesBudgetUnit(row){
+  if(appState.filters.unitType === 'all') return true;
+  const source = appState.filters.unitType === 'hotel' ? HOTELS : PARKS;
+  return source.some(site => site.name === row.sede);
 }
 
 function budgetTotals(rows){

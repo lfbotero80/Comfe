@@ -6,6 +6,86 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-17 — Filtros globales y ajuste visual de graficas [Estado: Cerrado]
+
+- **Agente(s):** Codex
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E2, E3
+- **Objetivo del sprint:** resolver visualmente los filtros del instrumento, ajustar proporción de graficas/convenciones, mover el boton de carga al header derecho y ubicar el % de presupuesto junto a la barra.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-053 | Graficas con convenciones al lado | Codex | Hecha | Ocupacion ocupa media zona del bloque y convenciones explican color |
+| TO-HU-054 | % de presupuesto junto a barra | Codex | Hecha | Separar avance visual de valor monetario |
+| TO-HU-055 | Filtros globales | Codex | Hecha | Periodo, tipo de unidad y semaforo visibles en todo el instrumento |
+| TO-HU-056 | Boton de carga arriba derecha | Codex | Hecha | Header vuelve a titulo izquierda / accion derecha |
+
+### Resumen de cierre
+
+Se resolvio una segunda capa visual del dashboard general. `index.html` devuelve el boton `Cargar datos` a la esquina superior derecha y agrega el contenedor de filtros globales debajo del header. `src/ui/global-filters.js` crea filtros persistentes de periodo, unidad y semaforo; `src/state/app-state.js` guarda el estado global de esos filtros. `src/main.js` renderiza y enlaza esos controles en todas las vistas.
+
+En `dashboard.js`, las graficas de Hoteles y Parques pasan a un cuerpo 50/50: a la izquierda queda la grafica y a la derecha sus convenciones de color. El presupuesto agrega convenciones propias y mueve el % de ejecucion a una columna junto a la barra de `Real cumplido`, dejando el valor monetario separado. Los KPIs, graficas y presupuesto ya obedecen filtros globales, con `Todo 2026` como valor inicial para no esconder datos de meses distintos en el demo local.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/index.html`, `src/main.js`, `src/state/app-state.js`, `src/ui/global-filters.js`, `src/ui/views/dashboard.js`, `src/ui/views/hotels.js`, `src/ui/views/parks.js` y `styles/app.css`.
+
+**Validacion realizada:** `node --check` sobre todos los modulos JS, `git diff --check`, servidor local `http://localhost:8055/` respondiendo 200 y prueba Playwright con navegador: boton arriba derecha, `dataStatus` oculto al inicio, tres filtros globales visibles, graficas de ocupacion con proporcion aprox. 47%/47% grafica-convenciones, presupuesto con % junto a barra, convenciones de presupuesto visibles, sin card/contador de alertas, y filtros cambiando KPIs/presupuesto.
+
+```text
+HANDOFF — SPRINT-17 Filtros globales y ajuste visual de graficas
+──────────────────────────────────────
+HUs completas:        TO-HU-053, TO-HU-054, TO-HU-055, TO-HU-056
+HUs pendientes:       ninguna dentro del alcance del sprint
+
+Archivos tocados:     BACKLOG.md · SPRINTS.md · ROADMAP.md · MAPA_CODIGO.md
+                      05-tablero-ocupacion/v3-modular/index.html
+                      05-tablero-ocupacion/v3-modular/src/main.js
+                      05-tablero-ocupacion/v3-modular/src/state/app-state.js
+                      05-tablero-ocupacion/v3-modular/src/ui/global-filters.js
+                      05-tablero-ocupacion/v3-modular/src/ui/views/dashboard.js
+                      05-tablero-ocupacion/v3-modular/src/ui/views/hotels.js
+                      05-tablero-ocupacion/v3-modular/src/ui/views/parks.js
+                      05-tablero-ocupacion/v3-modular/styles/app.css
+
+Archivos NO tocados:  tablero-seguimiento-ocupacion.html
+                      tablero-seguimiento-ocupacion-v2.html
+                      tablero-seguimiento-ocupacion-v3-demo.html
+                      v3-modular/src/ui/views/data-load.js, calendar.js,
+                      campaigns.js, contracts.js
+
+Datos/contratos:      Sin cambios en contratos de carga.
+
+Decisiones tomadas:   Filtro inicial `Todo 2026` para no ocultar datos del demo,
+                      porque ocupacion y presupuesto cargados hoy viven en meses
+                      distintos.
+                      Las graficas de ocupacion usan layout 50/50 con convenciones
+                      al lado.
+                      El % de ejecucion presupuestal queda junto a la barra; el monto
+                      queda como valor separado a la derecha.
+                      El boton de carga vuelve a la esquina superior derecha.
+
+Riesgos residuales:
+  - Los filtros globales ya afectan dashboard, presupuesto, Hoteles y Parques,
+    pero Calendario comercial conserva sus filtros internos propios.
+  - El filtro de periodo arranca en `Todo 2026`; si Diana quiere operar siempre
+    por mes vigente, habria que cargar fuentes completas del mismo periodo para
+    evitar vistas vacias.
+
+Validacion hecha:
+  Sintaxis:           node --check sobre todos los modulos JS -> pass
+  Estatica:           git diff --check -> pass
+  Runtime navegador:  http://localhost:8055/ responde 200; Playwright confirma
+                      boton derecha, filtros visibles, graficas 50/50 con
+                      convenciones, presupuesto con % junto a barra, y filtros
+                      actualizando KPIs/presupuesto.
+
+Auto-reporte DoD:     Completo para TO-HU-053, TO-HU-054, TO-HU-055 y TO-HU-056.
+```
+
+---
+
 ## SPRINT-16 — Dashboard ejecutivo y convenciones [Estado: Cerrado]
 
 - **Agente(s):** Codex

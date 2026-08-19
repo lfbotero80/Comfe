@@ -26,16 +26,17 @@
 
     <main class="main">
       <header class="topbar">
-        <div class="header-actions">
-          <button type="button" class="btn-upload" id="btnHeaderDataLoad">Cargar datos</button>
-          <div class="status-pill" id="dataStatus" hidden></div>
-        </div>
         <div>
           <p class="eyebrow">Unidad de Turismo</p>
           <h1 id="viewTitle">Dashboard general</h1>
         </div>
+        <div class="header-actions">
+          <div class="status-pill" id="dataStatus" hidden></div>
+          <button type="button" class="btn-upload" id="btnHeaderDataLoad">Cargar datos</button>
+        </div>
       </header>
 
+      <section id="globalFilters" class="global-filter-shell"></section>
       <section id="appView" class="view"></section>
     </main>
   </div>

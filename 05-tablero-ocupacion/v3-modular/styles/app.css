@@ -97,7 +97,7 @@ button,input,select{font:inherit}
 .main{padding:22px 28px 28px; min-width:0}
 .topbar{
   display:grid;
-  grid-template-columns:auto 1fr;
+  grid-template-columns:1fr auto;
   gap:16px;
   align-items:center;
   margin:-22px -28px 22px;
@@ -108,6 +108,7 @@ button,input,select{font:inherit}
   top:0;
   z-index:10;
 }
+.topbar .header-actions{justify-content:flex-end}
 .eyebrow{text-transform:uppercase; color:var(--muted); letter-spacing:.04em; font-size:11px; margin:0 0 3px; font-weight:750}
 h1,h2,h3{color:var(--navy)}
 h1{margin:0; font-size:19px; line-height:1.15}
@@ -120,6 +121,45 @@ p{line-height:1.55}
 .status-pill.error{background:var(--red-bg); color:var(--red); border-color:transparent}
 .status-pill.pending{background:var(--surface-soft); color:var(--muted); border-color:transparent}
 .view{display:grid; gap:18px}
+.global-filter-shell{margin:-8px 0 18px}
+.filter-bar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:10px;
+  box-shadow:var(--shadow);
+}
+.filter-control{
+  display:grid;
+  gap:5px;
+  min-width:180px;
+}
+.filter-control span{
+  color:var(--muted);
+  font-size:10.5px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+.filter-control select{
+  appearance:none;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  color:var(--ink);
+  min-height:36px;
+  padding:7px 34px 7px 10px;
+  font-weight:650;
+  cursor:pointer;
+  background-image:linear-gradient(45deg,transparent 50%,var(--navy) 50%),linear-gradient(135deg,var(--navy) 50%,transparent 50%);
+  background-position:calc(100% - 17px) 15px, calc(100% - 12px) 15px;
+  background-size:5px 5px,5px 5px;
+  background-repeat:no-repeat;
+}
 
 .grid{display:grid; gap:14px}
 .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -169,14 +209,15 @@ p{line-height:1.55}
 .occupancy-panel{padding:24px}
 .occupancy-panel h2{font-size:24px}
 .occupancy-panel .metric-note{font-size:14px}
+.occupancy-panel-body{display:grid; grid-template-columns:1fr 1fr; gap:22px; align-items:start}
 .occupancy-chart{gap:16px; padding-top:10px}
 .occupancy-chart .occ-row{
-  grid-template-columns:minmax(210px,280px) 1fr 70px 100px;
-  gap:18px;
+  grid-template-columns:minmax(160px,220px) 1fr 58px;
+  gap:12px;
   font-size:16px;
 }
 .occupancy-chart .bar-track{height:18px}
-.occupancy-chart .trend-svg{width:92px; height:28px}
+.occupancy-chart .trend-svg,.occupancy-chart .trend-empty{display:none}
 .occ-row strong{white-space:nowrap}
 .occ-row.muted span,.occ-row.muted strong{color:#90958F}
 .trend-svg{width:64px; height:22px; display:block}
@@ -193,15 +234,23 @@ p{line-height:1.55}
 .budget-compare-head{display:flex; justify-content:space-between; align-items:center; gap:12px}
 .budget-compare-head strong{color:var(--navy); font-size:14px}
 .budget-compare-bars{display:grid; gap:6px}
-.budget-compare-bar{display:grid; grid-template-columns:100px 1fr 110px; gap:10px; align-items:center; font-size:12.5px; color:var(--muted)}
+.budget-compare-bar{display:grid; grid-template-columns:100px 1fr 52px 110px; gap:10px; align-items:center; font-size:12.5px; color:var(--muted)}
 .budget-compare-bar strong{color:var(--navy); font-weight:750; text-align:right; white-space:nowrap}
 .budget-compare-label{white-space:nowrap}
+.bar-inline-pct{font-weight:850; color:var(--muted); text-align:left; white-space:nowrap}
+.bar-inline-pct.green{color:var(--green)}
+.bar-inline-pct.amber{color:var(--amber)}
+.bar-inline-pct.red{color:var(--red)}
+.bar-inline-pct.gray{color:var(--muted)}
 
-.convention-panel{padding:14px 16px}
-.convention-panel h2{margin-bottom:10px}
-.convention-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px}
-.convention-group{display:grid; gap:8px}
-.convention-group strong{color:var(--navy); font-size:13px}
+.inline-convention,.budget-convention{display:grid; gap:10px; align-content:start}
+.inline-convention{
+  min-height:100%;
+  border-left:1px solid var(--line);
+  padding-left:18px;
+}
+.inline-convention strong,.budget-convention strong{color:var(--navy); font-size:13px}
+.budget-convention{margin:0 0 14px}
 .convention-items{display:flex; flex-wrap:wrap; gap:8px}
 .convention-item{
   display:inline-flex;
@@ -654,11 +703,13 @@ p{line-height:1.55}
   .app-shell{grid-template-columns:1fr}
   .sidebar{position:static}
   .topbar{grid-template-columns:1fr}
-  .grid.two,.grid.three,.grid.four,.upload-grid,.chart-grid,.score-grid,.convention-grid,.form-grid.two{grid-template-columns:1fr}
+  .grid.two,.grid.three,.grid.four,.upload-grid,.chart-grid,.score-grid,.form-grid.two{grid-template-columns:1fr}
+  .occupancy-panel-body{grid-template-columns:1fr}
+  .inline-convention{border-left:0; border-top:1px solid var(--line); padding-left:0; padding-top:12px}
   .occ-row,.occupancy-chart .occ-row{grid-template-columns:120px 1fr 48px}
   .trend-svg,.trend-empty{display:none}
   .month-bars{grid-template-columns:repeat(6,minmax(42px,1fr)); min-height:260px}
-  .budget-compare-bar{grid-template-columns:76px 1fr 108px; font-size:11.5px}
+  .budget-compare-bar{grid-template-columns:76px 1fr 44px 88px; font-size:11.5px}
   .topbar{align-items:flex-start}
   .powerbi-hero{grid-template-columns:1fr}
   .modal-backdrop{padding:12px}

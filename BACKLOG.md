@@ -150,6 +150,9 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-049: Como jefatura, quiero que Hoteles y Parques aparezcan en bloques verticales separados, con gráficas más protagonistas, para comparar sin comprimir la lectura. — **Hecha**
   - TO-HU-050: Como jefatura, quiero eliminar el contador de alertas del dashboard, para quitar métricas que no explican una decisión operativa clara. — **Hecha**
   - TO-HU-051: Como Diana, quiero que las barras de presupuesto muestren el % de ejecución junto al real cumplido, para leer monto y cumplimiento sin hacer cálculo mental. — **Hecha**
+  - TO-HU-053: Como jefatura, quiero que las graficas de ocupacion tengan convenciones al lado y no ocupen todo el bloque, para entender el color sin perder contexto. — **Hecha**
+  - TO-HU-054: Como Diana, quiero que el % de ejecucion del presupuesto aparezca junto a la barra, para asociarlo visualmente al avance y no al valor monetario. — **Hecha**
+  - TO-HU-055: Como usuario, quiero filtros globales visibles en el instrumento, para revisar periodo, tipo de unidad y estado sin entrar a cada tabla. — **Hecha**
 
 - **E2-F2 — Sección Hoteles**
   - TO-HU-011: Como gerente hotelero, quiero una sección de Hoteles con una pestaña por hotel, para revisar solo mi sede sin ruido. — **Hecha**
@@ -201,6 +204,7 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-035: Como usuario, quiero un menú con iconos y sin la sección técnica Estructura de archivos, para navegar el tablero como producto operativo. — **Hecha**
   - TO-HU-036: Como gerente, quiero ver ocupadas sobre inventario total en un solo indicador y el día de la semana real, para leer la ocupación sin duplicidad ni etiquetas genéricas. — **Hecha**
   - TO-HU-052: Como usuario, quiero que el control fijo de estado de carga desaparezca salvo cuando exista un mensaje real de carga, para no ver texto decorativo permanente en el header. — **Hecha**
+  - TO-HU-056: Como usuario, quiero que el boton de carga de archivos quede en la parte superior derecha, para mantener el patron de accion primaria del header. — **Hecha**
 
 ## EP-06 · Vigilancia turismo bienestar
 Carpeta: `06-vigilancia-turismo-bienestar/`.

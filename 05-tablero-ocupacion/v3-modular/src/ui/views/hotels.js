@@ -3,6 +3,7 @@ import { appState } from '../../state/app-state.js';
 import { classifyOccupancy, OCCUPANCY_TARGET } from '../../domain/occupancy.js';
 import { commercialContextForSite } from '../../domain/commercial-context.js';
 import { buildStrategicRecommendation } from '../../domain/strategic-recommendation.js';
+import { monthLabel } from '../global-filters.js';
 import { badge, escapeHTML, trafficLight } from '../html.js';
 
 let activeHotelId = HOTELS[0].id;
@@ -27,7 +28,8 @@ export function renderHotels(){
   const rows = rowsForHotel(activeHotel);
   const year = activeYear(rows);
   const monthSummaries = monthlySummaries(rows, year);
-  const activeMonth = activeMonthByHotelId[activeHotel.id] || latestMonth(rows) || `${year}-08`;
+  const globalMonth = appState.filters.period === 'all' ? null : appState.filters.period;
+  const activeMonth = activeMonthByHotelId[activeHotel.id] || globalMonth || latestMonth(rows) || `${year}-08`;
   const monthRows = rowsForMonth(rows, activeMonth);
   const latest = monthRows[monthRows.length - 1] || null;
   const status = latest ? classifyOccupancy(latest.ocupacion_porcentaje, latest.fecha) : null;
@@ -128,7 +130,7 @@ function renderYearMovement(monthSummaries, activeMonth, year){
       <div class="section-head compact">
         <div>
           <h3>Movimiento anual ${escapeHTML(year)}</h3>
-          <p class="metric-note">Una barra por mes; gris indica que falta archivo cargado.</p>
+          <p class="metric-note">Filtro global: ${escapeHTML(monthLabel(appState.filters.period))}. Gris indica que falta archivo cargado.</p>
         </div>
       </div>
       <div class="month-bars">
