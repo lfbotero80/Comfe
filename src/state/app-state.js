@@ -1,4 +1,3 @@
-const DATA_MODE_KEY = 'comfenalco_data_mode_v1';
 const OPERATOR_KEY = 'comfenalco_operator_v1';
 const DECISION_LOG_KEY = 'comfenalco_decision_log_v1';
 const OCCUPANCY_KEY = 'comfenalco_occupancy_rows_v1';
@@ -8,31 +7,14 @@ const LOADED_FILES_KEY = 'comfenalco_loaded_files_v1';
 const CAMPAIGNS_KEY = 'comfenalco_campaign_rows_v1';
 const STORAGE_SCHEMA_KEY = 'comfenalco_public_storage_schema_v1';
 const STORAGE_SCHEMA_VERSION = 'real-empty-2026-08-19';
-export const DATA_MODES = {
-  demo: {
-    id: 'demo',
-    label: 'Modo demo',
-    description: 'Modo deshabilitado para la URL compartida: no incluye datos de ejemplo.'
-  },
-  real: {
-    id: 'real',
-    label: 'Datos reales',
-    description: 'Arranca sin ocupacion, presupuesto ni Revenue hasta cargar archivos.'
-  }
-};
 
 migrateLegacyDemoStorage();
 
-const initialDataMode = readDataMode();
-const initialModeData = dataForMode(initialDataMode);
-
 export const appState = {
-  dataMode: initialDataMode,
-  ...initialModeData,
-  loadedFiles: readPersistedRows(LOADED_FILES_KEY) ?? initialModeData.loadedFiles,
-  occupancyInventoryRows: readPersistedRows(OCCUPANCY_KEY) ?? initialModeData.occupancyInventoryRows,
-  budgetRows: readPersistedRows(BUDGET_KEY) ?? initialModeData.budgetRows,
-  revenueRuleRows: readPersistedRows(REVENUE_KEY) ?? initialModeData.revenueRuleRows,
+  loadedFiles: readPersistedRows(LOADED_FILES_KEY) ?? [],
+  occupancyInventoryRows: readPersistedRows(OCCUPANCY_KEY) ?? [],
+  budgetRows: readPersistedRows(BUDGET_KEY) ?? [],
+  revenueRuleRows: readPersistedRows(REVENUE_KEY) ?? [],
   currentOperator: readCurrentOperator(),
   decisionRows: readDecisionRows(),
   calendarRows: [],
@@ -46,28 +28,6 @@ export const appState = {
 
 export function setGlobalFilter(key, value){
   appState.filters[key] = value;
-}
-
-export function setDataMode(mode){
-  const nextMode = mode === DATA_MODES.real.id ? DATA_MODES.real.id : DATA_MODES.demo.id;
-  try{
-    localStorage.setItem(DATA_MODE_KEY, nextMode);
-  }catch(error){
-    // localStorage can be unavailable in some embedded previews; keep session mode.
-  }
-  const next = dataForMode(nextMode);
-  Object.assign(appState, {
-    dataMode: nextMode,
-    ...next
-  });
-  // Cambiar de modo es un reinicio explicito y deliberado (lo anuncia el propio
-  // boton: "datos semilla restaurados" / "cargue archivos para activar metricas"),
-  // asi que tambien reinicia lo persistido — no solo la memoria de la sesion.
-  persistRows(LOADED_FILES_KEY, next.loadedFiles);
-  persistRows(OCCUPANCY_KEY, next.occupancyInventoryRows);
-  persistRows(BUDGET_KEY, next.budgetRows);
-  persistRows(REVENUE_KEY, next.revenueRuleRows);
-  persistRows(CAMPAIGNS_KEY, appState.campaignRows);
 }
 
 export function registerLoad({ contractId, filename, acceptedRows, rejectedRows }){
@@ -175,14 +135,6 @@ export function addDecisionLog(entry){
   persistDecisionRows();
 }
 
-function readDataMode(){
-  try{
-    return localStorage.getItem(DATA_MODE_KEY) === DATA_MODES.demo.id ? DATA_MODES.demo.id : DATA_MODES.real.id;
-  }catch(error){
-    return DATA_MODES.real.id;
-  }
-}
-
 function readCurrentOperator(){
   try{
     return localStorage.getItem(OPERATOR_KEY) || '';
@@ -231,7 +183,7 @@ function migrateLegacyDemoStorage(){
   try{
     if(localStorage.getItem(STORAGE_SCHEMA_KEY) === STORAGE_SCHEMA_VERSION) return;
     [
-      DATA_MODE_KEY,
+      'comfenalco_data_mode_v1',
       DECISION_LOG_KEY,
       OCCUPANCY_KEY,
       BUDGET_KEY,
@@ -243,25 +195,6 @@ function migrateLegacyDemoStorage(){
   }catch(error){
     // If localStorage is unavailable, the app still starts from the in-memory real mode.
   }
-}
-
-function dataForMode(mode){
-  if(mode === DATA_MODES.real.id){
-    return {
-      loadedFiles: [],
-      occupancyInventoryRows: [],
-      parkRows: [],
-      budgetRows: [],
-      revenueRuleRows: []
-    };
-  }
-  return {
-    loadedFiles: [],
-    occupancyInventoryRows: [],
-    parkRows: [],
-    budgetRows: [],
-    revenueRuleRows: []
-  };
 }
 
 function mergeByKey(existingRows, newRows, keyFn, sortFn){

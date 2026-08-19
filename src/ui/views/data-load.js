@@ -17,10 +17,12 @@ export function renderDataLoad(){
         <button type="button" class="btn-ghost" id="btnExportOccupancyAll" ${appState.occupancyInventoryRows.length ? '' : 'disabled'}>Exportar ocupacion CSV</button>
       </div>
       <div class="data-load-controls">
-        ${renderDataModeControl()}
         ${renderResponsibleControl()}
       </div>
     </section>
+    <div class="upload-grid">
+      ${listContracts().map(contract => uploadCard(contract)).join('')}
+    </div>
     <section class="panel">
       <div class="section-head">
         <div>
@@ -47,9 +49,6 @@ export function renderDataLoad(){
       </div>
       <div class="validation-item ok">Los PDFs Zeus se pueden subir directamente en Ocupacion e inventario diario; el tablero extrae sede, corte y filas diarias cuando el formato coincide con el forecast esperado.</div>
     </section>
-    <div class="upload-grid">
-      ${listContracts().map(contract => uploadCard(contract)).join('')}
-    </div>
   `;
 }
 
@@ -124,17 +123,6 @@ function renderReadinessSummary(){
     <div class="readiness-groups">
       ${renderReadinessGroup('Hoteles', summary.hotels)}
       ${renderReadinessGroup('Parques', summary.parks)}
-    </div>
-  `;
-}
-
-function renderDataModeControl(){
-  return `
-    <div class="data-mode-panel real">
-      <div>
-        <strong>Datos reales</strong>
-        <span>Esta URL arranca sin datos precargados. Lo que se suba queda guardado solo en este navegador.</span>
-      </div>
     </div>
   `;
 }
