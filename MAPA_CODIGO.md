@@ -1,6 +1,6 @@
 # Mapa de código — Comfenalco IA
 
-Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-11`.
+Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-13`.
 
 ---
 
@@ -281,3 +281,10 @@ Plantillas CSV de S1:
 - El modal captura nombre, causa, sede(s), tarifa aplicada, fecha de ejecucion, ocupacion proyectada y ocupacion real.
 - `src/state/app-state.js` conserva ocupaciones en cero cuando se registren y mantiene las campanas nuevas en memoria de sesion.
 - `styles/app.css` contiene los estilos del modal, campos, ayuda y footer responsive.
+
+### 3.14 — Compactacion del modal de campanas en `SPRINT-13`
+
+`SPRINT-13` reduce la carga visual del modal creado en `SPRINT-11`:
+
+- `src/ui/views/campaigns.js` agrupa `Tarifa aplicada` y `Fecha de ejecucion` en una fila de dos columnas en desktop.
+- `styles/app.css` baja el modal a 640px de ancho maximo, reduce padding, alto de inputs, tamano de texto y acciones, manteniendo layout responsive a una columna en movil.

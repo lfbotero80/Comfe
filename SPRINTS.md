@@ -6,6 +6,62 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-13 — Compactar modal de campaña [Estado: Cerrado]
+
+- **Agente(s):** Codex
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E3
+- **Objetivo del sprint:** ajustar el modal de creación de campañas para que conserve el patrón de v2, pero con tamaño operativo y menor carga visual.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-041 | Modal compacto de campaña | Codex | Hecha | Reduce ancho, alto, padding, tipografía y agrupa campos secundarios |
+
+### Resumen de cierre
+
+**Qué cambió:** El modal `Agregar campaña al catálogo` se compactó: pasó a 640px de ancho máximo, menor altura visual, padding y tipografías de formulario más sobrias. `Tarifa aplicada` y `Fecha de ejecución` ahora comparten fila en desktop, igual que las ocupaciones, para reducir desplazamiento sin perder campos.
+
+**HUs trabajadas:** TO-HU-041 quedó en `Hecha`.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/src/ui/views/campaigns.js` y `05-tablero-ocupacion/v3-modular/styles/app.css`.
+
+**Validación realizada:** Prueba Playwright en `http://localhost:8055/`: abrir `Campañas`, abrir modal, medir tamaño renderizado (640 x 561 aprox. en 1280x900), guardar campaña y confirmar cálculo de efectividad 120%, sin errores de consola. `git diff --check` y `node --check` sobre módulos JS.
+
+**Decisiones / límites:** Es un ajuste visual/ergonómico; no cambia persistencia, contratos de carga ni el comportamiento de cálculo. En móvil el modal sigue a una columna para evitar campos apretados.
+
+**Pendientes para revisar:** Validación visual final de Luis Felipe sobre proporción del modal en su navegador real.
+
+```text
+HANDOFF — SPRINT-13 Compactar modal de campaña
+──────────────────────────────────────
+HUs completas:        TO-HU-041
+HUs pendientes:       ninguna dentro del alcance del sprint
+Archivos tocados:     BACKLOG.md · SPRINTS.md · ROADMAP.md · MAPA_CODIGO.md
+                      05-tablero-ocupacion/v3-modular/src/ui/views/campaigns.js
+                      05-tablero-ocupacion/v3-modular/styles/app.css
+Archivos NO tocados:  05-tablero-ocupacion/v3-modular/src/ui/views/dashboard.js
+                      05-tablero-ocupacion/tablero-seguimiento-ocupacion.html
+                      05-tablero-ocupacion/tablero-seguimiento-ocupacion-v2.html
+                      05-tablero-ocupacion/tablero-seguimiento-ocupacion-v3-demo.html
+Datos/contratos:      Sin cambios.
+Decisiones tomadas:   Modal compacto: 640px max, menor padding/tipografía,
+                      campos secundarios en dos columnas en desktop.
+Riesgos residuales:
+  - Proporción visual final depende del navegador/tamaño de pantalla de revisión.
+  - Persistencia de campañas sigue pendiente.
+Validación hecha:
+  Sintaxis:           node --check sobre módulos JS -> pass
+  Runtime navegador:  Playwright abre, guarda y calcula efectividad -> pass
+  Visual:             modal 640 x 561 aprox. en 1280x900 -> pass
+  Documentación:      BACKLOG.md + SPRINTS.md + ROADMAP.md + MAPA_CODIGO.md actualizados
+Auto-reporte DoD:     Completo para TO-HU-041
+```
+
+---
+
 ## SPRINT-12 — Dashboard solo-graficas [Estado: Cerrado]
 
 - **Agente(s):** Claude Code

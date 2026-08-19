@@ -185,6 +185,7 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-030: Como gerente de sede, quiero que la alerta de ocupación muestre campañas y actividades comerciales aplicables, para pasar del semáforo a una acción concreta. — **Hecha**
   - TO-HU-034: Como Comercial/Reservas, quiero agregar una campaña nueva desde el tablero, para ampliar el catálogo sin editar código. — **Hecha**
   - TO-HU-039: Como Comercial/Reservas, quiero agregar campañas en un modal similar al de v2, para capturar causa, sede, tarifa, fecha y medición sin saturar la vista del catálogo. — **Hecha**
+  - TO-HU-041: Como Comercial/Reservas, quiero que el modal de nueva campaña tenga tamaño operativo y no ocupe la pantalla completa, para registrar campañas sin perder contexto del catálogo. — **Hecha**
 
 - **E3-F6 — Limpieza de interfaz ejecutiva**
   - TO-HU-035: Como usuario, quiero un menú con iconos y sin la sección técnica Estructura de archivos, para navegar el tablero como producto operativo. — **Hecha**
