@@ -69,7 +69,7 @@ function renderActiveView(){
   }
 
   if(activeView === 'data-load'){
-    bindDataLoadHandlers({ setStatus });
+    bindDataLoadHandlers({ rerender: renderActiveView, setStatus });
   }
 
   if(activeView === 'hotels'){

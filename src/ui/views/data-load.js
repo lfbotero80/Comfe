@@ -3,7 +3,7 @@ import { buildReadinessSummary } from '../../domain/data-readiness.js';
 import { readStructuredFile } from '../../services/file-reader.js';
 import { exportOccupancyRows, sortedOccupancyRows } from '../../services/occupancy-export.js';
 import { validateFileRows } from '../../services/validators.js';
-import { appState, registerLoad } from '../../state/app-state.js';
+import { appState, DATA_MODES, registerLoad, setDataMode } from '../../state/app-state.js';
 import { badge, escapeHTML } from '../html.js';
 
 export function renderDataLoad(){
@@ -14,8 +14,9 @@ export function renderDataLoad(){
           <h2>Carga por archivo</h2>
           <p class="metric-note">Suba archivos normalizados de ocupacion, presupuesto o reglas de Revenue. El tablero valida la estructura antes de incorporar la informacion al seguimiento.</p>
         </div>
-        <button type="button" class="btn-ghost" id="btnExportOccupancyAll">Exportar ocupacion CSV</button>
+        <button type="button" class="btn-ghost" id="btnExportOccupancyAll" ${appState.occupancyInventoryRows.length ? '' : 'disabled'}>Exportar ocupacion CSV</button>
       </div>
+      ${renderDataModeControl()}
     </section>
     <section class="panel">
       <div class="section-head">
@@ -49,13 +50,26 @@ export function renderDataLoad(){
   `;
 }
 
-export function bindDataLoadHandlers({ setStatus }){
+export function bindDataLoadHandlers({ rerender, setStatus }){
   const exportAllBtn = document.getElementById('btnExportOccupancyAll');
   if(exportAllBtn){
     exportAllBtn.addEventListener('click', () => {
       exportOccupancyRows(sortedOccupancyRows(appState.occupancyInventoryRows), 'comfenalco-ocupacion-todas-las-sedes');
     });
   }
+
+  document.querySelectorAll('[data-mode-option]').forEach(button => {
+    button.addEventListener('click', () => {
+      const mode = button.dataset.modeOption;
+      if(mode === appState.dataMode) return;
+      setDataMode(mode);
+      const status = mode === DATA_MODES.real.id
+        ? 'Modo datos reales: cargue archivos para activar metricas.'
+        : 'Modo demo: datos semilla restaurados.';
+      setStatus(status, mode === DATA_MODES.real.id ? 'pending' : 'ok');
+      rerender();
+    });
+  });
 
   document.querySelectorAll('[data-file-contract]').forEach(input => {
     input.addEventListener('change', async event => {
@@ -80,6 +94,7 @@ export function bindDataLoadHandlers({ setStatus }){
             rejectedRows: validation.rejectedRows
           });
           refreshReadinessSummary();
+          if(contractId === 'occupancyInventory') exportAllBtn.disabled = !appState.occupancyInventoryRows.length;
           const withWarnings = validation.rejectedRows.length ? ` (${validation.rejectedRows.length} fila(s) rechazadas)` : '';
           setStatus(`${file.name}: ${validation.acceptedRows.length} fila(s) cargadas${withWarnings}`, validation.rejectedRows.length ? 'warn' : 'ok');
         }else{
@@ -106,6 +121,25 @@ function renderReadinessSummary(){
     <div class="readiness-groups">
       ${renderReadinessGroup('Hoteles', summary.hotels)}
       ${renderReadinessGroup('Parques', summary.parks)}
+    </div>
+  `;
+}
+
+function renderDataModeControl(){
+  const currentMode = DATA_MODES[appState.dataMode] || DATA_MODES.demo;
+  return `
+    <div class="data-mode-panel ${escapeHTML(appState.dataMode)}">
+      <div>
+        <strong>Modo de datos</strong>
+        <span>${escapeHTML(currentMode.description)}</span>
+      </div>
+      <div class="mode-toggle" aria-label="Modo de datos">
+        ${Object.values(DATA_MODES).map(mode => `
+          <button type="button" class="${appState.dataMode === mode.id ? 'active' : ''}" data-mode-option="${escapeHTML(mode.id)}">
+            ${escapeHTML(mode.label)}
+          </button>
+        `).join('')}
+      </div>
     </div>
   `;
 }
