@@ -6,9 +6,11 @@ import { buildStrategicRecommendation } from '../../domain/strategic-recommendat
 import { exportOccupancyRows, occupancyRowsBySite, occupancyRowsByType, slug } from '../../services/occupancy-export.js';
 import { renderAIContextPanel } from '../ai-context-panel.js';
 import { badge, escapeHTML, trafficLight } from '../html.js';
-import { renderSiteBudgetPanel } from '../site-budget-panel.js';
+import { renderSiteBudgetPanel, bindSiteBudgetHandlers } from '../site-budget-panel.js';
+import { renderBudgetFamilyPanel, bindBudgetFamilyHandlers } from '../budget-family-panel.js';
 
-let activeHotelId = HOTELS[0].id;
+const SUMMARY_ID = '__resumen__';
+let activeHotelId = SUMMARY_ID;
 const activeMonthByHotelId = {};
 const MONTHS = [
   ['01', 'Ene'],
@@ -26,6 +28,7 @@ const MONTHS = [
 ];
 
 export function renderHotels(){
+  if(activeHotelId === SUMMARY_ID) return renderHotelsSummary();
   const activeHotel = HOTELS.find(hotel => hotel.id === activeHotelId) || HOTELS[0];
   const rows = rowsForHotel(activeHotel);
   const year = activeYear(rows);
@@ -44,13 +47,7 @@ export function renderHotels(){
   });
 
   return `
-    <div class="tabs site-tabs">
-      ${HOTELS.map(hotel => `
-        <button type="button" class="${hotel.id === activeHotel.id ? 'active' : ''}" data-hotel-tab="${hotel.id}">
-          ${escapeHTML(hotel.name)}
-        </button>
-      `).join('')}
-    </div>
+    ${renderHotelTabs(activeHotel.id)}
 
     <section class="panel hotel-control">
       <div class="hotel-head">
@@ -77,6 +74,26 @@ export function renderHotels(){
   `;
 }
 
+function renderHotelTabs(activeId){
+  return `
+    <div class="tabs site-tabs">
+      <button type="button" class="${activeId === SUMMARY_ID ? 'active' : ''}" data-hotel-tab="${SUMMARY_ID}">Resumen</button>
+      ${HOTELS.map(hotel => `
+        <button type="button" class="${hotel.id === activeId ? 'active' : ''}" data-hotel-tab="${hotel.id}">
+          ${escapeHTML(hotel.name)}
+        </button>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderHotelsSummary(){
+  return `
+    ${renderHotelTabs(SUMMARY_ID)}
+    ${renderBudgetFamilyPanel({ familyId: 'hoteles', familyLabel: 'Hoteles', sites: HOTELS })}
+  `;
+}
+
 export function bindHotelHandlers({ rerender }){
   document.querySelectorAll('[data-hotel-tab]').forEach(button => {
     button.addEventListener('click', () => {
@@ -84,6 +101,9 @@ export function bindHotelHandlers({ rerender }){
       rerender();
     });
   });
+
+  bindSiteBudgetHandlers();
+  bindBudgetFamilyHandlers({ familyId: 'hoteles', sites: HOTELS, rerender });
 
   document.querySelectorAll('[data-hotel-month]').forEach(button => {
     button.addEventListener('click', () => {

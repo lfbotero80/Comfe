@@ -4,9 +4,11 @@ import { classifyOccupancy, OCCUPANCY_TARGET } from '../../domain/occupancy.js';
 import { exportOccupancyRows, occupancyRowsBySite, occupancyRowsByType, slug } from '../../services/occupancy-export.js';
 import { renderAIContextPanel } from '../ai-context-panel.js';
 import { badge, escapeHTML, trafficLight } from '../html.js';
-import { renderSiteBudgetPanel } from '../site-budget-panel.js';
+import { renderSiteBudgetPanel, bindSiteBudgetHandlers } from '../site-budget-panel.js';
+import { renderBudgetFamilyPanel, bindBudgetFamilyHandlers } from '../budget-family-panel.js';
 
-let activeParkId = PARKS[0].id;
+const SUMMARY_ID = '__resumen__';
+let activeParkId = SUMMARY_ID;
 const activeMonthByParkId = {};
 const MONTHS = [
   ['01', 'Ene'],
@@ -24,6 +26,7 @@ const MONTHS = [
 ];
 
 export function renderParks(){
+  if(activeParkId === SUMMARY_ID) return renderParksSummary();
   const activePark = PARKS.find(park => park.id === activeParkId) || PARKS[0];
   const rows = rowsForPark(activePark);
   const year = activeYear(rows);
@@ -34,13 +37,7 @@ export function renderParks(){
   const status = latest ? classifyOccupancy(latest.ocupacion_porcentaje, latest.fecha) : null;
 
   return `
-    <div class="tabs site-tabs">
-      ${PARKS.map(park => `
-        <button type="button" class="${park.id === activePark.id ? 'active' : ''}" data-park-tab="${park.id}">
-          ${escapeHTML(park.name)}
-        </button>
-      `).join('')}
-    </div>
+    ${renderParkTabs(activePark.id)}
 
     <section class="panel hotel-control">
       <div class="hotel-head">
@@ -66,6 +63,26 @@ export function renderParks(){
   `;
 }
 
+function renderParkTabs(activeId){
+  return `
+    <div class="tabs site-tabs">
+      <button type="button" class="${activeId === SUMMARY_ID ? 'active' : ''}" data-park-tab="${SUMMARY_ID}">Resumen</button>
+      ${PARKS.map(park => `
+        <button type="button" class="${park.id === activeId ? 'active' : ''}" data-park-tab="${park.id}">
+          ${escapeHTML(park.name)}
+        </button>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderParksSummary(){
+  return `
+    ${renderParkTabs(SUMMARY_ID)}
+    ${renderBudgetFamilyPanel({ familyId: 'parques', familyLabel: 'Parques', sites: PARKS })}
+  `;
+}
+
 export function bindParkHandlers({ rerender }){
   document.querySelectorAll('[data-park-tab]').forEach(button => {
     button.addEventListener('click', () => {
@@ -73,6 +90,9 @@ export function bindParkHandlers({ rerender }){
       rerender();
     });
   });
+
+  bindSiteBudgetHandlers();
+  bindBudgetFamilyHandlers({ familyId: 'parques', sites: PARKS, rerender });
 
   document.querySelectorAll('[data-park-month]').forEach(button => {
     button.addEventListener('click', () => {

@@ -6,6 +6,50 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-38 — Presupuesto dentro de Hoteles y Parques [Estado: Cerrado]
+
+- **Agente(s):** Claude Code
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E3
+- **Objetivo del sprint:** disolver el módulo independiente "Presupuesto" y llevar el control presupuestal a dos niveles dentro de Hoteles y Parques — familia (comparación entre las sedes del grupo) y sede individual — para que toda la información de una sede viva en un solo lugar.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-094 | Presupuesto por familia dentro de Hoteles/Parques | Claude Code | Hecha | Chip "Resumen" con comparación a escala de familia |
+| TO-HU-095 | Detalle 12 meses + empresarial/individual dentro de cada sede | Claude Code | Hecha | Enriquece `site-budget-panel.js` |
+
+### Resumen de cierre
+
+**Análisis previo (pedido explícitamente por Luis Felipe antes de desarrollar):** se revisó el código de los tres lugares donde vivía el presupuesto y se encontró que esto **no era un "mover" sino un "reconstruir"** — el panel per-site (`site-budget-panel.js`, 61 líneas) solo tenía 2 barras del mes activo, mientras la pestaña (`views/budget.js`, 211 líneas) tenía selector de periodo, comparación a escala común, detalle de 12 meses, desglose empresarial/individual y export CSV. Borrar la pestaña sin más habría perdido 5 de 6 capacidades, incluido el desglose empresarial/individual que sostiene la regla de negocio de Quirama (`CLAUDE.md`: revenue individual solo sobre la porción individual).
+
+**Qué cambió:**
+
+- `src/services/budget-export.js` (nuevo): `exportBudgetRows()`, `budgetRowsForSites()`, `sortedBudgetRows()` — espeja el patrón de `occupancy-export.js` y saca la generación de CSV de la vista.
+- `src/ui/budget-family-panel.js` (nuevo): comparación presupuestal de una familia con **escala común dentro de esa familia**, selector de periodo propio por familia (`modeByFamily`), total de la familia y export CSV del grupo.
+- `src/ui/site-budget-panel.js` (enriquecido, 61 → 136 líneas): conserva las 2 barras y agrega el detalle de los 12 meses en un `<details>` colapsado (con columnas empresarial/individual) y export CSV de esa sede.
+- `src/ui/views/hotels.js` y `src/ui/views/parks.js`: nuevo chip **"Resumen"** al inicio de los chips de sede, que es ahora la **entrada por defecto** (de lo general a lo particular). El contenido de cada sede queda igual, con el panel presupuestal enriquecido.
+- `src/config/navigation.js` + `src/main.js`: se retira el item `Presupuesto` del menú lateral (de 7 a 6 secciones).
+- `src/ui/views/data-load.js`: se agrega el export consolidado de presupuesto (las 9 sedes) junto al de ocupación que ya vivía ahí.
+- `src/ui/views/budget.js`: **eliminado** — su lógica quedó repartida entre el componente de familia y el de sede.
+
+**Decisiones de diseño tomadas (Luis Felipe dio go sin responder las 3 preguntas abiertas, así que se resolvieron con el criterio propuesto en el análisis):**
+1. "Resumen" es la entrada por defecto de Hoteles/Parques.
+2. Export: por familia en cada Resumen, por sede dentro de cada sede, y consolidado total en "Cargar datos".
+3. Selector de periodo solo en el Resumen de familia — dentro de cada sede la tabla de 12 meses ya muestra el año completo.
+
+**Por qué separar por familia mejora el análisis, no solo la navegación:** con las 9 sedes en escala común, Quirama ($687M) aplastaba visualmente a un parque como Mario Aramburo ($96M), que quedaba como una rayita. Separadas, la escala común vuelve a ser informativa dentro de cada grupo — y coincide con la regla del proyecto de que hoteles y parques son negocios estructuralmente distintos. La vista total de la unidad no se pierde: sigue en el KPI consolidado del Dashboard.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/src/services/budget-export.js` (nuevo), `src/ui/budget-family-panel.js` (nuevo), `src/ui/site-budget-panel.js`, `src/ui/views/hotels.js`, `src/ui/views/parks.js`, `src/ui/views/data-load.js`, `src/config/navigation.js`, `src/main.js`, `styles/app.css`, y `src/ui/views/budget.js` (eliminado).
+
+**Validación realizada:** `node --check` sobre todos los módulos JS; búsqueda negativa de referencias huérfanas a la vista `budget`; servidor local en puerto limpio (`8060`) para evitar la caché de módulos ES que ya había tropezado en `SPRINT-33`; en navegador con presupuesto real de prueba cargado: Resumen de Hoteles muestra total de familia ($746.715.196 de $1.014.897.734, 74%) y comparación de las 4 sedes con escala propia; Quirama conserva el desglose empresarial ($611.901.171) / individual ($68.752.941) en su detalle de 12 meses; Resumen de Parques muestra "2 de 5 sedes con dato"; export CSV por familia interceptado y verificado (BOM, separador `;`, solo las sedes de esa familia); las 6 vistas del menú cargan sin errores de consola y el item `Presupuesto` ya no aparece.
+
+**Pendientes para revisar:** validar visualmente con Diana si entrar por "Resumen" (en vez de directo al primer hotel) es el flujo que espera.
+
+---
+
 ## SPRINT-37 — Datos reales y flujo de carga [Estado: Cerrado]
 
 - **Agente(s):** Codex
