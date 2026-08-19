@@ -185,11 +185,13 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
 
 - **E3-F3 — Control presupuestal**
   - TO-HU-022: Como Diana, quiero ver presupuesto, ejecutado y % de cumplimiento por sede y periodo, para controlar desempeño financiero. — **Hecha**
-  - TO-HU-023: Como jefatura, quiero una vista acumulada mensual/trimestral, para usar el tablero como insumo de gestión. — **Pendiente**
-  - TO-HU-024: Como Diana, quiero que los datos no confiables se marquen como pendientes de validar, para no tomar decisiones sobre cifras dudosas. — **Pendiente**
+  - TO-HU-023: Como jefatura, quiero una vista acumulada mensual/trimestral, para usar el tablero como insumo de gestión. — **Hecha**
+  - TO-HU-024: Como Diana, quiero que los datos no confiables se marquen como pendientes de validar, para no tomar decisiones sobre cifras dudosas. — **Hecha**
+  - TO-HU-058: Como Diana, quiero que cargar el presupuesto de un mes no borre los meses ya cargados de esa sede, para poder construir el historial completo mes a mes. — **Hecha**
+  - TO-HU-059: Como Diana, quiero recuperar la pestaña propia "Seguimiento presupuestal" que existia en v2 (selector de periodo, comparacion de las 9 sedes en una escala comun, desglose empresarial/individual cuando el archivo lo trae, y detalle de 12 meses por sede), para no perder ese nivel de detalle al migrar a la version modular. — **Hecha**
 
 - **E3-F4 — Reportes y trazabilidad**
-  - TO-HU-025: Como Diana, quiero exportar reportes por sede y consolidado, para compartirlos con jefatura o analizarlos en Excel. — **Pendiente**
+  - TO-HU-025: Como Diana, quiero exportar reportes por sede y consolidado, para compartirlos con jefatura o analizarlos en Excel. — **Hecha** (presupuesto; ocupación queda pendiente)
   - TO-HU-026: Como Diana, quiero registrar decisiones y responsables en bitácora, para dar seguimiento a campañas, tarifas y compromisos. — **Pendiente**
   - TO-HU-027: Como administradora, quiero identificar quién cargó o modificó datos, para mantener control operativo mínimo. — **Pendiente**
 

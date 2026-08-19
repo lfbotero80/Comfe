@@ -17,7 +17,7 @@ Este roadmap organiza el producto `Tablero de ocupación` antes de ejecutar nuev
 | Sprint TO-03 | Construir sección Hoteles | E2, E3 | Una pestaña por hotel con inventario, ocupación, cumplimiento y semáforo |
 | Sprint TO-04 | Construir sección Parques / pasadía / camping | E2, E3 | Una pestaña por parque/sede con métricas equivalentes pero no hoteleras |
 | Sprint TO-05 | Integrar Revenue y campañas | E3 | Reglas de semáforo v2 + acción recomendada + catálogo/activación de campañas |
-| Sprint TO-06 | Consolidar presupuesto y reportes | E3 | Presupuesto, ejecutado, cumplimiento, acumulado y exportaciones |
+| Sprint TO-06 | Consolidar presupuesto y reportes | E3 | **Ejecutado en `SPRINT-19`**: presupuesto, ejecutado, cumplimiento, acumulado y exportaciones |
 | Sprint TO-07 | Gobierno, trazabilidad y cierre de demo | E1, E2, E3 | Roles, bitácora, fuentes, validaciones y versión candidata a reemplazar v2 |
 
 ### Sprint TO-01 · Modelo de datos y carga
@@ -76,9 +76,9 @@ Este roadmap organiza el producto `Tablero de ocupación` antes de ejecutar nuev
 
 **HUs candidatas:** TO-HU-022, TO-HU-023, TO-HU-024, TO-HU-025.
 
-**Avance relacionado:** `SPRINT-09` cerro TO-HU-022 en dashboard general. Siguen pendientes TO-HU-023, TO-HU-024 y TO-HU-025 para vista mensual/trimestral, confiabilidad del dato y exportacion.
+**Avance relacionado:** `SPRINT-09` cerro TO-HU-022 en dashboard general. `SPRINT-19` (Claude Code) cerro TO-HU-023, TO-HU-024, TO-HU-025, TO-HU-058 y TO-HU-059: restauro la pestaña propia "Seguimiento presupuestal" que existia en v2 (perdida en la modularizacion) con selector de periodo (ultimo/acumulado/mes especifico), comparacion de las 9 sedes a escala comun, datos no confiables marcados como pendientes de validar en vez de un % enganoso, detalle de 12 meses por sede con desglose empresarial/individual, y exportacion CSV consolidada y por sede — la primera utilidad de exportacion CSV en V3. De paso corrigio un bug real: `budgetRows` se sobrescribia en cada carga en vez de fusionar por sede+periodo.
 
-**Criterio de salida:** presupuesto vs ejecutado por sede, periodo mensual/trimestral, acumulado, datos pendientes/no confiables y exportación.
+**Criterio de salida:** cumplido — presupuesto vs ejecutado por sede, periodo mensual/trimestral, acumulado, datos pendientes/no confiables y exportación.
 
 ### Sprint TO-07 · Trazabilidad y demo candidato
 

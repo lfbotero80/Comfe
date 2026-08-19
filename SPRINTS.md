@@ -6,6 +6,47 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-19 — Seguimiento presupuestal (restauracion de v2) [Estado: Cerrado]
+
+- **Agente(s):** Claude Code
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E3
+- **Objetivo del sprint:** restaurar la pestaña "Seguimiento presupuestal" que existía en v2 y se perdió en la modularización — Luis Felipe la señaló como "bastante completa" en el demo y notó que hoy solo queda repartida dentro de cada Hotel/Parque.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-023 | Vista acumulada mensual | Claude Code | Hecha | Modo "Acumulado" suma todos los periodos cargados por sede |
+| TO-HU-024 | Datos no confiables marcados | Claude Code | Hecha | `dato_confiable: no` se muestra "Pendiente de validar", no un % engañoso |
+| TO-HU-025 | Exportar reportes por sede y consolidado | Claude Code | Hecha (presupuesto) | Ocupación queda pendiente para otra HU |
+| TO-HU-058 | Cargar un mes no borra los meses ya cargados | Claude Code | Hecha | Bug real encontrado: `budgetRows` se sobrescribía en cada carga |
+| TO-HU-059 | Pestaña propia "Seguimiento presupuestal" | Claude Code | Hecha | Selector de periodo, comparación a escala común, detalle 12 meses |
+
+### Resumen de cierre
+
+**Qué había en v2 y no existía en v3 (confirmado leyendo el HTML de v2 antes de construir, no de memoria):** selector de mes, gráfico comparativo de las 9 sedes con **escala común** (para comparar tamaño entre sedes, no solo % de cada una), desglose Presupuesto Empresarial vs. Individual, marcado explícito de "dato no confiable" en vez de un % engañoso, detalle desplegable de 12 meses por sede, y exportación CSV (consolidada y por sede). En v3 solo quedaba un fragmento dentro del Dashboard (KPI + comparación de 2 barras del último periodo cargado), sin selector de mes, sin desglose, sin marcado de confiabilidad y sin exportar nada — v3 no tenía ninguna utilidad de exportación CSV en ningún archivo.
+
+**Bug real encontrado y corregido antes de construir la pestaña:** `registerLoad()` en `app-state.js` sobrescribía `appState.budgetRows` completo en cada carga (`appState.budgetRows = acceptedRows`), a diferencia de `occupancyInventoryRows` que sí fusiona por clave. Cargar el presupuesto de un segundo mes borraba el primero. Se corrigió `mergeByKey()` para aceptar un comparador de orden configurable y se aplicó tambien a `budgetExecution` con clave `sede__periodo`. Verificado en navegador: cargado marzo y mayo de Quirama por separado, ambos meses conviven en el detalle y el modo "Acumulado" los suma correctamente (82% cumplido, $1.375.058.812 / $1.123.719.766).
+
+**Qué se construyó:**
+
+- `src/services/csv-export.js` (nuevo): `toCSV()`/`downloadCSV()` genéricos, separador `;` y BOM UTF-8 para Excel en español — mismo patrón que v2 (documentado en `SPRINT-00`).
+- `src/domain/budget.js` (nuevo): `summarizeSite()` calcula el resumen de una sede para 3 modos — `latest` (último periodo cargado), `accumulated` (suma de todos los periodos, excluyendo `ejecutado` de filas no confiables) y un mes específico (`2026-01`..`2026-12`). Maneja `dato_confiable` en los tres modos.
+- `src/ui/views/budget.js` (nuevo): `renderBudget()`/`bindBudgetHandlers()`. Selector de periodo, leyenda, gráfico comparativo de las 9 sedes a escala común (`Math.max` de presupuesto/ejecutado entre todas las sedes, no por sede — a proposito distinto del `budgetCompareRow()` del Dashboard, que sí escala por sede), y detalle `<details>` de 12 meses por sede con desglose empresarial/individual cuando el archivo lo trae, y botón de exportación individual.
+- `src/config/navigation.js`: nuevo item `Presupuesto` (ícono `$`) entre Parques y Calendario comercial.
+- `src/main.js`: enlaza `renderBudget`/`bindBudgetHandlers`; los filtros globales (acotados a Dashboard desde `SPRINT-18`) no se tocan — Presupuesto tampoco los muestra.
+- `styles/app.css`: `.budget-legend`, `.budget-report-list/-row/-head/-bars/-bar/-label`, `.budget-detail-list/-card/-inner`, `.pending-text`. Clases propias (`budget-report-*`) en vez de reusar `.budget-compare-*` del Dashboard, porque ese componente lo sigue evolucionando Codex (ya tiene 4 columnas desde `SPRINT-16`/`17`) y acoplarme a su forma actual habría sido frágil.
+
+**Decisión deliberada — no se fabricaron datos:** la demo de presupuesto no incluye hoy desglose empresarial/individual ni ninguna fila marcada `dato_confiable: no`. Siguiendo la regla del proyecto de no inventar cifras (`CLAUDE.md`), no se agregaron esos campos a `demo-data.js` solo para mostrar la funcionalidad — la UI ya maneja ambos casos correctamente y se activará en cuanto se cargue un archivo real con esos campos.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/src/services/csv-export.js` (nuevo), `src/domain/budget.js` (nuevo), `src/ui/views/budget.js` (nuevo), `src/config/navigation.js`, `src/main.js`, `src/state/app-state.js`, `styles/app.css`.
+
+**Validación realizada:** `node --check` en todos los módulos JS; servidor local `localhost:8055` responde 200; navegador: 9 sedes listadas con escala común visible (Quirama notablemente más grande que un parque pequeño), `6 de 9 sedes con dato` correcto, `Hotel Piedras Blancas`/`Parque Piedras Blancas`/`Parque Los Tamarindos` en "Sin dato" honesto; detalle de Quirama expandido muestra 11 meses en "Sin dato" y 1 con dato real; exportación CSV interceptada y verificada (BOM, separador `;`, columnas y % correctos); carga real de un segundo mes de Quirama confirma que el merge ya no borra el primero; las demás 5 vistas (Dashboard, Hoteles, Parques, Calendario, Campañas) siguen respondiendo sin errores de consola tras los cambios compartidos (`app-state.js`, `app.css`).
+
+---
+
 ## SPRINT-18 — Correccion de alcance de filtros globales [Estado: Cerrado]
 
 - **Agente(s):** Claude Code

@@ -1,6 +1,6 @@
 # Mapa de código — Comfenalco IA
 
-Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-18`.
+Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-19`.
 
 ---
 
@@ -146,10 +146,11 @@ URL local: `http://localhost:8055/`
 |---|---|
 | `src/main.js` | Orquesta navegacion, titulo de vista y render de la pantalla activa. Desde `SPRINT-18`, los filtros globales (`#globalFilters`) solo se renderizan y enlazan cuando `activeView === 'dashboard'`; en el resto de vistas quedan `hidden`. `setStatus(text, type)` colorea el pill del header segun `ok`/`warn`/`error`/`pending`; desde `SPRINT-16`, lo mantiene oculto cuando no hay texto real. |
 | `src/ui/global-filters.js` | Renderiza y enlaza filtros globales de periodo, unidad y semaforo. Expone `monthLabel()` para que dashboard y vistas por sede nombren el periodo con lenguaje humano. |
-| `src/config/navigation.js` | Define las vistas del menu lateral con iconos: dashboard, hoteles, parques, calendario comercial y catalogo de campanas. La carga de datos se abre desde el boton primario del header. `Estructura de archivos` ya no aparece en navegacion desde `SPRINT-09`. |
+| `src/config/navigation.js` | Define las vistas del menu lateral con iconos: dashboard, hoteles, parques, presupuesto (`$`, desde `SPRINT-19`), calendario comercial y catalogo de campanas. La carga de datos se abre desde el boton primario del header. `Estructura de archivos` ya no aparece en navegacion desde `SPRINT-09`. |
 | `src/domain/sites.js` | Catálogo de hoteles y parques, con rol estrategico y capacidad conocida cuando existe. |
 | `src/domain/data-contracts.js` | Contratos de archivo de S1: `occupancyInventory`, `budgetExecution` y `revenueRules`, con columnas obligatorias/opcionales, tipos, fuentes, grano y plantilla CSV. |
 | `src/domain/occupancy.js` | Reglas de clasificacion de ocupacion: Estandar >=70, Preventa 40-69, Mas cerca <40, alta demanda >=90, cierre operativo y brecha proyectado/real. |
+| `src/domain/budget.js` | Desde `SPRINT-19`. `summarizeSite(sede, rows, mode)` resume presupuesto/ejecutado de una sede en 3 modos: `latest` (ultimo periodo), `accumulated` (suma de todos los periodos cargados, excluye `ejecutado` de filas no confiables) o un mes especifico (`2026-01`..`2026-12`). Respeta `dato_confiable` en los tres modos. `BUDGET_MONTHS` es la lista de los 12 meses de 2026. |
 | `src/domain/operational-calendar.js` | Reglas de calendario operativo: festivos Colombia 2026, cierre domingo/lunes sin festivo, temporada alta y tipo de dia. |
 | `src/domain/commercial-context.js` | Cruza sede, fecha, tramo del semaforo, calendario comercial y campanas para generar contexto accionable. |
 | `src/domain/strategic-recommendation.js` | Motor deterministico de `Accion sugerida` para hoteles: combina semaforo, cumplimiento mensual, tendencia y contexto comercial. Punto futuro para conectar IA real sin mezclarla con la vista. |
@@ -161,12 +162,14 @@ URL local: `http://localhost:8055/`
 | `src/services/file-reader.js` | Lee archivos `.csv`, `.json` y PDFs Zeus para `occupancyInventory`; extrae texto con PDF.js local y delega normalizacion al parser Zeus. |
 | `src/services/zeus-forecast-parser.js` | Interpreta texto extraido de PDF Zeus Forecast por sede: detecta sede, corte, filas diarias, habitaciones disponibles/ocupadas y porcentaje, y devuelve filas `occupancyInventory`. |
 | `src/services/validators.js` | Valida formato, columnas obligatorias, fechas, periodos, sedes reconocidas, tipo de unidad, porcentajes y cuadratura de inventario/presupuesto/umbrales. |
-| `src/state/app-state.js` | Estado en memoria de la sesion local: archivos cargados, inventario/ocupacion, presupuesto, reglas de Revenue, campanas agregadas durante la sesion y filtros globales (`period`, `unitType`, `severity`). |
+| `src/services/csv-export.js` | Desde `SPRINT-19`. `toCSV(headers, rows)`/`downloadCSV(filename, csv)` genericos — separador `;` y BOM UTF-8 para Excel en español, mismo patron que v2. Primera utilidad de exportacion CSV en V3 (antes no existia ninguna). |
+| `src/state/app-state.js` | Estado en memoria de la sesion local: archivos cargados, inventario/ocupacion, presupuesto, reglas de Revenue, campanas agregadas durante la sesion y filtros globales (`period`, `unitType`, `severity`). `mergeByKey()` recibe un comparador de orden configurable desde `SPRINT-19`; `budgetExecution` fusiona por `sede + periodo` (antes sobrescribia todo en cada carga) igual que `occupancyInventory` fusiona por `sede + tipo_unidad + fecha`. |
 | `src/ui/html.js` | Helpers pequeños para escapar HTML, crear badges y renderizar el semaforo real de tres luces. |
 | `src/ui/views/dashboard.js` | Dashboard general solo-graficas tipo Power BI: banda principal sin contador de alertas, 2 KPIs de negocio, ocupacion Hoteles y ocupacion Parques en bloques verticales con cuerpo 50/50 (grafica + convenciones), y presupuesto comparativo por sede. El presupuesto usa dos barras (`Proyectado` y `Real cumplido`, funcion `budgetCompareRow()`), escaladas contra el mayor de los dos valores, y muestra el % de ejecucion junto a la barra real. Sedes sin dato quedan en gris al final de cada grafica. Obedece filtros globales de periodo, unidad y semaforo. |
 | `src/ui/views/data-load.js` | Vista de carga de archivos, descarga de plantillas, resultado de validacion por fila y explicacion de interpretacion Zeus por hotel. Desde `SPRINT-15`, el handler de carga ya no llama `rerender()` tras un exito (`renderDataLoad()` no depende de `appState`, y ese `rerender()` borraba el mensaje de validacion antes de que se alcanzara a leer) — el mensaje ahora persiste con estado `pending`/`ok`/`warn`/`error`. |
 | `src/ui/views/hotels.js` | Vista de hoteles con pestanas internas por hotel, 12 barras mensuales, cumplimiento del mes contra meta, ocupadas/inventario en un solo indicador, semaforo contextual, accion sugerida, contexto comercial y detalle diario del mes activo con dia real. Grafica de detalle diario ampliada en `SPRINT-15` (contenedor 240px, barras escaladas `pct * 2`, valores en 14px/800). El mes activo depende solo de `activeMonthByHotelId`/`latestMonth()` — `SPRINT-17` metio un fallback al filtro global de periodo que causaba falsos "Sin dato"; se quito en `SPRINT-18`. No obedece filtros globales (tiene su propia navegacion). |
 | `src/ui/views/parks.js` | Vista `Parques` con pestanas por sede, uso del mes, capacidad, usados/libres, alarma y detalle diario; no muestra semaforo cuando falta dato. Siempre usa el ultimo mes con dato de la sede (`latestMonthRows()`) — no tiene navegacion propia de mes ni obedece filtros globales (se quito en `SPRINT-18` la dependencia del periodo global que introdujo `SPRINT-17`). Pendiente: darle a Parques una navegacion de 12 meses como la de Hoteles. |
+| `src/ui/views/budget.js` | **Seguimiento presupuestal** (desde `SPRINT-19`, restaura la pestaña que existia en v2). Selector de periodo (ultimo cargado / acumulado / mes especifico), leyenda, comparacion de las 9 sedes con **escala comun** (a proposito distinto de `budgetCompareRow()` del Dashboard, que escala cada sede contra si misma) para poder comparar tamaño entre sedes, y detalle `<details>` de 12 meses por sede con desglose empresarial/individual cuando el archivo lo trae, exportacion CSV consolidada y por sede. Usa clases CSS propias (`budget-report-*`) en vez de `budget-compare-*` del Dashboard para no acoplarse a un componente que Codex sigue evolucionando. |
 | `src/ui/views/calendar.js` | Vista recuperada de calendario comercial, con filtros por mes/sede y calendario operativo 2026. |
 | `src/ui/views/campaigns.js` | Vista recuperada de catalogo de campanas, con estado, resultado si hay ocupacion proyectada/real y boton `Agregar campaña nueva` que abre un modal tipo v2. |
 | `src/ui/views/contracts.js` | Vista tecnica de contratos de datos; queda sin acceso desde el menu visible desde `SPRINT-09`. |
@@ -343,3 +346,14 @@ Plantillas CSV de S1:
 - `src/ui/views/parks.js`: `rowsForPeriod(rows, period)` se simplifico a `latestMonthRows(rows)` — ya no depende de `appState.filters.period`. Vuelve al comportamiento de antes de `SPRINT-17`.
 - El Dashboard no se toco: ahi los tres filtros si comparan varias sedes a la vez y siguen funcionando igual que en `SPRINT-17`.
 - Pendiente real (no resuelto aqui): Parques no tiene navegacion propia de mes como Hoteles (12 barras) — nunca la tuvo, no es una regresion de `SPRINT-17`, pero es candidata a HU futura.
+
+### 3.20 — Seguimiento presupuestal en `SPRINT-19`
+
+`SPRINT-19` restaura la pestaña "Seguimiento presupuestal" de v2, que se habia perdido en la modularizacion (solo quedaba un fragmento dentro del Dashboard):
+
+- **Bug corregido primero:** `registerLoad()` en `app-state.js` sobrescribia `budgetRows` completo en cada carga en vez de fusionar — cargar un segundo mes borraba el primero. `mergeByKey()` ahora acepta un comparador de orden configurable; `budgetExecution` fusiona por `sede + periodo`.
+- `src/services/csv-export.js` (nuevo): primera utilidad de exportacion CSV de V3.
+- `src/domain/budget.js` (nuevo): `summarizeSite()` con 3 modos (`latest`/`accumulated`/mes especifico), maneja `dato_confiable`.
+- `src/ui/views/budget.js` (nuevo): pestaña completa — selector de periodo, comparacion a escala comun de las 9 sedes, detalle de 12 meses por sede con desglose empresarial/individual, exportacion CSV consolidada y por sede.
+- `src/config/navigation.js` y `src/main.js`: nuevo item `Presupuesto` entre Parques y Calendario comercial.
+- No se fabricaron datos en `demo-data.js` para mostrar el desglose empresarial/individual ni `dato_confiable: no` — la demo actual no trae esos campos y no se inventaron cifras (regla de `CLAUDE.md`); la UI ya los maneja y se activan con datos reales.
