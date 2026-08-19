@@ -1,8 +1,7 @@
-import { appState } from '../../state/app-state.js';
-import { addCampaign } from '../../state/app-state.js';
+import { appState, addCampaign } from '../../state/app-state.js';
 import { badge, escapeHTML } from '../html.js';
 
-let showNewCampaignForm = false;
+let showNewCampaignModal = false;
 
 export function renderCampaigns(){
   return `
@@ -17,7 +16,7 @@ export function renderCampaigns(){
           <button type="button" class="btn-secondary" data-add-campaign-toggle>Agregar campaña nueva</button>
         </div>
       </div>
-      ${showNewCampaignForm ? renderNewCampaignForm() : ''}
+      ${showNewCampaignModal ? renderNewCampaignModal() : ''}
     </section>
 
     <section class="panel tight">
@@ -46,8 +45,25 @@ export function bindCampaignHandlers({ rerender, setStatus }){
   const toggle = document.querySelector('[data-add-campaign-toggle]');
   if(toggle){
     toggle.addEventListener('click', () => {
-      showNewCampaignForm = !showNewCampaignForm;
+      showNewCampaignModal = true;
       rerender();
+    });
+  }
+
+  document.querySelectorAll('[data-campaign-close]').forEach(button => {
+    button.addEventListener('click', () => {
+      showNewCampaignModal = false;
+      rerender();
+    });
+  });
+
+  const backdrop = document.querySelector('[data-campaign-modal-backdrop]');
+  if(backdrop){
+    backdrop.addEventListener('click', event => {
+      if(event.target === backdrop){
+        showNewCampaignModal = false;
+        rerender();
+      }
     });
   }
 
@@ -56,53 +72,77 @@ export function bindCampaignHandlers({ rerender, setStatus }){
     form.addEventListener('submit', event => {
       event.preventDefault();
       const data = new FormData(form);
+      const projectedOccupancy = parseOptionalNumber(data.get('projectedOccupancy'));
+      const actualOccupancy = parseOptionalNumber(data.get('actualOccupancy'));
       const campaign = {
         name: String(data.get('name') || '').trim(),
         cause: String(data.get('cause') || '').trim(),
         sites: String(data.get('sites') || '').trim(),
         rate: String(data.get('rate') || '').trim(),
-        status: String(data.get('status') || 'propuesta')
+        executionDate: String(data.get('executionDate') || '').trim(),
+        projectedOccupancy,
+        actualOccupancy,
+        status: actualOccupancy === null ? 'propuesta' : 'ejecutada'
       };
       if(!campaign.name || !campaign.cause || !campaign.sites || !campaign.rate){
         setStatus('Complete nombre, causa, sedes y tarifa/producto.');
         return;
       }
       addCampaign(campaign);
-      showNewCampaignForm = false;
+      showNewCampaignModal = false;
       setStatus(`${campaign.name}: campana agregada`);
       rerender();
     });
   }
 }
 
-function renderNewCampaignForm(){
+function renderNewCampaignModal(){
   return `
-    <form class="campaign-form" data-campaign-form>
-      <label>
-        <span>Nombre</span>
-        <input name="name" required placeholder="Ej. Puente de baja ocupacion">
-      </label>
-      <label>
-        <span>Causa</span>
-        <input name="cause" required placeholder="Ej. Baja proyeccion entre semana">
-      </label>
-      <label>
-        <span>Sedes</span>
-        <input name="sites" required placeholder="Ej. Hosteria Los Farallones">
-      </label>
-      <label>
-        <span>Tarifa o producto</span>
-        <input name="rate" required placeholder="Ej. Preventa 48 horas">
-      </label>
-      <label>
-        <span>Estado</span>
-        <select name="status">
-          <option value="propuesta">Propuesta</option>
-          <option value="ejecutada">Ejecutada</option>
-        </select>
-      </label>
-      <button type="submit" class="btn-upload">Guardar campaña</button>
-    </form>
+    <div class="modal-backdrop" data-campaign-modal-backdrop>
+      <form class="campaign-modal" data-campaign-form role="dialog" aria-modal="true" aria-labelledby="campaign-modal-title">
+        <div class="modal-head">
+          <h3 id="campaign-modal-title">Agregar campaña al catálogo</h3>
+          <button type="button" class="modal-close" data-campaign-close aria-label="Cerrar">×</button>
+        </div>
+        <div class="modal-body">
+          <label class="form-field">
+            <span>Nombre de la campaña</span>
+            <input name="name" required placeholder="Ej. Miércoles de nómada digital">
+          </label>
+          <label class="form-field">
+            <span>Causa que resuelve</span>
+            <input name="cause" required placeholder="Ej. Entre semana sin atractivo de calendario">
+          </label>
+          <label class="form-field">
+            <span>Sede(s)</span>
+            <input name="sites" required placeholder="Ej. Piedras Blancas, Balandú">
+          </label>
+          <label class="form-field">
+            <span>Tarifa aplicada</span>
+            <input name="rate" required placeholder="Ej. Tramo Preventa">
+          </label>
+          <label class="form-field">
+            <span>Fecha de ejecución</span>
+            <input name="executionDate" type="date">
+          </label>
+          <div class="form-grid two">
+            <label class="form-field">
+              <span>Ocupación proyectada antes (%)</span>
+              <input name="projectedOccupancy" type="number" min="0" max="100" step="0.01" inputmode="decimal">
+            </label>
+            <label class="form-field">
+              <span>Ocupación real lograda (%)</span>
+              <input name="actualOccupancy" type="number" min="0" max="100" step="0.01" inputmode="decimal">
+            </label>
+          </div>
+          <p class="modal-helper">Deja las ocupaciones en blanco si la campaña todavía no se ha ejecutado; el % de efectividad se calcula solo cuando ambos datos existen.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-ghost" data-campaign-close>Cancelar</button>
+          <button type="submit" class="btn-primary">Guardar campaña</button>
+        </div>
+      </form>
+    </div>
   `;
 }
 
@@ -132,6 +172,12 @@ function campaignEffectiveness(campaign){
   const actual = Number(campaign.actualOccupancy);
   if(Number.isNaN(projected) || Number.isNaN(actual) || projected === 0) return null;
   return (actual / projected) * 100;
+}
+
+function parseOptionalNumber(value){
+  if(value === null || value === undefined || String(value).trim() === '') return null;
+  const number = Number(value);
+  return Number.isNaN(number) ? null : number;
 }
 
 function statusLabel(value){
