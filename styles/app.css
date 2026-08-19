@@ -493,6 +493,19 @@ p{line-height:1.55}
 .priority-item.red{border-left-color:var(--red)}
 .priority-item.amber{border-left-color:var(--amber)}
 .priority-item.gray{border-left-color:#B7BCB8}
+.priority-body{display:grid; gap:5px; min-width:0}
+.priority-line{
+  display:block;
+  font-size:12.5px;
+  line-height:1.45;
+  color:var(--ink);
+  border-left:2px solid var(--line);
+  padding-left:9px;
+}
+.priority-line b{color:var(--navy)}
+.priority-line.campaign{border-left-color:var(--gold)}
+.priority-line.decision{border-left-color:var(--navy-soft)}
+.priority-line.muted{color:var(--muted); font-style:italic; border-left-color:#E4E6E3}
 .priority-rank{
   width:30px;
   height:30px;

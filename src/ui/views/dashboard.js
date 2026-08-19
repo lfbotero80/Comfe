@@ -127,20 +127,58 @@ function renderActionFocus(rows){
         </div>
       </div>
       <div class="priority-list">
-        ${priorityRows.length ? priorityRows.map((row, index) => `
-          <article class="priority-item ${row.combinedSeverity}">
-            <span class="priority-rank">${index + 1}</span>
-            <div>
-              <strong>${escapeHTML(row.name)}</strong>
-              <p>${escapeHTML(row.action)}</p>
-              <small>${escapeHTML(row.responsible)} · ${escapeHTML(row.source)}</small>
-            </div>
-            ${badge(row.combinedLabel, row.combinedSeverity)}
-          </article>
-        `).join('') : '<div class="empty-state"><strong>Sin acciones criticas</strong><span>Las sedes filtradas estan bajo control.</span></div>'}
+        ${priorityRows.length ? priorityRows.map((row, index) => renderPriorityItem(row, index)).join('') : '<div class="empty-state"><strong>Sin acciones criticas</strong><span>Las sedes filtradas estan bajo control.</span></div>'}
       </div>
     </section>
   `;
+}
+
+/**
+ * Cada accion prioritaria responde tres preguntas, no una (SPRINT-42):
+ * que hacer (accion), **con que** hacerlo (campanas aplicables del catalogo) y
+ * **que se decidio antes** (ultimo registro de la bitacora para esa sede).
+ * Cuando no hay campana aplicable o no hay registro previo, se dice
+ * explicitamente en vez de omitir la linea — la ausencia tambien es informacion.
+ */
+function renderPriorityItem(row, index){
+  return `
+    <article class="priority-item ${row.combinedSeverity}">
+      <span class="priority-rank">${index + 1}</span>
+      <div class="priority-body">
+        <strong>${escapeHTML(row.name)}</strong>
+        <p>${escapeHTML(row.action)}</p>
+        ${renderPriorityCampaigns(row)}
+        ${renderPriorityDecision(row)}
+        <small>Fuente: ${escapeHTML(row.source)}</small>
+      </div>
+      ${badge(row.combinedLabel, row.combinedSeverity)}
+    </article>
+  `;
+}
+
+function renderPriorityCampaigns(row){
+  if(!row.campaigns || !row.campaigns.length){
+    return '<span class="priority-line muted">Sin campana aplicable en el catalogo para este tramo.</span>';
+  }
+  const names = row.campaigns.slice(0, 2).map(campaign => `${campaign.name}${campaign.rate ? ` (${campaign.rate})` : ''}`);
+  const extra = row.campaigns.length > 2 ? ` +${row.campaigns.length - 2}` : '';
+  return `<span class="priority-line campaign"><b>Campanas disponibles:</b> ${escapeHTML(names.join(' · '))}${escapeHTML(extra)}</span>`;
+}
+
+function renderPriorityDecision(row){
+  const decision = row.lastDecision;
+  if(!decision){
+    return '<span class="priority-line muted">Sin registro previo en bitacora · responsable por definir.</span>';
+  }
+  const when = formatDecisionDate(decision.createdAt);
+  return `<span class="priority-line decision"><b>Ultimo registro:</b> ${escapeHTML(decision.decision || decision.type || 'Registro sin detalle')} — ${escapeHTML(decision.responsible || 'sin responsable')}${when ? ` · ${escapeHTML(when)}` : ''}${decision.status ? ` · ${escapeHTML(decision.status)}` : ''}</span>`;
+}
+
+function formatDecisionDate(value){
+  if(!value) return '';
+  const parsed = new Date(value);
+  if(Number.isNaN(parsed.getTime())) return '';
+  return parsed.toLocaleDateString('es-CO', { day: '2-digit', month: 'short' });
 }
 
 function renderTrendPanel(trendRows){
