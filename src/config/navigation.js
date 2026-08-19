@@ -4,5 +4,6 @@ export const NAV_ITEMS = [
   { id: 'parks', icon: '&#9673;', label: 'Parques', title: 'Parques' },
   { id: 'budget', icon: '&#36;', label: 'Presupuesto', title: 'Seguimiento presupuestal' },
   { id: 'calendar', icon: '&#9635;', label: 'Calendario comercial', title: 'Calendario comercial' },
-  { id: 'campaigns', icon: '&#9737;', label: 'Campañas', title: 'Catalogo de campanas' }
+  { id: 'campaigns', icon: '&#9737;', label: 'Campañas', title: 'Catalogo de campanas' },
+  { id: 'decisions', icon: '&#9998;', label: 'Bitácora', title: 'Bitácora de decisiones' }
 ];

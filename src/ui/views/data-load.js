@@ -3,7 +3,7 @@ import { buildReadinessSummary } from '../../domain/data-readiness.js';
 import { readStructuredFile } from '../../services/file-reader.js';
 import { exportOccupancyRows, sortedOccupancyRows } from '../../services/occupancy-export.js';
 import { validateFileRows } from '../../services/validators.js';
-import { appState, DATA_MODES, registerLoad, setDataMode } from '../../state/app-state.js';
+import { appState, DATA_MODES, registerLoad, setCurrentOperator, setDataMode } from '../../state/app-state.js';
 import { badge, escapeHTML } from '../html.js';
 
 export function renderDataLoad(){
@@ -16,7 +16,10 @@ export function renderDataLoad(){
         </div>
         <button type="button" class="btn-ghost" id="btnExportOccupancyAll" ${appState.occupancyInventoryRows.length ? '' : 'disabled'}>Exportar ocupacion CSV</button>
       </div>
-      ${renderDataModeControl()}
+      <div class="data-load-controls">
+        ${renderDataModeControl()}
+        ${renderResponsibleControl()}
+      </div>
     </section>
     <section class="panel">
       <div class="section-head">
@@ -71,6 +74,18 @@ export function bindDataLoadHandlers({ rerender, setStatus }){
     });
   });
 
+  const responsibleForm = document.querySelector('[data-responsible-form]');
+  if(responsibleForm){
+    responsibleForm.addEventListener('submit', event => {
+      event.preventDefault();
+      const data = new FormData(responsibleForm);
+      const name = String(data.get('responsible') || '').trim();
+      setCurrentOperator(name);
+      setStatus(name ? `Responsable activo: ${name}` : 'Responsable de carga sin definir.', name ? 'ok' : 'warn');
+      rerender();
+    });
+  }
+
   document.querySelectorAll('[data-file-contract]').forEach(input => {
     input.addEventListener('change', async event => {
       const file = event.target.files[0];
@@ -96,7 +111,8 @@ export function bindDataLoadHandlers({ rerender, setStatus }){
           refreshReadinessSummary();
           if(contractId === 'occupancyInventory') exportAllBtn.disabled = !appState.occupancyInventoryRows.length;
           const withWarnings = validation.rejectedRows.length ? ` (${validation.rejectedRows.length} fila(s) rechazadas)` : '';
-          setStatus(`${file.name}: ${validation.acceptedRows.length} fila(s) cargadas${withWarnings}`, validation.rejectedRows.length ? 'warn' : 'ok');
+          const responsible = appState.currentOperator || 'sin responsable definido';
+          setStatus(`${file.name}: ${validation.acceptedRows.length} fila(s) cargadas${withWarnings} · ${responsible}`, validation.rejectedRows.length ? 'warn' : 'ok');
         }else{
           setStatus(`${file.name}: no se cargo. Revise el detalle abajo.`, 'error');
         }
@@ -141,6 +157,18 @@ function renderDataModeControl(){
         `).join('')}
       </div>
     </div>
+  `;
+}
+
+function renderResponsibleControl(){
+  return `
+    <form class="responsible-panel" data-responsible-form>
+      <label class="form-field">
+        <span>Responsable activo</span>
+        <input name="responsible" value="${escapeHTML(appState.currentOperator)}" placeholder="Nombre de quien carga o modifica">
+      </label>
+      <button type="submit" class="btn-ghost">Guardar</button>
+    </form>
   `;
 }
 
