@@ -6,6 +6,82 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-23 — Estado de informacion por sede [Estado: Cerrado]
+
+- **Agente(s):** Codex
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E1, E3
+- **Objetivo del sprint:** mostrar en Carga de datos que informacion tiene cada sede y que contratos faltan, sin ensuciar el dashboard general.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-068 | Estado de informacion por sede | Codex | Hecha | Ocupacion, presupuesto y Revenue por Hoteles/Parques |
+
+### Resumen de cierre
+
+Se implemento un bloque de `Estado de informacion por sede` dentro de `Carga por archivo`, agrupado en Hoteles y Parques. Para cada sede muestra el porcentaje de cobertura, estado (`Completo`, `Parcial`, `Sin datos`), y tres chips operativos: Ocupacion, Presupuesto y Revenue. Cada chip indica si hay filas cargadas y el dato de referencia mas reciente cuando existe.
+
+La logica queda separada en `src/domain/data-readiness.js`: calcula cobertura por sede desde `appState` sin tocar vistas ejecutivas. `data-load.js` solo renderiza el resultado y refresca ese bloque despues de una carga exitosa, sin volver a renderizar toda la pantalla ni borrar los mensajes de validacion. Tambien se corrigio un texto desactualizado: la vista ya no dice que PDF Zeus esta pendiente, porque la carga directa por PDF existe desde `SPRINT-10`.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/src/domain/data-readiness.js`, `src/ui/views/data-load.js` y `styles/app.css`.
+
+**Validacion realizada:** `node --check` sobre todos los modulos JS, `git diff --check`, servidor local `http://localhost:8055/` respondiendo 200 y prueba Playwright: la vista de carga muestra 2 grupos, 9 sedes y 27 chips; el texto de PDF Zeus directo aparece; al subir `Forecast Balandu 1808.pdf`, Hacienda Balandu pasa a `2 de 3 frentes`; el mensaje de validacion se conserva y no hay errores JS.
+
+```text
+HANDOFF — SPRINT-23 Estado de informacion por sede
+──────────────────────────────────────
+HUs completas:        TO-HU-068
+HUs pendientes:       ninguna dentro del alcance del sprint
+
+Archivos tocados:     BACKLOG.md · SPRINTS.md · ROADMAP.md · MAPA_CODIGO.md
+                      05-tablero-ocupacion/v3-modular/src/domain/data-readiness.js
+                      05-tablero-ocupacion/v3-modular/src/ui/views/data-load.js
+                      05-tablero-ocupacion/v3-modular/styles/app.css
+
+Archivos NO tocados:  tablero-seguimiento-ocupacion.html
+                      tablero-seguimiento-ocupacion-v2.html
+                      tablero-seguimiento-ocupacion-v3-demo.html
+                      v3-modular/src/ui/views/dashboard.js, hotels.js,
+                      parks.js, budget.js, calendar.js, campaigns.js
+
+Datos/contratos:      Sin cambios en contratos de carga.
+                      Se corrige texto operativo sobre PDF Zeus: ya se puede
+                      subir directamente en el contrato de ocupacion/inventario.
+
+Decisiones tomadas:   El estado de informacion vive en Carga de datos, no en
+                      Dashboard, para no aumentar carga cognitiva de la vista
+                      ejecutiva.
+                      La cobertura se mide en tres frentes por sede:
+                      ocupacion/inventario, presupuesto y Revenue.
+                      La vista se refresca por bloque tras carga exitosa, sin
+                      rerender completo que borre validaciones.
+
+Riesgos residuales:
+- `Revenue` aparece pendiente mientras no se carguen reglas; el motor actual
+  de accion sugerida sigue usando reglas deterministicas internas, no filas de
+  `revenueRules`.
+- El estado no audita usuario ni fecha por responsable; eso corresponde a
+  TO-HU-027 o a una capa de persistencia/autenticacion real.
+
+Validación hecha:
+  Sintaxis:           node --check sobre todos los modulos JS -> pass
+  Estatica:           git diff --check -> pass
+  Servidor local:     http://localhost:8055/ responde 200
+  Runtime navegador:  Playwright confirma 2 grupos, 9 sedes, 27 chips,
+                      texto PDF actualizado, carga real de Balandu actualiza
+                      cobertura a 2 de 3 frentes y conserva validacion visible;
+                      sin errores JS.
+  Documentación:      BACKLOG.md + SPRINTS.md + ROADMAP.md + MAPA_CODIGO.md
+                      actualizados
+
+Auto-reporte DoD:     Completo para TO-HU-068.
+```
+
+---
+
 ## SPRINT-22 — Exportacion CSV de ocupacion [Estado: Cerrado]
 
 - **Agente(s):** Codex

@@ -1,6 +1,6 @@
 # Mapa de código — Comfenalco IA
 
-Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-22`.
+Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-23`.
 
 ---
 
@@ -154,6 +154,7 @@ URL local: `http://localhost:8055/`
 | `src/domain/operational-calendar.js` | Reglas de calendario operativo: festivos Colombia 2026, cierre domingo/lunes sin festivo, temporada alta y tipo de dia. |
 | `src/domain/commercial-context.js` | Cruza sede, fecha, tramo del semaforo, calendario comercial y campanas para generar contexto accionable. |
 | `src/domain/strategic-recommendation.js` | Motor deterministico de `Accion sugerida` para hoteles: combina semaforo, cumplimiento mensual, tendencia y contexto comercial. Punto futuro para conectar IA real sin mezclarla con la vista. |
+| `src/domain/data-readiness.js` | Desde `SPRINT-23`. Calcula estado de informacion por sede desde `appState`: cobertura de ocupacion/inventario, presupuesto y Revenue, ultimo detalle disponible, fuente mas reciente y estado (`Completo`, `Parcial`, `Sin datos`). No renderiza HTML. |
 | `src/data/demo-data.js` | Datos semilla para que el demo modular no arranque vacio: forecast real de Hosteria Los Farallones y cortes presupuestales disponibles. |
 | `src/data/colombia-holidays-2026.js` | Festivos oficiales de Colombia 2026 migrados desde v2 para no generar falsas alarmas por cierres normales o festivos. |
 | `src/data/commercial-calendar.js` | Calendario comercial migrado desde v2: actividades por mes, sede, tipo, publico y descripcion. |
@@ -168,7 +169,7 @@ URL local: `http://localhost:8055/`
 | `src/ui/html.js` | Helpers pequeños para escapar HTML, crear badges y renderizar el semaforo real de tres luces. |
 | `src/ui/site-budget-panel.js` | Desde `SPRINT-20`. Componente compartido de presupuesto por sede para Hoteles/Parques. Reusa `domain/budget.js`; intenta mostrar el mes activo y, si no existe presupuesto para ese periodo, muestra el ultimo periodo cargado con nota explicita. |
 | `src/ui/views/dashboard.js` | Dashboard general solo-graficas tipo Power BI: banda principal sin contador de alertas, 2 KPIs de negocio, ocupacion Hoteles y ocupacion Parques en bloques verticales con cuerpo 50/50 (grafica + diagnostico visual de semaforo/cobertura), y presupuesto comparativo por sede. El presupuesto usa dos barras (`Proyectado` y `Real cumplido`, funcion `budgetCompareRow()`), escaladas contra el mayor de los dos valores, y muestra el % de ejecucion solo junto a la barra real, sin badge duplicado por sede desde `SPRINT-21`. Sedes sin dato quedan en gris al final de cada grafica. Obedece filtros globales de periodo, unidad y semaforo. |
-| `src/ui/views/data-load.js` | Vista de carga de archivos, descarga de plantillas, resultado de validacion por fila y explicacion de interpretacion Zeus por hotel. Desde `SPRINT-15`, el handler de carga ya no llama `rerender()` tras un exito (`renderDataLoad()` no depende de `appState`, y ese `rerender()` borraba el mensaje de validacion antes de que se alcanzara a leer) — el mensaje ahora persiste con estado `pending`/`ok`/`warn`/`error`. Desde `SPRINT-22`, agrega exportacion CSV consolidada de ocupacion e inventario. |
+| `src/ui/views/data-load.js` | Vista de carga de archivos, descarga de plantillas, resultado de validacion por fila y explicacion de interpretacion Zeus por hotel. Desde `SPRINT-15`, el handler de carga ya no llama `rerender()` tras un exito (`renderDataLoad()` no depende de `appState`, y ese `rerender()` borraba el mensaje de validacion antes de que se alcanzara a leer) — el mensaje ahora persiste con estado `pending`/`ok`/`warn`/`error`. Desde `SPRINT-22`, agrega exportacion CSV consolidada de ocupacion e inventario. Desde `SPRINT-23`, muestra `Estado de informacion por sede` y refresca solo ese bloque tras carga exitosa. |
 | `src/ui/views/hotels.js` | Vista de hoteles con pestanas internas por hotel, 12 barras mensuales, cumplimiento del mes contra meta, ocupadas/inventario en un solo indicador, semaforo contextual, accion sugerida, contexto comercial, seguimiento presupuestal de la sede y detalle diario del mes activo con dia real. Grafica de detalle diario ampliada en `SPRINT-15` (contenedor 240px, barras escaladas `pct * 2`, valores en 14px/800). El mes activo depende solo de `activeMonthByHotelId`/`latestMonth()` — `SPRINT-17` metio un fallback al filtro global de periodo que causaba falsos "Sin dato"; se quito en `SPRINT-18`. No obedece filtros globales (tiene su propia navegacion). Desde `SPRINT-22`, exporta todos los hoteles o el hotel activo en CSV; el boton por hotel queda deshabilitado si la sede no tiene filas. |
 | `src/ui/views/parks.js` | Vista `Parques` con pestanas por sede, movimiento anual de 12 meses, cumplimiento del mes contra meta de uso, capacidad, usados/libres, alarma, accion sugerida, seguimiento presupuestal de la sede y detalle diario del mes activo. No obedece filtros globales (se quito en `SPRINT-18` la dependencia del periodo global que introdujo `SPRINT-17`). Desde `SPRINT-20`, una sede sin dato muestra accion sugerida gris y estado vacio claro, no tabla vacia. Desde `SPRINT-22`, exporta todos los parques o el parque activo en CSV; el boton por parque queda deshabilitado si la sede no tiene filas. |
 | `src/ui/views/budget.js` | **Seguimiento presupuestal** (desde `SPRINT-19`, restaura la pestaña que existia en v2). Selector de periodo (ultimo cargado / acumulado / mes especifico), leyenda, comparacion de las 9 sedes con **escala comun** (a proposito distinto de `budgetCompareRow()` del Dashboard, que escala cada sede contra si misma) para poder comparar tamaño entre sedes, y detalle `<details>` de 12 meses por sede con desglose empresarial/individual cuando el archivo lo trae, exportacion CSV consolidada y por sede. Usa clases CSS propias (`budget-report-*`) en vez de `budget-compare-*` del Dashboard para no acoplarse a un componente que Codex sigue evolucionando. |
@@ -388,3 +389,13 @@ Plantillas CSV de S1:
 - `src/ui/views/hotels.js`: agrega `Exportar hotel` y `Exportar hoteles`; el boton por hotel se deshabilita si la sede activa no tiene filas.
 - `src/ui/views/parks.js`: agrega `Exportar parque` y `Exportar parques`; el boton por parque se deshabilita si la sede activa no tiene filas.
 - `styles/app.css`: agrega estado visual para botones deshabilitados.
+
+### 3.24 — Estado de informacion por sede en `SPRINT-23`
+
+`SPRINT-23` agrega control de fuentes cargadas sin meter ruido en el Dashboard:
+
+- `src/domain/data-readiness.js` (nuevo): calcula cobertura por sede para tres frentes: ocupacion/inventario, presupuesto y Revenue.
+- `src/ui/views/data-load.js`: agrega la seccion `Estado de informacion por sede`, agrupada por Hoteles y Parques, con porcentaje de cobertura, chips por frente y fuente mas reciente.
+- `src/ui/views/data-load.js`: despues de una carga exitosa, refresca solo `#readinessSummary`, conservando el mensaje de validacion de la tarjeta de carga.
+- `src/ui/views/data-load.js`: corrige el texto de PDF Zeus directo; ya no se dice que esta pendiente.
+- `styles/app.css`: agrega `.readiness-*` para tarjetas, barras y chips responsive.

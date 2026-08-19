@@ -799,6 +799,29 @@ p{line-height:1.55}
 .validation-item.warn{background:#FFF5DE; color:var(--amber)}
 .validation-item.error{background:#FDEDEC; color:var(--red); font-weight:700}
 .validation-item.pending{background:var(--surface-soft); color:var(--muted)}
+.readiness-groups{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px}
+.readiness-group{display:grid; gap:10px}
+.readiness-group h3{margin:0; color:var(--navy); font-size:18px}
+.readiness-list{display:grid; gap:10px}
+.readiness-item{border:1px solid var(--line); border-radius:12px; padding:12px; background:var(--surface); display:grid; gap:10px}
+.readiness-item.green{border-color:rgba(0,96,74,.28)}
+.readiness-item.amber{border-color:rgba(242,157,0,.36)}
+.readiness-item.gray{background:#F4F6F4}
+.readiness-main{display:flex; justify-content:space-between; gap:12px; align-items:flex-start}
+.readiness-main strong{display:block; color:var(--navy); font-size:15px}
+.readiness-main span{display:block; color:var(--muted); font-size:12px; margin-top:2px}
+.readiness-bar{height:8px; border-radius:999px; overflow:hidden; background:#E1E6E2}
+.readiness-bar span{display:block; height:100%; border-radius:999px}
+.readiness-bar .green{background:var(--green)}
+.readiness-bar .amber{background:var(--amber)}
+.readiness-bar .gray{background:#AEB7B0}
+.readiness-contracts{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px}
+.readiness-chip{border:1px solid var(--line); border-radius:8px; padding:8px; display:grid; gap:2px; min-width:0}
+.readiness-chip.ok{background:#EAF6EF; border-color:transparent}
+.readiness-chip.missing{background:#fff; color:var(--muted)}
+.readiness-chip b{font-size:12px; color:var(--navy)}
+.readiness-chip small{font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.readiness-source{margin:0; color:var(--muted); font-size:12px}
 
 .section-list{display:grid; gap:12px}
 .site-card{display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center}
@@ -809,7 +832,7 @@ p{line-height:1.55}
   .app-shell{grid-template-columns:1fr}
   .sidebar{position:static}
   .topbar{grid-template-columns:1fr}
-  .grid.two,.grid.three,.grid.four,.upload-grid,.chart-grid,.score-grid,.form-grid.two{grid-template-columns:1fr}
+  .grid.two,.grid.three,.grid.four,.upload-grid,.chart-grid,.score-grid,.form-grid.two,.readiness-groups{grid-template-columns:1fr}
   .occupancy-panel-body{grid-template-columns:1fr}
   .inline-convention,.occupancy-insight{border-left:0; border-top:1px solid var(--line); padding-left:0; padding-top:12px}
   .occ-row,.occupancy-chart .occ-row{grid-template-columns:120px 1fr 48px}
@@ -818,6 +841,7 @@ p{line-height:1.55}
   .site-budget-bar{grid-template-columns:82px 1fr 96px; font-size:11.5px}
   .budget-compare-bar{grid-template-columns:76px 1fr 44px 88px; font-size:11.5px}
   .budget-report-bar{grid-template-columns:76px 1fr 96px; font-size:11.5px}
+  .readiness-contracts{grid-template-columns:1fr}
   .topbar{align-items:flex-start}
   .powerbi-hero{grid-template-columns:1fr}
   .modal-backdrop{padding:12px}

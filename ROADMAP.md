@@ -18,7 +18,7 @@ Este roadmap organiza el producto `Tablero de ocupación` antes de ejecutar nuev
 | Sprint TO-04 | Construir sección Parques / pasadía / camping | E2, E3 | Una pestaña por parque/sede con métricas equivalentes pero no hoteleras |
 | Sprint TO-05 | Integrar Revenue y campañas | E3 | Reglas de semáforo v2 + acción recomendada + catálogo/activación de campañas |
 | Sprint TO-06 | Consolidar presupuesto y reportes | E3 | **Ejecutado en `SPRINT-19` + `SPRINT-22`**: presupuesto, ejecutado, cumplimiento, acumulado y exportaciones de presupuesto/ocupacion |
-| Sprint TO-07 | Gobierno, trazabilidad y cierre de demo | E1, E2, E3 | Roles, bitácora, fuentes, validaciones y versión candidata a reemplazar v2 |
+| Sprint TO-07 | Gobierno, trazabilidad y cierre de demo | E1, E2, E3 | **Parcial en `SPRINT-23`**: estado de fuentes por sede. Pendiente: bitácora, usuario que carga y versión candidata |
 
 ### Sprint TO-01 · Modelo de datos y carga
 
@@ -26,7 +26,7 @@ Este roadmap organiza el producto `Tablero de ocupación` antes de ejecutar nuev
 
 **HUs candidatas:** TO-HU-001, TO-HU-002, TO-HU-003, TO-HU-004, TO-HU-005, TO-HU-006, TO-HU-007.
 
-**Estado:** ejecutado en `SPRINT-04` el 2026-08-19; ampliado en `SPRINT-10` con carga directa de PDFs Zeus para ocupacion hotelera. `SPRINT-15` (Claude Code) corrigio un bug real: la carga exitosa borraba su propio mensaje de confirmacion antes de que se pudiera leer (`rerender()` innecesario en `data-load.js`); ahora confirma exito/advertencia/error con color. `SPRINT-16` (Codex) oculto el pill fijo del header cuando no hay mensaje real. `SPRINT-17` (Codex) dejo `Cargar datos` como accion primaria arriba a la derecha.
+**Estado:** ejecutado en `SPRINT-04` el 2026-08-19; ampliado en `SPRINT-10` con carga directa de PDFs Zeus para ocupacion hotelera. `SPRINT-15` (Claude Code) corrigio un bug real: la carga exitosa borraba su propio mensaje de confirmacion antes de que se pudiera leer (`rerender()` innecesario en `data-load.js`); ahora confirma exito/advertencia/error con color. `SPRINT-16` (Codex) oculto el pill fijo del header cuando no hay mensaje real. `SPRINT-17` (Codex) dejo `Cargar datos` como accion primaria arriba a la derecha. `SPRINT-23` (Codex) agrego estado de fuentes cargadas por sede dentro de Carga de datos, agrupando Hoteles y Parques con cobertura de ocupacion, presupuesto y Revenue.
 
 **Criterio de salida:** existen plantillas/contratos claros para cargar ocupación, inventario, presupuesto y fuentes. El tablero puede rechazar datos incompletos o mal formateados.
 
@@ -85,6 +85,8 @@ Este roadmap organiza el producto `Tablero de ocupación` antes de ejecutar nuev
 **Objetivo:** dejar una versión revisable como producto, no solo como prototipo.
 
 **HUs candidatas:** TO-HU-007, TO-HU-024, TO-HU-026, TO-HU-027.
+
+**Avance relacionado:** `SPRINT-23` cerro TO-HU-068: estado de informacion por sede dentro de Carga de datos, con cobertura de ocupacion/inventario, presupuesto y Revenue. Quedan pendientes bitacora de decisiones (TO-HU-026), usuario que carga/modifica (TO-HU-027) y decision de version candidata.
 
 **Criterio de salida:** versión candidata con bitácora, fuentes, usuario que cargó datos, validaciones visibles y decisión pendiente de si reemplaza v2.
 
