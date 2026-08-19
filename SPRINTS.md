@@ -6,6 +6,75 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-27 — Arquitectura IA para accion sugerida [Estado: Cerrado]
+
+- **Agente(s):** Codex
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E3
+- **Objetivo del sprint:** definir que requiere una IA permanente para recomendaciones comerciales, sin fingir que el HTML local ya puede operar como sistema inteligente conectado.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-044 | Evaluar arquitectura de IA permanente para recomendaciones | Codex | Hecha | Documento de arquitectura y HUs derivadas creadas |
+
+### Resumen de cierre
+
+Se creo `05-tablero-ocupacion/ARQUITECTURA_IA_RECOMENDACIONES_SPRINT-27.md` para evaluar como evolucionar la `Accion sugerida` desde el motor deterministico actual hacia recomendaciones asistidas por IA. La conclusion principal es no conectar IA directamente desde el HTML local: el motor deterministico debe seguir como base auditable y fallback, y cualquier IA real requiere backend/API, autenticacion, auditoria, control de llaves, validacion de salida y aprobacion humana.
+
+El documento separa hechos verificados del estado actual, valor posible de IA, limites, arquitectura por capas, flujo recomendado, opciones de implementacion, datos minimos, riesgos y backlog derivado. Se recomienda empezar por IA bajo demanda despues de cargar archivos, no por IA permanente con job diario. Tambien se alimenta el backlog con `TO-HU-073` a `TO-HU-077`.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md` y `05-tablero-ocupacion/ARQUITECTURA_IA_RECOMENDACIONES_SPRINT-27.md`.
+
+**Validacion realizada:** lectura de `strategic-recommendation.js`, `occupancy.js`, `commercial-context.js` y `data-contracts.js`; revision documental contra reglas de `CLAUDE.md` (no inventar cifras, distinguir hechos/propuestas, no presentar IA como decision aprobada); `git diff --check`; servidor local `http://localhost:8055/` responde 200 aunque no se toco runtime.
+
+```text
+HANDOFF — SPRINT-27 Arquitectura IA para accion sugerida
+──────────────────────────────────────
+HUs completas:        TO-HU-044
+HUs pendientes:       TO-HU-073, TO-HU-074, TO-HU-075, TO-HU-076,
+                      TO-HU-077 creadas como derivadas
+
+Archivos tocados:     BACKLOG.md · SPRINTS.md · ROADMAP.md · MAPA_CODIGO.md
+                      05-tablero-ocupacion/ARQUITECTURA_IA_RECOMENDACIONES_SPRINT-27.md
+
+Archivos NO tocados:  tablero-seguimiento-ocupacion.html
+                      tablero-seguimiento-ocupacion-v2.html
+                      tablero-seguimiento-ocupacion-v3-demo.html
+                      v3-modular/src/**/*.js
+                      v3-modular/styles/app.css
+
+Datos/contratos:      No se cambiaron datos, contratos, plantillas ni runtime.
+
+Decisiones tomadas:   No conectar IA real desde HTML local.
+                      Mantener motor deterministico como base auditable y
+                      fallback.
+                      Primera fase recomendada: IA bajo demanda con backend,
+                      no IA permanente automatica.
+                      La IA propone; Comercial/Diana/Gerencia aprueban.
+
+Riesgos residuales:
+- Sin backend, autenticacion y auditoria no hay forma responsable de operar IA
+  real dentro del instrumento.
+- Sin TO-HU-026/027, una recomendacion IA no tendria bitacora ni responsable.
+- La IA permanente diaria depende de fuente programada Zeus/Power BI y gobierno
+  de costos/datos; queda como fase posterior.
+
+Validación hecha:
+  Documental:         lectura de motor actual, semaforo, contexto comercial
+                      y contratos de datos -> pass
+  Estatica:           git diff --check -> pass
+  Servidor local:     http://localhost:8055/ responde 200
+  Runtime:            no aplica; sprint arquitectonico sin cambios de codigo
+  Documentación:      BACKLOG.md + SPRINTS.md + ROADMAP.md + MAPA_CODIGO.md actualizados
+
+Auto-reporte DoD:     Completo para TO-HU-044.
+```
+
+---
+
 ## SPRINT-26 — Mes activo sin fallback quemado [Estado: Cerrado]
 
 - **Agente(s):** Codex

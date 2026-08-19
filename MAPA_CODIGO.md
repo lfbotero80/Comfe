@@ -1,6 +1,6 @@
 # Mapa de código — Comfenalco IA
 
-Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-26`.
+Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-27`.
 
 ---
 
@@ -39,6 +39,7 @@ Versiones principales:
 | `tablero-seguimiento-ocupacion-v3-demo.html` | **Demo v3 abrible por doble clic** — creado en `SPRINT-03` a partir de v2 para conservar semaforos, seguimientos, metricas y experiencia visual mientras la modularizacion madura. Es el archivo correcto para revision local inmediata. |
 | `abrir-v3-modular.command` | Lanzador macOS para abrir `v3-modular/` con servidor local en `http://localhost:8055/`. |
 | `AUDITORIA_DATOS_QUEMADOS_SPRINT-24.md` | Informe de auditoria de datos quemados de la V3 modular: distingue datos semilla, catalogos estructurales, reglas de negocio y riesgos pendientes (`TO-HU-071`, `TO-HU-072`). |
+| `ARQUITECTURA_IA_RECOMENDACIONES_SPRINT-27.md` | Documento de arquitectura para evolucionar `Accion sugerida` hacia IA asistida: recomienda no conectar IA desde HTML local, mantener motor deterministico como fallback, y exigir backend, auditoria, contexto estructurado y aprobacion humana antes de IA real. |
 | `v3-modular/` | **Base modular paralela** — creada en `SPRINT-01` para dejar de crecer el monolito. No reemplaza producción ni v2. |
 
 Las versiones `tablero-seguimiento-ocupacion.html`, `tablero-seguimiento-ocupacion-v2.html` y `tablero-seguimiento-ocupacion-v3-demo.html` son **un solo archivo HTML autocontenido** (HTML + CSS + JS inline), sin build step, sin backend. Persistencia en `localStorage` del navegador. Sin dependencias externas (se quitó Chart.js — el gráfico de presupuesto es divs+CSS puro — para que el tablero funcione sin internet).
@@ -428,3 +429,12 @@ Plantillas CSV de S1:
 - `src/ui/views/parks.js`: aplica el mismo criterio que Hoteles; no hay mes activo sin filas cargadas.
 - `hotels.js` y `parks.js`: los estados vacios dicen `Sin periodo cargado` y `Detalle diario pendiente`, sin escribir `2026-08`.
 - `src/ui/site-budget-panel.js`: acepta `activePeriod` vacio; muestra ultimo presupuesto solo si existe, con nota explicita de que no hay periodo de ocupacion cargado.
+
+### 3.28 — Arquitectura IA para recomendaciones en `SPRINT-27`
+
+`SPRINT-27` no toca runtime; deja una decision arquitectonica documentada:
+
+- `ARQUITECTURA_IA_RECOMENDACIONES_SPRINT-27.md`: define capas para pasar de recomendacion deterministica a IA asistida.
+- Decision: no poner llaves ni llamadas IA dentro del HTML local.
+- Secuencia recomendada: cerrar bitacora/responsables (`TO-HU-026/027`), crear paquete de contexto IA (`TO-HU-073`), pilotear IA bajo demanda (`TO-HU-074`) y solo despues evaluar job diario (`TO-HU-077`).
+- Backlog derivado: `TO-HU-073` a `TO-HU-077`.
