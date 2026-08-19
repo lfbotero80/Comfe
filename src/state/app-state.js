@@ -5,6 +5,9 @@ import { CAMPAIGNS } from '../data/campaigns.js';
 const DATA_MODE_KEY = 'comfenalco_data_mode_v1';
 const OPERATOR_KEY = 'comfenalco_operator_v1';
 const DECISION_LOG_KEY = 'comfenalco_decision_log_v1';
+const OCCUPANCY_KEY = 'comfenalco_occupancy_rows_v1';
+const BUDGET_KEY = 'comfenalco_budget_rows_v1';
+const REVENUE_KEY = 'comfenalco_revenue_rows_v1';
 export const DATA_MODES = {
   demo: {
     id: 'demo',
@@ -19,10 +22,14 @@ export const DATA_MODES = {
 };
 
 const initialDataMode = readDataMode();
+const initialModeData = dataForMode(initialDataMode);
 
 export const appState = {
   dataMode: initialDataMode,
-  ...dataForMode(initialDataMode),
+  ...initialModeData,
+  occupancyInventoryRows: readPersistedRows(OCCUPANCY_KEY) ?? initialModeData.occupancyInventoryRows,
+  budgetRows: readPersistedRows(BUDGET_KEY) ?? initialModeData.budgetRows,
+  revenueRuleRows: readPersistedRows(REVENUE_KEY) ?? initialModeData.revenueRuleRows,
   currentOperator: readCurrentOperator(),
   decisionRows: readDecisionRows(),
   calendarRows: COMMERCIAL_CALENDAR.slice(),
@@ -45,10 +52,17 @@ export function setDataMode(mode){
   }catch(error){
     // localStorage can be unavailable in some embedded previews; keep session mode.
   }
+  const next = dataForMode(nextMode);
   Object.assign(appState, {
     dataMode: nextMode,
-    ...dataForMode(nextMode)
+    ...next
   });
+  // Cambiar de modo es un reinicio explicito y deliberado (lo anuncia el propio
+  // boton: "datos semilla restaurados" / "cargue archivos para activar metricas"),
+  // asi que tambien reinicia lo persistido — no solo la memoria de la sesion.
+  persistRows(OCCUPANCY_KEY, next.occupancyInventoryRows);
+  persistRows(BUDGET_KEY, next.budgetRows);
+  persistRows(REVENUE_KEY, next.revenueRuleRows);
 }
 
 export function registerLoad({ contractId, filename, acceptedRows, rejectedRows }){
@@ -83,6 +97,7 @@ export function registerLoad({ contractId, filename, acceptedRows, rejectedRows 
       row => `${row.sede}__${row.tipo_unidad}__${row.fecha}`,
       (a, b) => String(a.sede).localeCompare(String(b.sede)) || String(a.fecha).localeCompare(String(b.fecha))
     );
+    persistRows(OCCUPANCY_KEY, appState.occupancyInventoryRows);
   }
   if(contractId === 'budgetExecution'){
     appState.budgetRows = mergeByKey(
@@ -90,8 +105,12 @@ export function registerLoad({ contractId, filename, acceptedRows, rejectedRows 
       row => `${row.sede}__${row.periodo}`,
       (a, b) => String(a.sede).localeCompare(String(b.sede)) || String(a.periodo).localeCompare(String(b.periodo))
     );
+    persistRows(BUDGET_KEY, appState.budgetRows);
   }
-  if(contractId === 'revenueRules') appState.revenueRuleRows = acceptedRows;
+  if(contractId === 'revenueRules'){
+    appState.revenueRuleRows = acceptedRows;
+    persistRows(REVENUE_KEY, appState.revenueRuleRows);
+  }
 }
 
 export function addCampaign(campaign){
@@ -179,6 +198,25 @@ function persistDecisionRows(){
     localStorage.setItem(DECISION_LOG_KEY, JSON.stringify(appState.decisionRows.slice(0, 250)));
   }catch(error){
     // Demo local: if persistence is unavailable, the in-session log still works.
+  }
+}
+
+function readPersistedRows(key){
+  try{
+    const raw = localStorage.getItem(key);
+    if(raw === null) return null;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : null;
+  }catch(error){
+    return null;
+  }
+}
+
+function persistRows(key, rows){
+  try{
+    localStorage.setItem(key, JSON.stringify(rows));
+  }catch(error){
+    // localStorage can be unavailable in some embedded previews; keep session data.
   }
 }
 
