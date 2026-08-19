@@ -26,19 +26,16 @@ export function renderDashboard(){
         <h2>${urgent ? 'Atencion inmediata en ocupacion' : 'Ocupacion y presupuesto bajo control'}</h2>
         <p>${urgent ? 'Hay sedes en Preventa o Mas cerca. Priorice acciones comerciales por sede.' : 'Lectura consolidada por sede, inventario, alertas y ejecucion presupuestal.'}</p>
       </div>
-      <div class="hero-status ${urgent ? 'red' : 'green'}">
-        <strong>${urgent}</strong>
-        <span>alertas criticas</span>
-      </div>
     </section>
 
-    <div class="score-grid three">
+    <div class="score-grid two">
       ${score('Ocupacion hotelera', avgOccupancy === null ? 'Sin dato' : `${avgOccupancy.toFixed(0)}%`, 'Promedio vs. meta 70%', avgOccupancy === null ? 'gray' : avgOccupancy >= 70 ? 'green' : avgOccupancy >= 40 ? 'amber' : 'red')}
       ${score('Presupuesto ejecutado', budgetTotal.budget ? `${budgetTotal.pct.toFixed(0)}%` : 'Sin dato', `${formatCOP(budgetTotal.executed)} de ${formatCOP(budgetTotal.budget)}`, budgetTotal.severity)}
-      ${score('Alertas activas', alertItems.length, 'Preventa o Mas cerca, todas las sedes', urgent ? 'red' : alertItems.length ? 'amber' : 'green')}
     </div>
 
-    <div class="chart-grid">
+    ${renderConventions()}
+
+    <div class="dashboard-stack">
       ${occupancyPanel('Hoteles — ocupacion', 'Ordenado de mas critico a mas alto. Detalle diario en la pestana Hoteles.', hotelItems)}
       ${occupancyPanel('Parques — ocupacion / uso', 'Ordenado de mas critico a mas alto. Detalle diario en la pestana Parques.', parkItems)}
     </div>
@@ -69,17 +66,56 @@ function score(label, value, note, severity){
 
 function occupancyPanel(title, note, items){
   return `
-    <section class="panel">
+    <section class="panel occupancy-panel">
       <div class="section-head">
         <div>
           <h2>${escapeHTML(title)}</h2>
           <p class="metric-note">${escapeHTML(note)}</p>
         </div>
       </div>
-      <div class="bar-chart">
+      <div class="bar-chart occupancy-chart">
         ${items.map(occupancyRow).join('')}
       </div>
     </section>
+  `;
+}
+
+function renderConventions(){
+  return `
+    <section class="panel convention-panel">
+      <h2>Convenciones</h2>
+      <div class="convention-grid">
+        ${conventionGroup('Ocupacion / uso', [
+          ['green', 'Verde', '70% o mas: tarifa estandar / proteger precio'],
+          ['amber', 'Amarillo', '40% a 69%: Preventa / comunicacion preventiva'],
+          ['red', 'Rojo', 'Menos de 40%: Mas cerca / campana de choque'],
+          ['gray', 'Gris', 'Sin dato o cierre operativo normal']
+        ])}
+        ${conventionGroup('Presupuesto', [
+          ['green', 'Verde', '90% o mas de ejecucion'],
+          ['amber', 'Amarillo', '70% a 89% de ejecucion'],
+          ['red', 'Rojo', 'Menos de 70% de ejecucion'],
+          ['gray', 'Gris', 'Sin presupuesto cargado']
+        ])}
+      </div>
+    </section>
+  `;
+}
+
+function conventionGroup(title, items){
+  return `
+    <div class="convention-group">
+      <strong>${escapeHTML(title)}</strong>
+      <div class="convention-items">
+        ${items.map(([severity, label, text]) => `
+          <span class="convention-item">
+            <i class="legend-dot ${severity}"></i>
+            <b>${escapeHTML(label)}</b>
+            <em>${escapeHTML(text)}</em>
+          </span>
+        `).join('')}
+      </div>
+    </div>
   `;
 }
 
@@ -168,7 +204,7 @@ function budgetCompareRow(row){
         <div class="budget-compare-bar">
           <span class="budget-compare-label">Real cumplido</span>
           <div class="bar-track"><div class="bar-fill ${row.severity}" style="width:${actualWidth}%"></div></div>
-          <strong>${formatCOP(row.ejecutado)}</strong>
+          <strong>${formatCOP(row.ejecutado)} · ${row.pct.toFixed(0)}%</strong>
         </div>
       </div>
     </div>

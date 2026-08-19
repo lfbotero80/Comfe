@@ -32,6 +32,7 @@ body{
 }
 
 button,input,select{font:inherit}
+[hidden]{display:none !important}
 .header-actions{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
 .btn-upload{
   border:1px solid rgba(196,214,0,.92);
@@ -95,8 +96,8 @@ button,input,select{font:inherit}
 
 .main{padding:22px 28px 28px; min-width:0}
 .topbar{
-  display:flex;
-  justify-content:space-between;
+  display:grid;
+  grid-template-columns:auto 1fr;
   gap:16px;
   align-items:center;
   margin:-22px -28px 22px;
@@ -125,7 +126,9 @@ p{line-height:1.55}
 .grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
 .grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}
 .chart-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+.dashboard-stack{display:grid; gap:18px}
 .score-grid{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px}
+.score-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
 .score-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
 .panel{
   background:var(--surface);
@@ -163,6 +166,17 @@ p{line-height:1.55}
 .bar-row.muted span,.bar-row.muted strong{color:#90958F}
 
 .occ-row{display:grid; grid-template-columns:150px 1fr 60px 70px; gap:10px; align-items:center; font-size:13px}
+.occupancy-panel{padding:24px}
+.occupancy-panel h2{font-size:24px}
+.occupancy-panel .metric-note{font-size:14px}
+.occupancy-chart{gap:16px; padding-top:10px}
+.occupancy-chart .occ-row{
+  grid-template-columns:minmax(210px,280px) 1fr 70px 100px;
+  gap:18px;
+  font-size:16px;
+}
+.occupancy-chart .bar-track{height:18px}
+.occupancy-chart .trend-svg{width:92px; height:28px}
 .occ-row strong{white-space:nowrap}
 .occ-row.muted span,.occ-row.muted strong{color:#90958F}
 .trend-svg{width:64px; height:22px; display:block}
@@ -183,9 +197,35 @@ p{line-height:1.55}
 .budget-compare-bar strong{color:var(--navy); font-weight:750; text-align:right; white-space:nowrap}
 .budget-compare-label{white-space:nowrap}
 
+.convention-panel{padding:14px 16px}
+.convention-panel h2{margin-bottom:10px}
+.convention-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+.convention-group{display:grid; gap:8px}
+.convention-group strong{color:var(--navy); font-size:13px}
+.convention-items{display:flex; flex-wrap:wrap; gap:8px}
+.convention-item{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  min-height:28px;
+  padding:4px 8px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:#fff;
+  font-size:12px;
+  color:var(--muted);
+}
+.convention-item b{color:var(--ink)}
+.convention-item em{font-style:normal}
+.legend-dot{width:10px; height:10px; border-radius:50%; flex-shrink:0; background:#D8DDD9}
+.legend-dot.green{background:var(--green)}
+.legend-dot.amber{background:var(--amber)}
+.legend-dot.red{background:var(--red)}
+.legend-dot.gray{background:#B7BCB8}
+
 .powerbi-hero{
   display:grid;
-  grid-template-columns:1fr auto;
+  grid-template-columns:1fr;
   gap:16px;
   align-items:center;
   background:linear-gradient(135deg,var(--navy),#0F6B53);
@@ -197,21 +237,6 @@ p{line-height:1.55}
 .powerbi-hero h2{color:#fff; margin:2px 0 4px; font-size:24px}
 .powerbi-hero p{margin:0; color:#D7EFE5; font-size:13px}
 .powerbi-hero .eyebrow{color:var(--gold)}
-.hero-status{
-  min-width:112px;
-  min-height:86px;
-  border-radius:12px;
-  display:grid;
-  place-items:center;
-  text-align:center;
-  background:rgba(255,255,255,.12);
-  border:1px solid rgba(255,255,255,.18);
-}
-.hero-status strong{font-size:34px; line-height:1; color:#fff}
-.hero-status span{font-size:12px; color:#D7EFE5}
-.hero-status.red{background:rgba(192,54,43,.24)}
-.hero-status.green{background:rgba(30,155,50,.24)}
-
 .semaforo{
   display:inline-flex;
   flex-direction:column;
@@ -628,12 +653,13 @@ p{line-height:1.55}
 @media (max-width:900px){
   .app-shell{grid-template-columns:1fr}
   .sidebar{position:static}
-  .grid.two,.grid.three,.grid.four,.upload-grid,.chart-grid,.score-grid,.form-grid.two{grid-template-columns:1fr}
-  .occ-row{grid-template-columns:120px 1fr 40px}
+  .topbar{grid-template-columns:1fr}
+  .grid.two,.grid.three,.grid.four,.upload-grid,.chart-grid,.score-grid,.convention-grid,.form-grid.two{grid-template-columns:1fr}
+  .occ-row,.occupancy-chart .occ-row{grid-template-columns:120px 1fr 48px}
   .trend-svg,.trend-empty{display:none}
   .month-bars{grid-template-columns:repeat(6,minmax(42px,1fr)); min-height:260px}
-  .budget-compare-bar{grid-template-columns:76px 1fr 84px; font-size:11.5px}
-  .topbar{align-items:flex-start; flex-direction:column}
+  .budget-compare-bar{grid-template-columns:76px 1fr 108px; font-size:11.5px}
+  .topbar{align-items:flex-start}
   .powerbi-hero{grid-template-columns:1fr}
   .modal-backdrop{padding:12px}
   .modal-head,.modal-body,.modal-footer{padding-left:18px; padding-right:18px}

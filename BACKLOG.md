@@ -146,6 +146,10 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-033: Como jefatura, quiero que el dashboard general tenga lectura visual tipo Power BI, para entender el estado del negocio sin recorrer cada sección. — **Hecha**
   - TO-HU-040: Como jefatura, quiero que el dashboard sea solo gráficas ordenadas de más crítico a mejor (sin listas de texto ni tarjetas detalladas por sede), para ver en segundos dónde actuar y encontrar el detalle diario solo dentro de cada Hotel/Parque. — **Hecha**
   - TO-HU-046: Como Diana, quiero ver presupuesto proyectado y real cumplido como dos barras comparables por sede (no un solo % de relleno), para distinguir de un vistazo si el problema es de proyección o de ejecución. — **Hecha**
+  - TO-HU-048: Como usuaria del tablero, quiero ver convenciones claras de color, para entender cuándo una sede pasa de rojo a amarillo o verde. — **Hecha**
+  - TO-HU-049: Como jefatura, quiero que Hoteles y Parques aparezcan en bloques verticales separados, con gráficas más protagonistas, para comparar sin comprimir la lectura. — **Hecha**
+  - TO-HU-050: Como jefatura, quiero eliminar el contador de alertas del dashboard, para quitar métricas que no explican una decisión operativa clara. — **Hecha**
+  - TO-HU-051: Como Diana, quiero que las barras de presupuesto muestren el % de ejecución junto al real cumplido, para leer monto y cumplimiento sin hacer cálculo mental. — **Hecha**
 
 - **E2-F2 — Sección Hoteles**
   - TO-HU-011: Como gerente hotelero, quiero una sección de Hoteles con una pestaña por hotel, para revisar solo mi sede sin ruido. — **Hecha**
@@ -196,6 +200,7 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
 - **E3-F6 — Limpieza de interfaz ejecutiva**
   - TO-HU-035: Como usuario, quiero un menú con iconos y sin la sección técnica Estructura de archivos, para navegar el tablero como producto operativo. — **Hecha**
   - TO-HU-036: Como gerente, quiero ver ocupadas sobre inventario total en un solo indicador y el día de la semana real, para leer la ocupación sin duplicidad ni etiquetas genéricas. — **Hecha**
+  - TO-HU-052: Como usuario, quiero que el control fijo de estado de carga desaparezca salvo cuando exista un mensaje real de carga, para no ver texto decorativo permanente en el header. — **Hecha**
 
 ## EP-06 · Vigilancia turismo bienestar
 Carpeta: `06-vigilancia-turismo-bienestar/`.

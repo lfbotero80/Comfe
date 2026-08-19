@@ -78,6 +78,7 @@ function renderActiveView(){
 
 function setStatus(text, type){
   statusEl.textContent = text;
+  statusEl.hidden = !text;
   statusEl.classList.remove('ok', 'warn', 'error', 'pending');
   if(type) statusEl.classList.add(type);
 }

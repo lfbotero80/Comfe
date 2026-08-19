@@ -6,6 +6,87 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-16 — Dashboard ejecutivo y convenciones [Estado: Cerrado]
+
+- **Agente(s):** Codex
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E2, E3
+- **Objetivo del sprint:** corregir el dashboard general para explicar convenciones de color, dar protagonismo vertical a Hoteles/Parques, mejorar presupuesto con % de ejecución y limpiar el estado fijo de carga.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-048 | Convenciones de color | Codex | Hecha | Ocupación 70/40; presupuesto 90/70; gris sin dato/cierre |
+| TO-HU-049 | Hoteles y Parques verticales | Codex | Hecha | Bloques separados y gráficas más protagonistas |
+| TO-HU-050 | Eliminar contador de alertas | Codex | Hecha | Sale hero status y score de alertas activas |
+| TO-HU-051 | Presupuesto con % de ejecución | Codex | Hecha | Real cumplido muestra monto + % |
+| TO-HU-052 | Estado de carga no permanente | Codex | Hecha | Pill oculto hasta que exista resultado real |
+
+### Resumen de cierre
+
+Se corrigio el dashboard general con foco en lectura ejecutiva: Hoteles y Parques ya no compiten en dos columnas comprimidas, sino que aparecen como dos bloques verticales de ocupacion/uso con graficas mas grandes. Se agrego un bloque de convenciones para explicar los colores del semaforo: ocupacion/uso en verde desde 70%, amarillo entre 40% y 69%, rojo por debajo de 40%, y gris cuando no hay dato o hay cierre operativo normal; presupuesto en verde desde 90% de ejecucion, amarillo entre 70% y 89%, rojo por debajo de 70%, y gris sin presupuesto cargado.
+
+Tambien se elimino del dashboard el contador de alertas criticas y la tarjeta de "Alertas activas", porque no aportaban una decision clara frente a las graficas y acciones por sede. En presupuesto, la barra de `Real cumplido` ahora muestra monto y porcentaje de ejecucion. En el header, `Cargar datos` queda siempre visible arriba a la izquierda y el pill de estado queda oculto hasta que exista un mensaje real.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/index.html`, `src/main.js`, `src/ui/views/dashboard.js` y `styles/app.css`.
+
+**Validacion realizada:** `node --check` sobre todos los modulos JS, `git diff --check`, servidor local `http://localhost:8055/` respondiendo 200 y revision visual con Playwright: header sin estado permanente, convenciones visibles, Hoteles arriba y Parques abajo, presupuesto con % de ejecucion y sin contador de alertas.
+
+```text
+HANDOFF — SPRINT-16 Dashboard ejecutivo y convenciones
+──────────────────────────────────────
+HUs completas:        TO-HU-048, TO-HU-049, TO-HU-050, TO-HU-051, TO-HU-052
+HUs pendientes:       ninguna dentro del alcance del sprint
+
+Archivos tocados:     BACKLOG.md · SPRINTS.md · ROADMAP.md · MAPA_CODIGO.md
+                      05-tablero-ocupacion/v3-modular/index.html
+                      05-tablero-ocupacion/v3-modular/src/main.js
+                      05-tablero-ocupacion/v3-modular/src/ui/views/dashboard.js
+                      05-tablero-ocupacion/v3-modular/styles/app.css
+
+Archivos NO tocados:  tablero-seguimiento-ocupacion.html
+                      tablero-seguimiento-ocupacion-v2.html
+                      tablero-seguimiento-ocupacion-v3-demo.html
+                      v3-modular/src/ui/views/hotels.js, parks.js, data-load.js,
+                      calendar.js, campaigns.js, contracts.js
+
+Datos/contratos:      Sin cambios en contratos de carga.
+
+Decisiones tomadas:   Convenciones visibles en dashboard: ocupacion/uso verde >=70,
+                      amarillo 40-69, rojo <40, gris sin dato/cierre; presupuesto
+                      verde >=90, amarillo 70-89, rojo <70, gris sin presupuesto.
+                      Hoteles y Parques pasan a bloques verticales full-width con
+                      graficas mas protagonistas.
+                      Se elimina el contador de alertas criticas del hero y el score
+                      de Alertas activas.
+                      Presupuesto conserva barras Proyectado/Real cumplido y suma
+                      % de ejecucion al Real cumplido.
+                      El pill de estado del header queda oculto hasta que exista
+                      un mensaje real.
+
+Riesgos residuales:
+  - Las convenciones de presupuesto quedan definidas por umbrales internos
+    90/70 mientras no exista una regla formal de jefatura en fuente externa.
+  - El status del header sigue siendo un mecanismo global usado por carga y
+    campanas; queda oculto por defecto, pero puede aparecer con eventos reales
+    que usen setStatus().
+
+Validacion hecha:
+  Sintaxis:           node --check sobre todos los modulos JS -> pass
+  Estatica:           git diff --check -> pass
+  Runtime navegador:  http://localhost:8055/ responde 200; Playwright confirma
+                      dataStatus oculto al inicio, convenciones visibles, dos
+                      bloques de ocupacion verticales, presupuesto con %, y sin
+                      contador de alertas en hero/KPIs.
+
+Auto-reporte DoD:     Completo para TO-HU-048, TO-HU-049, TO-HU-050,
+                      TO-HU-051 y TO-HU-052.
+```
+
+---
+
 ## SPRINT-15 — Retroalimentacion de carga y legibilidad del tablero [Estado: Cerrado]
 
 - **Agente(s):** Claude Code
