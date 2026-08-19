@@ -6,6 +6,66 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-45 — Se elimina el hospedaje de OpenAI Sites [Estado: Cerrado]
+
+- **Agente(s):** Claude Code
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Commit:** `SPRINT-45 — Se elimina el hospedaje de OpenAI Sites (Claude Code)`
+
+- **Objetivo del sprint:** cerrar `HU-051`, abierta desde la auditoría de `SPRINT-34`: había un `project_id` de un servicio de hosting de terceros en el repo, sin que nadie hubiera decidido si ese despliegue debía existir.
+
+| HU | Título | Agente | Estado | Nota |
+|---|---|---|---|---|
+| HU-051 | Decidir el destino del `project_id` de OpenAI Sites | Luis Felipe / Claude Code | Hecha | Decisión: no se necesita |
+
+**Qué se aclaró primero.** Luis Felipe mencionó que "con Codex creamos una página temporal lanzada desde GitHub". Al verificar aparecieron **dos hospedajes distintos**, no uno:
+
+1. **GitHub Pages** — rama `gh-pages` en `github.com/lfbotero80/Comfe`, con el tablero completo. Es el que él conocía y autorizó.
+2. **OpenAI Sites** — `05-tablero-ocupacion/v3-modular/.openai/hosting.json`, con `project_id: appgprj_6a86049a2e488191bbf7b19548624e9b`, commiteado por Codex en `c586bec` ("Hosting — Configuracion Sites para demo del tablero"). Otro proveedor, no el mismo. Este no lo había revisado nadie.
+
+**Qué se verificó sobre la exposición real.** La rama `gh-pages` **no publica cifras de negocio**: `src/data/demo-data.js` quedó en tres arreglos vacíos desde `SPRINT-35`, y los datos de ocupación y presupuesto viven en `localStorage` de cada navegador. Lo publicado es la herramienta y los nombres de las sedes, no los números.
+
+**Decisión de Luis Felipe (2026-08-19):** *"no la necesito"*. Se eliminó `.openai/hosting.json` y su directorio del repo.
+
+**Límite explícito de este sprint:** borrar el archivo **no da de baja el sitio si llegó a publicarse**. El archivo es solo la configuración local que apunta al proyecto; si Codex alcanzó a desplegar, el sitio sigue vivo en la cuenta de OpenAI hasta que se elimine desde ahí. Queda anotado como acción de Luis Felipe, no del repo.
+
+**Archivos tocados**
+
+- `05-tablero-ocupacion/v3-modular/.openai/hosting.json`: eliminado (con su directorio).
+- `BACKLOG.md`, `SPRINTS.md`: cierre de `HU-051`.
+
+**Validación realizada:** `git rm` sobre el único archivo del directorio; `.openai/` ya no existe en el árbol de trabajo. No se tocó código de la aplicación, así que no hay superficie funcional que revalidar. La regla que este incidente originó ya está escrita en `METODOLOGIA_SCRUM.md` (sección de commits sin rastro y de despliegue a terceros) y se mantiene.
+
+**Riesgos / pendientes:** `gh-pages` todavía contiene una copia de `.openai/hosting.json`, porque se publicó el directorio completo. Se limpia solo en el próximo redespliegue desde `main`. Un `project_id` por sí solo no otorga acceso, así que no es una credencial filtrada, pero conviene que el redespliegue ocurra.
+
+```
+HANDOFF — SPRINT-45 Se elimina el hospedaje de OpenAI Sites
+Agente:             Claude Code
+Estado:             Cerrado
+Commit:             SPRINT-45 — Se elimina el hospedaje de OpenAI Sites (Claude Code)
+
+Que quedo listo:    HU-051 cerrada. `.openai/hosting.json` eliminado del repo
+                    por decision de Luis Felipe: el unico hospedaje que quiere
+                    es GitHub Pages (rama gh-pages). El de OpenAI Sites era un
+                    segundo destino que nadie habia revisado.
+
+Que NO se toco:     Nada de la aplicacion. gh-pages sigue como estaba.
+
+Riesgos abiertos:   - Borrar el archivo NO da de baja el sitio si Codex alcanzo
+                      a publicarlo. Eso se elimina desde la cuenta de OpenAI;
+                      es accion de Luis Felipe, no del repo.
+                    - gh-pages aun tiene una copia del archivo; se limpia en el
+                      proximo redespliegue desde main.
+                    - gh-pages va atrasada en SPRINT-42: le faltan 43, 44 y 45.
+
+Validacion:         git rm sobre el unico archivo del directorio
+                    `.openai/` ya no existe en el arbol de trabajo
+                    Sin cambios de codigo -> sin superficie funcional a probar
+```
+
+---
+
 ## SPRINT-44 — Riesgo por sede pasa de texto a gráfico [Estado: Cerrado]
 
 - **Agente(s):** Claude Code
