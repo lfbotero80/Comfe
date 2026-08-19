@@ -8,7 +8,7 @@ let activeParkId = PARKS[0].id;
 export function renderParks(){
   const activePark = PARKS.find(park => park.id === activeParkId) || PARKS[0];
   const rows = rowsForPark(activePark);
-  const monthRows = rowsForCurrentMonth(rows);
+  const monthRows = rowsForPeriod(rows, appState.filters.period);
   const latest = monthRows[monthRows.length - 1] || rows[rows.length - 1] || null;
   const status = latest ? classifyOccupancy(latest.ocupacion_porcentaje, latest.fecha) : null;
   const monthLabel = latest ? String(latest.fecha).slice(0, 7) : 'Sin periodo cargado';
@@ -53,10 +53,13 @@ function rowsForPark(park){
     .sort((a, b) => String(a.fecha).localeCompare(String(b.fecha)));
 }
 
-function rowsForCurrentMonth(rows){
-  if(!rows.length) return [];
-  const latestMonth = String(rows[rows.length - 1].fecha).slice(0, 7);
-  return rows.filter(row => String(row.fecha).startsWith(latestMonth));
+function rowsForPeriod(rows, period){
+  if(period === 'all'){
+    if(!rows.length) return [];
+    const latestMonth = String(rows[rows.length - 1].fecha).slice(0, 7);
+    return rows.filter(row => String(row.fecha).startsWith(latestMonth));
+  }
+  return rows.filter(row => String(row.fecha).startsWith(period));
 }
 
 function renderParkMetrics(park, rows, latest, status, monthLabel){

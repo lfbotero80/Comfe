@@ -13,8 +13,17 @@ export const appState = {
   budgetRows: DEMO_BUDGET_ROWS.slice(),
   revenueRuleRows: [],
   calendarRows: COMMERCIAL_CALENDAR.slice(),
-  campaignRows: CAMPAIGNS.slice()
+  campaignRows: CAMPAIGNS.slice(),
+  filters: {
+    period: 'all',
+    unitType: 'all',
+    severity: 'all'
+  }
 };
+
+export function setGlobalFilter(key, value){
+  appState.filters[key] = value;
+}
 
 export function registerLoad({ contractId, filename, acceptedRows, rejectedRows }){
   appState.loadedFiles.push({
