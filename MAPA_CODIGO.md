@@ -1,6 +1,6 @@
 # Mapa de código — Comfenalco IA
 
-Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-39`.
+Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-40`.
 
 ---
 
@@ -37,7 +37,8 @@ Versiones principales:
 | `tablero-seguimiento-ocupacion.html` | **Versión principal** — la que usa Diana/Sandra hoy en producción. |
 | `tablero-seguimiento-ocupacion-v2.html` | **Versión de trabajo** — tiene todo lo de `SPRINT-00` (auth, forecast diario, festivos, CSV, sub-navegación por hotel) pendiente de que Luis Felipe la revise y decida si reemplaza a la principal (`HU-034`). |
 | `tablero-seguimiento-ocupacion-v3-demo.html` | **Demo v3 abrible por doble clic** — creado en `SPRINT-03` a partir de v2 para conservar semaforos, seguimientos, metricas y experiencia visual mientras la modularizacion madura. Es el archivo correcto para revision local inmediata. |
-| `abrir-v3-modular.command` | Lanzador macOS para abrir `v3-modular/` con servidor local en `http://localhost:8055/`. |
+| `abrir-v3-modular.command` | Lanzador macOS para abrir `v3-modular/` en `http://localhost:8055/`. Desde `SPRINT-40` usa `servidor-local.py` en vez de `python3 -m http.server`, para que el navegador no cachee los modulos ES. |
+| `servidor-local.py` | Desde `SPRINT-40`. Servidor local igual a `http.server` pero con `Cache-Control: no-store`. Existe porque los modulos ES cacheados hacian que el tablero se mostrara a medias (solo menu y header, o pestanas ya eliminadas) aun con el codigo correcto en disco. |
 | `AUDITORIA_DATOS_QUEMADOS_SPRINT-24.md` | Informe de auditoria de datos quemados de la V3 modular: distingue datos semilla, catalogos estructurales, reglas de negocio y riesgos pendientes (`TO-HU-071`, `TO-HU-072`). |
 | `ARQUITECTURA_IA_RECOMENDACIONES_SPRINT-27.md` | Documento de arquitectura para evolucionar `Accion sugerida` hacia IA asistida: recomienda no conectar IA desde HTML local, mantener motor deterministico como fallback, y exigir backend, auditoria, contexto estructurado y aprobacion humana antes de IA real. |
 | `DISENO_DASHBOARD_MANDO_SPRINT-30.md` | Especificacion funcional previa a codigo para redisenar el Dashboard general como tablero de mando directivo: estado combinado, KPIs directivos, matriz por sede, cuadrante ocupacion vs presupuesto, top 3 acciones, calidad de dato y lectura anual distinta. |

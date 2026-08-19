@@ -6,6 +6,35 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-40 — Servidor local sin cache [Estado: Cerrado]
+
+- **Agente(s):** Claude Code
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / soporte de desarrollo
+- **Objetivo del sprint:** eliminar la causa raíz de un problema recurrente: el navegador servía una mezcla de módulos viejos y nuevos, y el tablero aparecía a medias (solo menú y header, o pestañas que ya no existían) aun con el código correcto en disco.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-098 | Servidor local sin caché | Claude Code | Hecha | Deja de aparecer código viejo mezclado con nuevo |
+
+### Resumen de cierre
+
+**El problema, que ya se había manifestado cuatro veces:** el tablero usa módulos ES (`type="module"`), que los navegadores cachean de forma agresiva. `python3 -m http.server` no envía ninguna cabecera de caché, así que el navegador reutilizaba módulos viejos junto con otros nuevos. Los síntomas variaban — una pestaña `Presupuesto` que ya no existía en el código, un dashboard que se quedaba solo con menú y header, cifras que no reflejaban el último cambio — y en los cuatro casos el código en disco estaba correcto. Durante el desarrollo me obligó dos veces a levantar servidores en puertos nuevos para poder verificar cambios, y a Luis Felipe le costó dos reportes de "se rompió".
+
+**Qué cambió:**
+
+- `05-tablero-ocupacion/servidor-local.py` (nuevo): equivalente a `python3 -m http.server` pero enviando `Cache-Control: no-store, no-cache, must-revalidate, max-age=0`, `Pragma: no-cache` y `Expires: 0`. Así el navegador revalida siempre y lo que se ve corresponde al código en disco.
+- `05-tablero-ocupacion/abrir-v3-modular.command`: usa ese servidor en vez de `http.server`. Resuelve la ruta base con `pwd` para poder invocar el script desde la carpeta del tablero.
+
+**Validación realizada:** `curl -I` confirma las tres cabeceras en los módulos JS servidos; el tablero carga completo en puertos limpios (`8062`, `8070`) con el código actual; el menú se sirve correcto (6 secciones, sin `Presupuesto`).
+
+**Límite conocido:** una pestaña que ya visitó el puerto **antes** de este cambio puede seguir usando su caché previa; la primera vez hace falta una recarga forzada (o abrir una ventana privada). De ahí en adelante ya no vuelve a pasar, porque el servidor pide no cachear.
+
+---
+
 ## SPRINT-39 — Cifras ajustadas a la realidad [Estado: Cerrado]
 
 - **Agente(s):** Claude Code
