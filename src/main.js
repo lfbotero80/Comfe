@@ -56,10 +56,7 @@ function renderActiveView(){
   headerDataLoadButton.classList.toggle('active', activeView === 'data-load');
 
   if(activeView === 'data-load'){
-    bindDataLoadHandlers({
-      rerender: renderActiveView,
-      setStatus: text => { statusEl.textContent = text; }
-    });
+    bindDataLoadHandlers({ setStatus });
   }
 
   if(activeView === 'hotels'){
@@ -75,6 +72,12 @@ function renderActiveView(){
   }
 
   if(activeView === 'campaigns'){
-    bindCampaignHandlers({ rerender: renderActiveView, setStatus: text => { statusEl.textContent = text; } });
+    bindCampaignHandlers({ rerender: renderActiveView, setStatus });
   }
+}
+
+function setStatus(text, type){
+  statusEl.textContent = text;
+  statusEl.classList.remove('ok', 'warn', 'error', 'pending');
+  if(type) statusEl.classList.add(type);
 }

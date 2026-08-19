@@ -31,13 +31,16 @@ export function renderDataLoad(){
   `;
 }
 
-export function bindDataLoadHandlers({ rerender, setStatus }){
+export function bindDataLoadHandlers({ setStatus }){
   document.querySelectorAll('[data-file-contract]').forEach(input => {
     input.addEventListener('change', async event => {
       const file = event.target.files[0];
       const contractId = event.target.dataset.fileContract;
       const resultTarget = document.querySelector(`[data-validation-result="${contractId}"]`);
       if(!file) return;
+
+      resultTarget.innerHTML = `<div class="validation-item pending">Leyendo ${escapeHTML(file.name)}...</div>`;
+      setStatus(`Leyendo ${file.name}...`, 'pending');
 
       try{
         const rows = await readStructuredFile(file, contractId);
@@ -51,11 +54,16 @@ export function bindDataLoadHandlers({ rerender, setStatus }){
             acceptedRows: validation.acceptedRows,
             rejectedRows: validation.rejectedRows
           });
-          setStatus(`${file.name}: ${validation.acceptedRows.length} fila(s) aceptadas`);
-          rerender();
+          const withWarnings = validation.rejectedRows.length ? ` (${validation.rejectedRows.length} fila(s) rechazadas)` : '';
+          setStatus(`${file.name}: ${validation.acceptedRows.length} fila(s) cargadas${withWarnings}`, validation.rejectedRows.length ? 'warn' : 'ok');
+        }else{
+          setStatus(`${file.name}: no se cargo. Revise el detalle abajo.`, 'error');
         }
       }catch(error){
         resultTarget.innerHTML = `<div class="validation-item error">${escapeHTML(error.message)}</div>`;
+        setStatus(`${file.name}: archivo no compatible`, 'error');
+      }finally{
+        event.target.value = '';
       }
     });
   });
