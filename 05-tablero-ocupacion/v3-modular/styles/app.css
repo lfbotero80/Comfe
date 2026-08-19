@@ -414,70 +414,44 @@ p{line-height:1.55}
 .command-layout{display:grid; grid-template-columns:minmax(0,1.35fr) minmax(330px,.65fr); gap:18px}
 .command-layout.secondary{grid-template-columns:minmax(0,1fr) minmax(320px,420px)}
 .command-card{min-height:360px}
-.quadrant-card,.trend-card,.radar-card,.action-focus{display:grid; grid-template-rows:auto 1fr}
-.quadrant-plot{
-  position:relative;
-  min-height:310px;
-  border-left:2px solid var(--line);
-  border-bottom:2px solid var(--line);
+.trend-card,.radar-card,.action-focus{display:grid; grid-template-rows:auto 1fr}
+.risk-groups-card{display:grid; grid-template-rows:auto 1fr; gap:12px}
+.risk-group{
+  border:1px solid var(--line);
+  border-left-width:5px;
   border-radius:10px;
-  background:
-    linear-gradient(90deg,rgba(192,54,43,.08) 0 70%,rgba(30,155,50,.07) 70% 100%),
-    linear-gradient(0deg,rgba(192,54,43,.08) 0 75%,rgba(30,155,50,.07) 75% 100%);
-  overflow:hidden;
+  padding:12px 14px;
+  background:#fff;
 }
-.axis-label{position:absolute; color:var(--muted); font-size:11px; font-weight:850; text-transform:uppercase}
-.axis-label.y{left:8px; top:8px}
-.axis-label.x{right:12px; bottom:8px}
-.target-line{position:absolute; background:rgba(0,87,68,.32)}
-.target-line.vertical{top:0; bottom:0; width:2px}
-.target-line.horizontal{left:0; right:0; height:2px}
-.quad-label{position:absolute; color:rgba(64,64,64,.46); font-size:12px; font-weight:800; line-height:1.25}
-.quad-label.top-left{left:18px; top:28px}
-.quad-label.top-right{right:18px; top:28px; text-align:right}
-.quad-label.bottom-left{left:18px; bottom:28px}
-.quad-label.bottom-right{right:18px; bottom:28px; text-align:right}
-.quadrant-point{
-  position:absolute;
-  transform:translate(-50%,50%);
-  width:30px;
-  height:30px;
-  border-radius:50%;
+.risk-group.red{border-left-color:var(--red)}
+.risk-group.amber{border-left-color:var(--amber)}
+.risk-group.green{border-left-color:var(--green)}
+.risk-group.gray{border-left-color:#B7BCB8}
+.risk-group + .risk-group{margin-top:10px}
+.risk-group-head{display:flex; justify-content:space-between; align-items:baseline; gap:12px}
+.risk-group-head strong{color:var(--navy); font-size:14px}
+.risk-group-count{color:var(--muted); font-size:12px; font-weight:750; white-space:nowrap}
+.risk-group-hint{margin:2px 0 10px; color:var(--muted); font-size:12.5px; line-height:1.4}
+.risk-group-list{display:grid; gap:8px}
+.risk-item{
   display:grid;
-  place-items:center;
-  border:3px solid #fff;
-  box-shadow:0 5px 16px rgba(0,64,47,.20);
+  grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr);
+  gap:12px;
+  align-items:center;
+  padding:8px 10px;
+  border-radius:8px;
+  background:var(--surface-soft);
 }
-.quadrant-point.parque{border-radius:8px; transform:translate(-50%,50%) rotate(45deg)}
-.quadrant-point.parque b{transform:rotate(-45deg)}
-.quadrant-point.partial{border-style:dashed; opacity:.85}
-.quadrant-point b{
-  position:absolute;
-  top:30px;
-  min-width:72px;
-  color:var(--ink);
-  font-size:11px;
-  text-align:center;
-}
-.quadrant-point.red{background:var(--red)}
-.quadrant-point.amber{background:var(--amber)}
-.quadrant-point.green{background:var(--green)}
-.quadrant-point.gray{background:#AAB1AC}
-.quadrant-point.partial{background:#B7BCB8}
-.quadrant-legend{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  margin-top:10px;
-  color:var(--muted);
-  font-size:12px;
-  font-weight:750;
-}
-.quadrant-legend span{display:inline-flex; align-items:center; gap:6px}
-.quadrant-symbol{width:12px; height:12px; display:inline-block; background:var(--navy)}
-.quadrant-symbol.hotel{border-radius:50%}
-.quadrant-symbol.parque{border-radius:3px; transform:rotate(45deg)}
-.quadrant-symbol.partial{border-radius:50%; background:#B7BCB8; border:2px dashed #fff; box-shadow:0 0 0 1px #B7BCB8}
+.risk-item-name strong{display:block; color:var(--navy); font-size:13.5px; line-height:1.25}
+.risk-item-name span{display:block; color:var(--muted); font-size:11.5px; margin-top:2px}
+.risk-metric{display:grid; gap:1px}
+.risk-metric-label{color:var(--muted); font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.03em}
+.risk-metric strong{font-size:19px; line-height:1.1; color:var(--navy)}
+.risk-metric.red strong{color:var(--red)}
+.risk-metric.amber strong{color:var(--amber)}
+.risk-metric.green strong{color:var(--green)}
+.risk-metric.gray strong{color:var(--muted)}
+.risk-metric-gap{color:var(--muted); font-size:11.5px}
 .priority-list{display:grid; gap:12px; align-content:start}
 .priority-item{
   display:grid;
@@ -1140,8 +1114,7 @@ p{line-height:1.55}
   .command-band,.command-layout,.command-layout.secondary{grid-template-columns:1fr}
   .command-band h2{font-size:22px}
   .command-card{min-height:0}
-  .quadrant-plot{min-height:280px}
-  .quadrant-point b{display:none}
+  .risk-item{grid-template-columns:1fr; gap:6px}
   .vertical-bars{grid-template-columns:repeat(4,minmax(56px,1fr)); overflow:auto}
   .vertical-bar-item{height:190px}
   .trend-line-chart{min-height:220px}

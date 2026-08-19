@@ -87,8 +87,33 @@ function siteCommandRow(site, state, readiness){
     plotX: occupancyPct === null ? 4 : occupancyPct,
     plotY: budget.hasData ? Math.min(budget.pct, 120) / 1.2 : 4,
     plotIsPartial: occupancyPct === null || !budget.hasData,
+    riskGroup: riskGroupFor(occupancyPct, budget),
     priority: priorityValue(combinedSeverity, occupancyStatus.severity, budget.severity, missing.length)
   };
+}
+
+export const BUDGET_TARGET = 90;
+
+/**
+ * Clasifica el **tipo de problema** de una sede, que es lo que el cuadrante
+ * cartesiano intentaba comunicar con coordenadas (`SPRINT-31`) y que
+ * `SPRINT-43` pasa a decir con palabras.
+ *
+ * Una sede a la que le falta ocupacion o presupuesto NO se clasifica como
+ * riesgo: queda en `insufficient`. En el cuadrante caia en la esquina inferior
+ * izquierda — literalmente el area rotulada "Accion prioritaria" — y una sede
+ * de la que no se sabia nada se veia igual que una en crisis.
+ */
+function riskGroupFor(occupancyPct, budget){
+  const hasOccupancy = occupancyPct !== null;
+  const hasBudget = Boolean(budget.hasData) && Boolean(budget.confiable);
+  if(!hasOccupancy || !hasBudget) return 'insufficient';
+  const lowOccupancy = occupancyPct < OCCUPANCY_TARGET;
+  const lowBudget = budget.pct < BUDGET_TARGET;
+  if(lowOccupancy && lowBudget) return 'both';
+  if(lowOccupancy) return 'occupancy';
+  if(lowBudget) return 'budget';
+  return 'ok';
 }
 
 function commandTotals(rows, state){

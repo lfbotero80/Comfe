@@ -1,4 +1,4 @@
-import { buildDashboardCommand, formatCOP, OCCUPANCY_TARGET } from '../../domain/dashboard-command.js';
+import { buildDashboardCommand, formatCOP, OCCUPANCY_TARGET, BUDGET_TARGET } from '../../domain/dashboard-command.js';
 import { appState } from '../../state/app-state.js';
 import { badge, escapeHTML } from '../html.js';
 import { monthLabel } from '../global-filters.js';
@@ -12,7 +12,7 @@ export function renderDashboard(){
     ${renderExecutiveKpis(command)}
 
     <section class="command-layout">
-      ${renderQuadrant(command.rows)}
+      ${renderRiskGroups(command.rows)}
       ${renderActionFocus(command.rows)}
     </section>
 
@@ -81,38 +81,91 @@ function score(label, value, note, severity){
   `;
 }
 
-function renderQuadrant(rows){
-  const points = rows;
+const RISK_GROUPS = [
+  { id: 'both', label: 'Ocupacion y presupuesto por debajo de la meta', hint: 'Riesgo comercial y financiero al tiempo. Revisar primero.', severity: 'red' },
+  { id: 'occupancy', label: 'Solo la ocupacion esta por debajo', hint: 'Riesgo comercial: la venta no llega, la ejecucion si.', severity: 'amber' },
+  { id: 'budget', label: 'Solo el presupuesto esta por debajo', hint: 'Riesgo financiero: se ocupa, pero no se ejecuta lo presupuestado.', severity: 'amber' },
+  { id: 'ok', label: 'Ocupacion y presupuesto en meta', hint: 'Sostener y proteger tarifa.', severity: 'green' },
+  { id: 'insufficient', label: 'Sin informacion suficiente para evaluar', hint: 'Falta ocupacion o presupuesto: no se puede clasificar el riesgo.', severity: 'gray' }
+];
+
+/**
+ * Reemplaza al cuadrante cartesiano de `SPRINT-31` (ver `SPRINT-43`).
+ *
+ * Responde la misma pregunta —que tipo de problema tiene cada sede— pero sin
+ * pedirle al lector que aprenda a interpretar un plano de coordenadas: agrupa
+ * por tipo de riesgo, usa el nombre completo de la sede y pone cada cifra al
+ * lado de su meta, de modo que no hace falta una linea de referencia.
+ */
+function renderRiskGroups(rows){
+  const grouped = RISK_GROUPS
+    .map(group => ({ ...group, items: rows.filter(row => row.riskGroup === group.id) }))
+    .filter(group => group.items.length);
+
   return `
-    <section class="panel command-card quadrant-card">
+    <section class="panel command-card risk-groups-card">
       <div class="section-head">
         <div>
-          <h2>Riesgo ocupacion vs presupuesto</h2>
-          <p class="metric-note">Cada punto es una sede. Abajo a la izquierda concentra riesgo comercial y financiero.</p>
+          <h2>Riesgo por sede</h2>
+          <p class="metric-note">Agrupado por tipo de problema. Metas: ocupacion ${OCCUPANCY_TARGET}%, ejecucion presupuestal ${BUDGET_TARGET}%.</p>
         </div>
       </div>
-      <div class="quadrant-plot">
-        <span class="axis-label y">Presupuesto</span>
-        <span class="axis-label x">Ocupacion / uso</span>
-        <span class="target-line vertical" style="left:${OCCUPANCY_TARGET}%"></span>
-        <span class="target-line horizontal" style="bottom:90%"></span>
-        <span class="quad-label top-left">Buena ejecucion<br>baja ocupacion</span>
-        <span class="quad-label top-right">Proteger tarifa<br>mantener</span>
-        <span class="quad-label bottom-left">Accion prioritaria</span>
-        <span class="quad-label bottom-right">Revisar mix / tarifa</span>
-        ${points.map(point => `
-          <span class="quadrant-point ${point.combinedSeverity} ${point.kind} ${point.plotIsPartial ? 'partial' : ''}" style="left:${point.plotX}%; bottom:${point.plotY}%">
-            <b>${escapeHTML(shortName(point.name))}</b>
-          </span>
-        `).join('')}
-        ${points.length ? '' : '<div class="empty-state"><strong>Sin sedes para el filtro</strong><span>Ajuste filtros para activar el cuadrante.</span></div>'}
-      </div>
-      <div class="quadrant-legend">
-        <span><i class="quadrant-symbol hotel"></i>Hoteles</span>
-        <span><i class="quadrant-symbol parque"></i>Parques</span>
-        <span><i class="quadrant-symbol partial"></i>Dato parcial</span>
-      </div>
+      ${grouped.length ? grouped.map(renderRiskGroup).join('') : '<div class="empty-state"><strong>Sin sedes para el filtro</strong><span>Ajuste los filtros para ver el riesgo por sede.</span></div>'}
     </section>
+  `;
+}
+
+function renderRiskGroup(group){
+  return `
+    <div class="risk-group ${group.severity}">
+      <div class="risk-group-head">
+        <strong>${escapeHTML(group.label)}</strong>
+        <span class="risk-group-count">${group.items.length} sede${group.items.length === 1 ? '' : 's'}</span>
+      </div>
+      <p class="risk-group-hint">${escapeHTML(group.hint)}</p>
+      <div class="risk-group-list">
+        ${group.items.map(renderRiskItem).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderRiskItem(row){
+  return `
+    <article class="risk-item">
+      <div class="risk-item-name">
+        <strong>${escapeHTML(row.name)}</strong>
+        <span>${escapeHTML(row.kind === 'hotel' ? 'Hotel' : 'Parque')}</span>
+      </div>
+      ${renderRiskMetric('Ocupacion', row.occupancyPct, OCCUPANCY_TARGET, row.occupancySeverity)}
+      ${renderRiskMetric('Presupuesto', row.budgetPct, BUDGET_TARGET, row.budgetSeverity)}
+    </article>
+  `;
+}
+
+/**
+ * Cada cifra se muestra junto a su meta y con la brecha en puntos, para que se
+ * lea sin comparar contra una linea dibujada — que en el cuadrante anterior
+ * ademas estaba mal calibrada (la meta de 90% se dibujaba donde iba 108%).
+ */
+function renderRiskMetric(label, pct, target, severity){
+  if(pct === null || pct === undefined){
+    return `
+      <div class="risk-metric gray">
+        <span class="risk-metric-label">${escapeHTML(label)}</span>
+        <strong>Sin dato</strong>
+        <span class="risk-metric-gap">meta ${target}%</span>
+      </div>
+    `;
+  }
+  const gap = pct - target;
+  const gapText = gap >= 0 ? `+${gap.toFixed(0)} pts sobre meta` : `${gap.toFixed(0)} pts bajo meta`;
+  return `
+    <div class="risk-metric ${severity}">
+      <span class="risk-metric-label">${escapeHTML(label)}</span>
+      <strong>${pct.toFixed(0)}%</strong>
+      <span class="risk-metric-gap">${escapeHTML(gapText)} · meta ${target}%</span>
+    </div>
   `;
 }
 
@@ -236,11 +289,11 @@ function renderVerticalBudget(rows){
       <div class="section-head">
         <div>
           <h2>Cumplimiento presupuestal por sede</h2>
-          <p class="metric-note">Barras verticales para comparar ejecucion; la linea marca 90%.</p>
+          <p class="metric-note">Barras verticales para comparar ejecucion; la linea marca la meta de ${BUDGET_TARGET}%.</p>
         </div>
       </div>
       <div class="vertical-bars">
-        <span class="vertical-target" style="bottom:90%"></span>
+        <span class="vertical-target" style="bottom:75.0%"></span>
         ${dataRows.length ? dataRows.map(row => `
           <div class="vertical-bar-item">
             <strong>${row.budgetPct.toFixed(0)}%</strong>
@@ -365,13 +418,16 @@ function radarAxisPoint(index, radius){
   };
 }
 
+/**
+ * Nombre corto para etiquetas de grafica. Conserva la palabra que distingue la
+ * sede (Hotel / Parque / Camping / Hosteria) porque hay dos pares que solo se
+ * diferencian por ella: Hosteria vs Camping Los Farallones, y Hotel vs Parque
+ * Piedras Blancas. La version anterior los reducia al mismo texto y los volvia
+ * indistinguibles en el grafico (corregido en `SPRINT-43`).
+ */
 function shortName(name){
   return String(name)
-    .replace('Hosteria Los ', '')
-    .replace('Hotel ', '')
-    .replace('Hacienda ', '')
-    .replace('Parque Ecologico Los ', '')
-    .replace('Parque ', '')
-    .replace('Ecoparque ', '')
-    .replace('Camping Los ', '');
+    .replace('Los ', '')
+    .replace('Ecologico ', '')
+    .trim();
 }

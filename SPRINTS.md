@@ -6,6 +6,39 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-43 — Riesgo por sede reemplaza el cuadrante [Estado: Cerrado]
+
+- **Agente(s):** Claude Code
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E2
+- **Objetivo del sprint:** Luis Felipe reportó que el plano cartesiano "no se entiende, no se lee fácil". Al revisarlo aparecieron tres defectos reales, no solo de presentación. Eligió reemplazarlo (opción B) en vez de repararlo.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-099 | Reemplazar el cuadrante por lectura agrupada por tipo de riesgo | Claude Code | Hecha | Corrige de paso 3 defectos verificados |
+
+### Resumen de cierre
+
+**Los tres defectos que se encontraron al analizar (verificados numéricamente, no supuestos):**
+
+1. **Cuatro sedes se confundían entre sí.** `shortName()` reducía `Hosteria Los Farallones` y `Camping Los Farallones` ambas a "Farallones", y `Hotel Piedras Blancas` con `Parque Piedras Blancas` ambas a "Piedras Blancas" — justo los dos pares que `CLAUDE.md` insiste en no mezclar por ser unidades de negocio distintas.
+2. **La línea de meta de presupuesto estaba mal calibrada.** Las coordenadas usaban `min(pct,120)/1.2` pero la línea se dibujaba en `bottom:90%`, que corresponde a **108% de ejecución**, no al umbral de 90%. Toda sede que cumplía bien (90–107%) aparecía *debajo* de la línea, como si incumpliera. El eje X sí era 1:1, lo que hacía la mezcla más engañosa.
+3. **Las sedes sin dato caían en el cuadrante "Acción prioritaria".** Sin ocupación o sin presupuesto, el punto se ubicaba en `(4,4)` — la esquina inferior izquierda, literalmente rotulada como acción prioritaria. Una sede de la que no se sabía nada se veía igual que una en crisis.
+
+**Qué reemplaza al cuadrante:** un bloque **"Riesgo por sede"** que responde la misma pregunta (qué tipo de problema tiene cada sede) sin exigir interpretar coordenadas. Agrupa en cinco categorías con nombre explícito — ocupación y presupuesto bajos / solo ocupación / solo presupuesto / ambos en meta / sin información suficiente — y por cada sede muestra las dos cifras con su meta y la brecha en puntos, así no hace falta ninguna línea de referencia.
+
+- `src/domain/dashboard-command.js`: `riskGroupFor()` clasifica el tipo de riesgo; exporta `BUDGET_TARGET`. Una sede sin ocupación o sin presupuesto confiable queda en `insufficient`, nunca en un grupo de riesgo.
+- `src/ui/views/dashboard.js`: `renderRiskGroups()` reemplaza a `renderQuadrant()`. `shortName()` ahora conserva la palabra que distingue (Hotel/Parque/Camping/Hostería) — verificado que las 9 sedes producen etiquetas únicas.
+- **Se corrigió el mismo error de calibración en las barras verticales de presupuesto**, que compartían la escala y la línea mal ubicada: la meta se dibuja ahora en `75%` de altura, que es donde cae el 90% real.
+- `styles/app.css`: se eliminó todo el CSS del cuadrante (20 reglas, ninguna usada en otro lado) y se agregó el de los grupos de riesgo.
+
+**Validación realizada:** `node --check`; verificación numérica de que las 9 etiquetas cortas son únicas; prueba en navegador limpio con 4 escenarios construidos a propósito, uno por grupo — Piedras Blancas (30% ocup / 50% ppto) → "ambos bajo meta"; Quirama (40% / 95%) → "solo ocupación"; Balandú (85% / 60%) → "solo presupuesto"; Farallones (90% / 98%) → "ambos en meta"; las 5 sedes sin datos quedaron correctamente en "Sin información suficiente" y fuera de cualquier grupo de alerta. Las 6 vistas sin errores de consola.
+
+---
+
 ## SPRINT-42 — Top 3 accionable con campanas y bitacora [Estado: Cerrado]
 
 - **Agente(s):** Claude Code
