@@ -1,6 +1,6 @@
 # Mapa de código — Comfenalco IA
 
-Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-10`.
+Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-11`.
 
 ---
 
@@ -159,14 +159,14 @@ URL local: `http://localhost:8055/`
 | `src/services/file-reader.js` | Lee archivos `.csv`, `.json` y PDFs Zeus para `occupancyInventory`; extrae texto con PDF.js local y delega normalizacion al parser Zeus. |
 | `src/services/zeus-forecast-parser.js` | Interpreta texto extraido de PDF Zeus Forecast por sede: detecta sede, corte, filas diarias, habitaciones disponibles/ocupadas y porcentaje, y devuelve filas `occupancyInventory`. |
 | `src/services/validators.js` | Valida formato, columnas obligatorias, fechas, periodos, sedes reconocidas, tipo de unidad, porcentajes y cuadratura de inventario/presupuesto/umbrales. |
-| `src/state/app-state.js` | Estado en memoria de la sesion local: archivos cargados, inventario/ocupacion, presupuesto y reglas de Revenue. |
+| `src/state/app-state.js` | Estado en memoria de la sesion local: archivos cargados, inventario/ocupacion, presupuesto, reglas de Revenue y campanas agregadas durante la sesion. |
 | `src/ui/html.js` | Helpers pequeños para escapar HTML, crear badges y renderizar el semaforo real de tres luces. |
 | `src/ui/views/dashboard.js` | Dashboard general decisional tipo Power BI: banda principal, KPIs, alertas, ocupacion visual por sede, presupuesto proyectado vs real en absolutos/% y tarjetas de Hoteles/Parques; sedes sin datos quedan en gris. |
 | `src/ui/views/data-load.js` | Vista de carga de archivos, descarga de plantillas, resultado de validacion por fila y explicacion de interpretacion Zeus por hotel. |
 | `src/ui/views/hotels.js` | Vista de hoteles con pestanas internas por hotel, ocupacion del mes, ocupadas/inventario en un solo indicador, semaforo contextual, accion sugerida, contexto comercial y detalle diario del mes con dia real. |
 | `src/ui/views/parks.js` | Vista `Parques` con pestanas por sede, uso del mes, capacidad, usados/libres, alarma y detalle diario; no muestra semaforo cuando falta dato. |
 | `src/ui/views/calendar.js` | Vista recuperada de calendario comercial, con filtros por mes/sede y calendario operativo 2026. |
-| `src/ui/views/campaigns.js` | Vista recuperada de catalogo de campanas, con estado, resultado si hay ocupacion proyectada/real y boton `Agregar campaña nueva` para alta local de sesion. |
+| `src/ui/views/campaigns.js` | Vista recuperada de catalogo de campanas, con estado, resultado si hay ocupacion proyectada/real y boton `Agregar campaña nueva` que abre un modal tipo v2. |
 | `src/ui/views/contracts.js` | Vista tecnica de contratos de datos; queda sin acceso desde el menu visible desde `SPRINT-09`. |
 | `vendor/pdfjs/pdf.mjs` | PDF.js local para extraer texto de PDFs Zeus en navegador sin depender de CDN. |
 | `vendor/pdfjs/pdf.worker.mjs` | Worker local de PDF.js requerido por la lectura de PDFs. |
@@ -272,3 +272,12 @@ Plantillas CSV de S1:
 - `src/services/zeus-forecast-parser.js` convierte cada fila diaria Zeus en `sede`, `tipo_sede`, `tipo_unidad`, `fecha`, `inventario_total`, `unidades_ocupadas`, `unidades_libres`, `ocupacion_porcentaje`, `fuente` y `fecha_corte`.
 - `src/state/app-state.js` fusiona cargas por `sede + tipo_unidad + fecha`; cargar un hotel no borra los datos ya cargados de otro.
 - Validado con Playwright subiendo `Forecast Balandu 1808.pdf`, `Forecast Quirama 1808.pdf` y `Forecast Piedras Blancas 1808.pdf` desde la vista `Cargar datos`.
+
+### 3.13 — Modal de campanas en `SPRINT-11`
+
+`SPRINT-11` recupera el patron visual de v2 para crear campanas sin saturar la tabla:
+
+- `src/ui/views/campaigns.js` reemplaza el formulario incrustado por un modal con overlay, cabecera verde, cierre, campos completos y botones `Cancelar` / `Guardar campaña`.
+- El modal captura nombre, causa, sede(s), tarifa aplicada, fecha de ejecucion, ocupacion proyectada y ocupacion real.
+- `src/state/app-state.js` conserva ocupaciones en cero cuando se registren y mantiene las campanas nuevas en memoria de sesion.
+- `styles/app.css` contiene los estilos del modal, campos, ayuda y footer responsive.

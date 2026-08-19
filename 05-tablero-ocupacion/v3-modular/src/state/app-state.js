@@ -38,8 +38,8 @@ export function addCampaign(campaign){
     sites: campaign.sites,
     rate: campaign.rate,
     executionDate: campaign.executionDate || '',
-    projectedOccupancy: campaign.projectedOccupancy || null,
-    actualOccupancy: campaign.actualOccupancy || null,
+    projectedOccupancy: campaign.projectedOccupancy ?? null,
+    actualOccupancy: campaign.actualOccupancy ?? null,
     status: campaign.status || 'propuesta'
   });
 }

@@ -66,7 +66,7 @@ Este roadmap organiza el producto `Tablero de ocupación` antes de ejecutar nuev
 
 **HUs candidatas:** TO-HU-016, TO-HU-017, TO-HU-018, TO-HU-019, TO-HU-020, TO-HU-021, TO-HU-026.
 
-**Avance relacionado:** `SPRINT-06` recupero TO-HU-028, TO-HU-029 y TO-HU-030 como correccion de fidelidad frente a v2: calendario comercial, catalogo de campanas y contexto comercial conectado a alertas. `SPRINT-07` cerro TO-HU-017, TO-HU-018, TO-HU-020 y TO-HU-021: umbrales, cierres/festivos/temporada y recomendaciones de proteger tarifa o activar campana. Sigue pendiente TO-HU-026 para bitacora/seguimiento de decisiones.
+**Avance relacionado:** `SPRINT-06` recupero TO-HU-028, TO-HU-029 y TO-HU-030 como correccion de fidelidad frente a v2: calendario comercial, catalogo de campanas y contexto comercial conectado a alertas. `SPRINT-07` cerro TO-HU-017, TO-HU-018, TO-HU-020 y TO-HU-021: umbrales, cierres/festivos/temporada y recomendaciones de proteger tarifa o activar campana. `SPRINT-11` recupero el patron modal de v2 para agregar campanas con causa, sede, tarifa, fecha y medicion. Sigue pendiente TO-HU-026 para bitacora/seguimiento de decisiones.
 
 **Criterio de salida:** el semáforo de v2 gobierna la recomendación: mantener, preventa, Más Cerca, campaña, proteger tarifa o no actuar por cierre operativo.
 

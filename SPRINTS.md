@@ -6,6 +6,65 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-11 — Modal de campaña nueva [Estado: Cerrado]
+
+- **Agente(s):** Codex
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E3
+- **Objetivo del sprint:** recuperar en V3 modular el patrón modal de v2 para agregar campañas, con captura completa de causa, sede, tarifa, fecha y medición de ocupación.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-039 | Modal de alta de campaña tipo v2 | Codex | Hecha | Reemplaza formulario incrustado por modal con campos completos |
+
+### Resumen de cierre
+
+**Qué cambió:** La vista `Catálogo de campañas` de V3 modular dejó de abrir un formulario incrustado y ahora usa un modal inspirado en el HTML v2: overlay, cabecera verde institucional, botón de cierre, campos amplios, ayuda breve y acciones `Cancelar` / `Guardar campaña`. El alta captura nombre, causa, sede(s), tarifa aplicada, fecha de ejecución y ocupación proyectada/real; cuando existe medición, la tabla calcula efectividad.
+
+**HUs trabajadas:** TO-HU-039 quedó en `Hecha`.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/src/ui/views/campaigns.js`, `05-tablero-ocupacion/v3-modular/src/state/app-state.js` y `05-tablero-ocupacion/v3-modular/styles/app.css`.
+
+**Validación realizada:** `node --check` sobre todos los módulos JS; prueba Playwright en `http://localhost:8055/` abriendo `Campañas`, mostrando el modal, guardando una campaña con 35% proyectado y 42% real, cerrando el modal y calculando 120% de efectividad; captura visual del modal para revisar proporciones; `git diff --check`.
+
+**Decisiones / límites:** El sprint no cambia persistencia: las campañas nuevas siguen viviendo solo en memoria de sesión. No se tocó el HTML v2 ni la versión principal. El campo de fecha usa `type=date`, por lo que el formato visible depende del navegador/localización.
+
+**Pendientes para revisar:** Definir si el catálogo de campañas debe persistir en localStorage, si debe permitir editar/eliminar campañas y si estas altas deben convertirse en bitácora con responsable.
+
+```text
+HANDOFF — SPRINT-11 Modal de campaña nueva
+──────────────────────────────────────
+HUs completas:        TO-HU-039
+HUs pendientes:       ninguna dentro del alcance del sprint
+Archivos tocados:     BACKLOG.md · SPRINTS.md · ROADMAP.md · MAPA_CODIGO.md
+                      05-tablero-ocupacion/v3-modular/src/ui/views/campaigns.js
+                      05-tablero-ocupacion/v3-modular/src/state/app-state.js
+                      05-tablero-ocupacion/v3-modular/styles/app.css
+Archivos NO tocados:  05-tablero-ocupacion/tablero-seguimiento-ocupacion.html
+                      05-tablero-ocupacion/tablero-seguimiento-ocupacion-v2.html
+                      05-tablero-ocupacion/tablero-seguimiento-ocupacion-v3-demo.html
+Datos/contratos:      Sin cambios en contratos de carga.
+                      Campañas nuevas agregan fecha y ocupación proyectada/real.
+Decisiones tomadas:   El alta de campaña vuelve al patrón modal de v2.
+                      La tabla calcula efectividad solo con proyectado y real.
+Riesgos residuales:
+  - La campaña nueva no persiste al recargar; sigue pendiente localStorage o backend.
+  - El formato visible de fecha depende del navegador.
+  - Falta decisión de edición/eliminación y bitácora con responsable.
+Validación hecha:
+  Sintaxis:           node --check sobre todos los módulos JS -> pass
+  Runtime navegador:  Playwright abre modal, guarda campaña y calcula 120% -> pass
+  Visual:             captura del modal revisada contra referencia v2 -> pass
+  Documentación:      BACKLOG.md + SPRINTS.md + ROADMAP.md + MAPA_CODIGO.md actualizados
+Auto-reporte DoD:     Completo para TO-HU-039
+                      Persistencia y bitácora quedan para sprint posterior.
+```
+
+---
+
 ## SPRINT-10 — Carga directa de PDFs Zeus [Estado: Cerrado]
 
 - **Agente(s):** Codex
