@@ -1,0 +1,4 @@
+sede;tipo_sede;tipo_unidad;plan_venta;tramo;umbral_min;umbral_max;accion_recomendada;tarifa_cat_a;tarifa_cat_b;tarifa_cat_c;tarifa_cat_d;temporada;fecha_inicio;fecha_fin;fuente;fecha_corte;observaciones
+Hotel Piedras Blancas;hotel;habitacion;Plan Americano;estandar;70;100;Mantener tarifa o proteger precio;161000;178500;296400;316000;baja;;;REVENUE PROPUESTA.xlsx;2026-07-20;
+Hotel Piedras Blancas;hotel;habitacion;Plan Americano;preventa;40;69;Activar comunicacion flash;130500;136500;204600;242500;;;;REVENUE PROPUESTA.xlsx;2026-07-20;
+Hotel Piedras Blancas;hotel;habitacion;Plan Americano;mas_cerca;0;39;Activar tarifa de choque o campana;109400;109400;182900;196000;;;;REVENUE PROPUESTA.xlsx;2026-07-20;

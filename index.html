@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tablero de ocupacion y presupuesto · Comfenalco Antioquia</title>
+  <link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">C</div>
+        <div>
+          <strong>Comfenalco Antioquia</strong>
+          <span>Ocupacion y presupuesto</span>
+        </div>
+      </div>
+
+      <nav id="appNav" class="nav"></nav>
+
+      <div class="sidebar-note">
+        Control interno de ocupacion, inventario, presupuesto y acciones comerciales.
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Unidad de Turismo</p>
+          <h1 id="viewTitle">Dashboard general</h1>
+        </div>
+        <div class="header-actions">
+          <button type="button" class="btn-upload" id="btnHeaderDataLoad">Cargar datos</button>
+          <div class="status-pill" id="dataStatus">Datos operativos cargados</div>
+        </div>
+      </header>
+
+      <section id="appView" class="view"></section>
+    </main>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
