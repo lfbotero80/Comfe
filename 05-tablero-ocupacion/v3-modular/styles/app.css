@@ -184,7 +184,10 @@ p{line-height:1.55}
 .metric-label{font-size:12px; color:var(--muted)}
 .metric-value{font-size:26px; font-weight:850; color:var(--navy)}
 .metric-note{font-size:12px; color:var(--muted)}
-.score-card{border-top:4px solid var(--line)}
+.score-card{border-top:5px solid var(--line); padding:18px 20px}
+.score-card .metric-label{font-size:13px}
+.score-card .metric-value{font-size:34px; line-height:1}
+.score-card .metric-note{font-size:13px}
 .score-card.green{border-top-color:var(--green)}
 .score-card.amber{border-top-color:var(--amber)}
 .score-card.red{border-top-color:var(--red)}
@@ -206,7 +209,7 @@ p{line-height:1.55}
 .bar-row.muted span,.bar-row.muted strong{color:#90958F}
 
 .occ-row{display:grid; grid-template-columns:150px 1fr 60px 70px; gap:10px; align-items:center; font-size:13px}
-.occupancy-panel{padding:24px}
+.occupancy-panel{padding:22px 24px}
 .occupancy-panel h2{font-size:24px}
 .occupancy-panel .metric-note{font-size:14px}
 .occupancy-panel-body{display:grid; grid-template-columns:1fr 1fr; gap:22px; align-items:start}
@@ -242,6 +245,52 @@ p{line-height:1.55}
 .bar-inline-pct.amber{color:var(--amber)}
 .bar-inline-pct.red{color:var(--red)}
 .bar-inline-pct.gray{color:var(--muted)}
+
+.occupancy-insight{
+  min-height:100%;
+  display:grid;
+  align-content:center;
+  gap:14px;
+  border-left:1px solid var(--line);
+  padding-left:20px;
+}
+.insight-metric{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:12px;
+}
+.insight-metric span,.coverage-line span{color:var(--muted); font-size:12px; font-weight:700}
+.insight-metric strong{color:var(--navy); font-size:34px; line-height:1}
+.status-stack{
+  height:22px;
+  border-radius:999px;
+  overflow:hidden;
+  display:flex;
+  background:var(--surface-soft);
+}
+.status-stack span{display:block; min-width:8px}
+.status-stack .red{background:var(--red)}
+.status-stack .amber{background:var(--amber)}
+.status-stack .green{background:var(--green)}
+.status-stack .gray{background:#D8DDD9}
+.status-counts{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px}
+.status-count{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  color:var(--muted);
+  font-size:12px;
+}
+.status-count b{color:var(--ink)}
+.coverage-line{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding-top:10px;
+  border-top:1px solid var(--line);
+}
+.coverage-line strong{color:var(--navy)}
 
 .budget-legend{display:flex; gap:16px; flex-wrap:wrap; margin:12px 0; font-size:12.5px; color:var(--muted)}
 .budget-legend span{display:inline-flex; align-items:center; gap:6px}
@@ -308,10 +357,10 @@ p{line-height:1.55}
   background:linear-gradient(135deg,var(--navy),#0F6B53);
   color:#fff;
   border-radius:14px;
-  padding:18px;
+  padding:16px 18px;
   box-shadow:var(--shadow);
 }
-.powerbi-hero h2{color:#fff; margin:2px 0 4px; font-size:24px}
+.powerbi-hero h2{color:#fff; margin:2px 0 4px; font-size:22px}
 .powerbi-hero p{margin:0; color:#D7EFE5; font-size:13px}
 .powerbi-hero .eyebrow{color:var(--gold)}
 .semaforo{
@@ -756,7 +805,7 @@ p{line-height:1.55}
   .topbar{grid-template-columns:1fr}
   .grid.two,.grid.three,.grid.four,.upload-grid,.chart-grid,.score-grid,.form-grid.two{grid-template-columns:1fr}
   .occupancy-panel-body{grid-template-columns:1fr}
-  .inline-convention{border-left:0; border-top:1px solid var(--line); padding-left:0; padding-top:12px}
+  .inline-convention,.occupancy-insight{border-left:0; border-top:1px solid var(--line); padding-left:0; padding-top:12px}
   .occ-row,.occupancy-chart .occ-row{grid-template-columns:120px 1fr 48px}
   .trend-svg,.trend-empty{display:none}
   .month-bars{grid-template-columns:repeat(6,minmax(42px,1fr)); min-height:260px}

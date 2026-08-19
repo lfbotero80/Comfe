@@ -6,6 +6,77 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-21 — Dashboard ejecutivo compacto [Estado: Cerrado]
+
+- **Agente(s):** Codex
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E2
+- **Objetivo del sprint:** aprovechar mejor el espacio del dashboard general: reemplazar leyendas laterales por informacion grafica, evitar % repetidos y hacer los KPIs mas legibles.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-060 | Lateral de graficas con contenido grafico | Codex | Hecha | Cambia convenciones por resumen visual |
+| TO-HU-062 | Quitar % duplicado en presupuesto | Codex | Hecha | Mantiene % junto a barra, quita badge repetido |
+| TO-HU-063 | Redistribuir tamaños del dashboard | Codex | Hecha | KPI y bloques con menos aire muerto |
+| TO-HU-064 | Sidebar Unidad de Turismo | Codex | Hecha | Ajuste de texto |
+
+### Resumen de cierre
+
+Se corrigio el dashboard para que el espacio lateral de Hoteles/Parques deje de ser una leyenda grande y pase a ser informacion visual: promedio con dato, barra apilada por semaforo, conteo de sedes rojas/amarillas/verdes/sin dato y cobertura de datos. Las convenciones de presupuesto siguen visibles donde son necesarias, pero la ocupacion ahora usa el lateral como grafica de diagnostico.
+
+Tambien se quito la repeticion del % de cumplimiento presupuestal en el encabezado de cada sede del dashboard: el porcentaje queda solo junto a la barra `Real cumplido`, y el valor monetario queda a la derecha. Los KPIs superiores se hicieron mas legibles con valores de 34px y menos aire muerto. En el sidebar, el subtitulo de marca pasa a `Unidad de Turismo`.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/index.html`, `src/ui/views/dashboard.js` y `styles/app.css`.
+
+**Validacion realizada:** `node --check` sobre todos los modulos JS, `git diff --check`, servidor local `http://localhost:8055/` respondiendo 200 y prueba Playwright: sidebar con `Unidad de Turismo`, KPIs a 34px, lateral de ocupacion con resumen visual, sin convenciones antiguas en ocupacion, proporciones 47%/47%, presupuesto sin badge duplicado, % solo junto a barra, boton de carga a la derecha y sin errores JS.
+
+```text
+HANDOFF — SPRINT-21 Dashboard ejecutivo compacto
+──────────────────────────────────────
+HUs completas:        TO-HU-060, TO-HU-062, TO-HU-063, TO-HU-064
+HUs pendientes:       ninguna dentro del alcance del sprint
+
+Archivos tocados:     BACKLOG.md · SPRINTS.md · ROADMAP.md · MAPA_CODIGO.md
+                      05-tablero-ocupacion/v3-modular/index.html
+                      05-tablero-ocupacion/v3-modular/src/ui/views/dashboard.js
+                      05-tablero-ocupacion/v3-modular/styles/app.css
+
+Archivos NO tocados:  tablero-seguimiento-ocupacion.html
+                      tablero-seguimiento-ocupacion-v2.html
+                      tablero-seguimiento-ocupacion-v3-demo.html
+                      v3-modular/src/ui/views/hotels.js, parks.js, budget.js,
+                      data-load.js, calendar.js, campaigns.js, contracts.js
+
+Datos/contratos:      Sin cambios en contratos de carga.
+
+Decisiones tomadas:   El lateral derecho de Hoteles/Parques en Dashboard ya no
+                      muestra convenciones; muestra diagnostico visual de semaforo
+                      y cobertura.
+                      El % de presupuesto se mantiene solo junto a la barra real;
+                      se elimina el badge duplicado por sede.
+                      El KPI superior aumenta legibilidad sin cambiar metricas.
+
+Riesgos residuales:
+  - El bloque de presupuesto del Dashboard sigue siendo resumen ejecutivo; el
+    detalle completo vive en la pestaña Presupuesto restaurada en SPRINT-19.
+  - TO-HU-061 sigue pendiente: `Todo 2026` todavia requiere un diseno distinto
+    y mas robusto que una suma simple de meses.
+
+Validacion hecha:
+  Sintaxis:           node --check sobre todos los modulos JS -> pass
+  Estatica:           git diff --check -> pass
+  Runtime navegador:  http://localhost:8055/ responde 200; Playwright confirma
+                      sidebar correcto, lateral con resumen visual, sin %
+                      duplicado en presupuesto y sin errores JS.
+
+Auto-reporte DoD:     Completo para TO-HU-060, TO-HU-062, TO-HU-063 y TO-HU-064.
+```
+
+---
+
 ## SPRINT-20 — Control completo por sede [Estado: Cerrado]
 
 - **Agente(s):** Codex

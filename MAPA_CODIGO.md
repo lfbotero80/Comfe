@@ -127,7 +127,7 @@ Creada en `SPRINT-01` por Codex. Es una base de desarrollo local para migrar el 
 
 | Archivo | Rol |
 |---|---|
-| `v3-modular/index.html` | Shell HTML con sidebar, topbar, boton primario `Cargar datos` ubicado arriba a la derecha, pill de estado oculto por defecto, contenedor de filtros globales y contenedor de vistas. Carga `src/main.js` como modulo ES. |
+| `v3-modular/index.html` | Shell HTML con sidebar, topbar, boton primario `Cargar datos` ubicado arriba a la derecha, pill de estado oculto por defecto, contenedor de filtros globales y contenedor de vistas. La marca lateral muestra `Unidad de Turismo` desde `SPRINT-21`. Carga `src/main.js` como modulo ES. |
 | `v3-modular/styles/app.css` | Estilos separados del HTML. Tras `SPRINT-02`, recupera el sistema visual de v2: paleta Comfenalco, sidebar verde, acento lima, tarjetas KPI, semaforo real y graficos CSS. |
 | `v3-modular/README.md` | Instrucciones de uso local, limites y estado de la version modular. |
 
@@ -166,7 +166,7 @@ URL local: `http://localhost:8055/`
 | `src/state/app-state.js` | Estado en memoria de la sesion local: archivos cargados, inventario/ocupacion, presupuesto, reglas de Revenue, campanas agregadas durante la sesion y filtros globales (`period`, `unitType`, `severity`). `mergeByKey()` recibe un comparador de orden configurable desde `SPRINT-19`; `budgetExecution` fusiona por `sede + periodo` (antes sobrescribia todo en cada carga) igual que `occupancyInventory` fusiona por `sede + tipo_unidad + fecha`. |
 | `src/ui/html.js` | Helpers pequeños para escapar HTML, crear badges y renderizar el semaforo real de tres luces. |
 | `src/ui/site-budget-panel.js` | Desde `SPRINT-20`. Componente compartido de presupuesto por sede para Hoteles/Parques. Reusa `domain/budget.js`; intenta mostrar el mes activo y, si no existe presupuesto para ese periodo, muestra el ultimo periodo cargado con nota explicita. |
-| `src/ui/views/dashboard.js` | Dashboard general solo-graficas tipo Power BI: banda principal sin contador de alertas, 2 KPIs de negocio, ocupacion Hoteles y ocupacion Parques en bloques verticales con cuerpo 50/50 (grafica + convenciones), y presupuesto comparativo por sede. El presupuesto usa dos barras (`Proyectado` y `Real cumplido`, funcion `budgetCompareRow()`), escaladas contra el mayor de los dos valores, y muestra el % de ejecucion junto a la barra real. Sedes sin dato quedan en gris al final de cada grafica. Obedece filtros globales de periodo, unidad y semaforo. |
+| `src/ui/views/dashboard.js` | Dashboard general solo-graficas tipo Power BI: banda principal sin contador de alertas, 2 KPIs de negocio, ocupacion Hoteles y ocupacion Parques en bloques verticales con cuerpo 50/50 (grafica + diagnostico visual de semaforo/cobertura), y presupuesto comparativo por sede. El presupuesto usa dos barras (`Proyectado` y `Real cumplido`, funcion `budgetCompareRow()`), escaladas contra el mayor de los dos valores, y muestra el % de ejecucion solo junto a la barra real, sin badge duplicado por sede desde `SPRINT-21`. Sedes sin dato quedan en gris al final de cada grafica. Obedece filtros globales de periodo, unidad y semaforo. |
 | `src/ui/views/data-load.js` | Vista de carga de archivos, descarga de plantillas, resultado de validacion por fila y explicacion de interpretacion Zeus por hotel. Desde `SPRINT-15`, el handler de carga ya no llama `rerender()` tras un exito (`renderDataLoad()` no depende de `appState`, y ese `rerender()` borraba el mensaje de validacion antes de que se alcanzara a leer) — el mensaje ahora persiste con estado `pending`/`ok`/`warn`/`error`. |
 | `src/ui/views/hotels.js` | Vista de hoteles con pestanas internas por hotel, 12 barras mensuales, cumplimiento del mes contra meta, ocupadas/inventario en un solo indicador, semaforo contextual, accion sugerida, contexto comercial, seguimiento presupuestal de la sede y detalle diario del mes activo con dia real. Grafica de detalle diario ampliada en `SPRINT-15` (contenedor 240px, barras escaladas `pct * 2`, valores en 14px/800). El mes activo depende solo de `activeMonthByHotelId`/`latestMonth()` — `SPRINT-17` metio un fallback al filtro global de periodo que causaba falsos "Sin dato"; se quito en `SPRINT-18`. No obedece filtros globales (tiene su propia navegacion). |
 | `src/ui/views/parks.js` | Vista `Parques` con pestanas por sede, movimiento anual de 12 meses, cumplimiento del mes contra meta de uso, capacidad, usados/libres, alarma, accion sugerida, seguimiento presupuestal de la sede y detalle diario del mes activo. No obedece filtros globales (se quito en `SPRINT-18` la dependencia del periodo global que introdujo `SPRINT-17`). Desde `SPRINT-20`, una sede sin dato muestra accion sugerida gris y estado vacio claro, no tabla vacia. |
@@ -368,3 +368,12 @@ Plantillas CSV de S1:
 - `src/ui/views/parks.js`: agrega movimiento anual de 12 meses, seleccion de mes, cumplimiento del mes contra meta de uso, accion sugerida gris cuando falta dato, detalle diario con estado vacio y presupuesto por sede.
 - `styles/app.css`: agrega `.site-budget-panel`, `.site-budget-bars` y `.site-budget-bar`.
 - Decision de dato: si el mes activo no tiene presupuesto, se muestra el ultimo periodo presupuestal cargado con nota explicita, no se inventa ni se oculta.
+
+### 3.22 — Dashboard ejecutivo compacto en `SPRINT-21`
+
+`SPRINT-21` pule el dashboard general:
+
+- `index.html`: subtitulo lateral cambia a `Unidad de Turismo`.
+- `src/ui/views/dashboard.js`: el lateral de Hoteles/Parques deja de mostrar convenciones y pasa a `renderOccupancyInsight()` con promedio, barra apilada de semaforo, conteos por color y cobertura de datos.
+- `src/ui/views/dashboard.js`: `budgetCompareRow()` elimina el badge `% cumplido` del encabezado para evitar duplicidad; el % queda solo junto a la barra `Real cumplido`.
+- `styles/app.css`: KPIs superiores suben a 34px, hero mas compacto, y estilos nuevos `.occupancy-insight`, `.status-stack`, `.status-counts`, `.coverage-line`.

@@ -78,23 +78,61 @@ function occupancyPanel(title, note, items){
         <div class="bar-chart occupancy-chart">
           ${items.length ? items.map(occupancyRow).join('') : '<p class="metric-note">Sin sedes para los filtros aplicados.</p>'}
         </div>
-        ${renderOccupancyConvention()}
+        ${renderOccupancyInsight(items)}
       </div>
     </section>
   `;
 }
 
-function renderOccupancyConvention(){
+function renderOccupancyInsight(items){
+  const total = items.length || 1;
+  const dataItems = items.filter(item => item.hasData);
+  const counts = {
+    red: items.filter(item => item.severity === 'red').length,
+    amber: items.filter(item => item.severity === 'amber').length,
+    green: items.filter(item => item.severity === 'green').length,
+    gray: items.filter(item => item.severity === 'gray').length
+  };
+  const avg = dataItems.length ? average(dataItems.map(item => Number(item.pct))) : null;
   return `
-    <aside class="inline-convention">
-      <strong>Convenciones</strong>
-      ${conventionItems([
-        ['green', 'Verde', '70% o mas'],
-        ['amber', 'Amarillo', '40% a 69%'],
-        ['red', 'Rojo', 'Menos de 40%'],
-        ['gray', 'Gris', 'Sin dato / cierre']
-      ])}
+    <aside class="occupancy-insight">
+      <div class="insight-metric">
+        <span>Promedio con dato</span>
+        <strong>${avg === null ? 'Sin dato' : `${avg.toFixed(0)}%`}</strong>
+      </div>
+      <div class="status-stack" aria-label="Distribucion por semaforo">
+        ${statusSegment('red', counts.red, total)}
+        ${statusSegment('amber', counts.amber, total)}
+        ${statusSegment('green', counts.green, total)}
+        ${statusSegment('gray', counts.gray, total)}
+      </div>
+      <div class="status-counts">
+        ${statusCount('red', 'Rojo', counts.red)}
+        ${statusCount('amber', 'Amarillo', counts.amber)}
+        ${statusCount('green', 'Verde', counts.green)}
+        ${statusCount('gray', 'Sin dato', counts.gray)}
+      </div>
+      <div class="coverage-line">
+        <span>Cobertura de datos</span>
+        <strong>${dataItems.length} de ${items.length}</strong>
+      </div>
     </aside>
+  `;
+}
+
+function statusSegment(severity, count, total){
+  if(!count) return '';
+  const width = Math.max(8, (count / total) * 100);
+  return `<span class="${severity}" style="width:${width}%"></span>`;
+}
+
+function statusCount(severity, label, count){
+  return `
+    <span class="status-count">
+      <i class="legend-dot ${severity}"></i>
+      <b>${count}</b>
+      ${escapeHTML(label)}
+    </span>
   `;
 }
 
@@ -202,7 +240,6 @@ function budgetCompareRow(row){
     <div class="budget-compare-row">
       <div class="budget-compare-head">
         <strong>${escapeHTML(row.sede)}</strong>
-        <span class="badge ${row.severity}">${row.pct.toFixed(0)}% cumplido</span>
       </div>
       <div class="budget-compare-bars">
         <div class="budget-compare-bar">
