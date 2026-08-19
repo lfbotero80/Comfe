@@ -6,6 +6,83 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-25 — Modo demo y datos reales [Estado: Cerrado]
+
+- **Agente(s):** Codex
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E1
+- **Objetivo del sprint:** separar el arranque con datos semilla del arranque con datos reales vacios, para que la V3 modular no mezcle demo con operacion.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-071 | Separar modo demo / modo datos reales | Codex | Hecha | Modo persistente en localStorage y control en Carga de datos |
+
+### Resumen de cierre
+
+Se separo la V3 modular en dos modos de operacion: `Modo demo`, que conserva los datos semilla para revisar el instrumento completo, y `Datos reales`, que arranca sin ocupacion, presupuesto ni reglas de Revenue hasta que el usuario cargue archivos. La seleccion queda guardada en `localStorage` con la clave `comfenalco_data_mode_v1`, para que el tablero recuerde el modo entre recargas locales.
+
+El control de modo queda dentro de `Carga de datos`, no en el Dashboard. Al pasar a `Datos reales`, `appState` reinicia `loadedFiles`, `occupancyInventoryRows`, `parkRows`, `budgetRows` y `revenueRuleRows` vacios; se conservan catalogos base como calendario comercial y campanas, porque son estructura de negocio y no cargas operativas. El boton `Exportar ocupacion CSV` queda deshabilitado cuando no hay filas y se habilita apenas se carga ocupacion/inventario.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/src/state/app-state.js`, `src/main.js`, `src/ui/views/data-load.js` y `styles/app.css`.
+
+**Validacion realizada:** `node --check` sobre todos los modulos JS; `git diff --check`; servidor local `http://localhost:8055/` respondiendo 200; prueba Playwright: demo abre con datos semilla, `Datos reales` deja cobertura en `0 de 3 frentes`, deshabilita exportacion, carga `Forecast Balandú 1808.pdf` con 14 filas aceptadas, habilita exportacion y permite volver a `Modo demo` sin errores de consola.
+
+```text
+HANDOFF — SPRINT-25 Modo demo y datos reales
+──────────────────────────────────────
+HUs completas:        TO-HU-071
+HUs pendientes:       TO-HU-072 queda pendiente fuera del alcance
+
+Archivos tocados:     BACKLOG.md · SPRINTS.md · ROADMAP.md · MAPA_CODIGO.md
+                      05-tablero-ocupacion/v3-modular/src/state/app-state.js
+                      05-tablero-ocupacion/v3-modular/src/main.js
+                      05-tablero-ocupacion/v3-modular/src/ui/views/data-load.js
+                      05-tablero-ocupacion/v3-modular/styles/app.css
+
+Archivos NO tocados:  tablero-seguimiento-ocupacion.html
+                      tablero-seguimiento-ocupacion-v2.html
+                      tablero-seguimiento-ocupacion-v3-demo.html
+                      v3-modular/src/ui/views/dashboard.js, hotels.js, parks.js,
+                      budget.js, calendar.js, campaigns.js
+
+Datos/contratos:      No se cambiaron contratos ni plantillas.
+                      El modo real arranca sin datos operativos cargados.
+                      El modo demo conserva semillas para revision visual.
+
+Decisiones tomadas:   El modo de datos vive en appState y se persiste en
+                      localStorage (`comfenalco_data_mode_v1`).
+                      Cambiar a Datos reales limpia ocupacion, parques,
+                      presupuesto, Revenue y archivos cargados.
+                      Calendario comercial y catalogo de campanas se conservan
+                      como catalogos base, no como carga operativa.
+
+Riesgos residuales:
+- TO-HU-072 sigue pendiente: Hoteles/Parques aun deben dejar de mostrar un
+  fallback visual a agosto cuando una sede no tiene filas.
+- El modo real no persiste las filas cargadas despues de refrescar el navegador;
+  eso sigue siendo una limitacion del demo local sin backend/persistencia formal.
+- Los catalogos base siguen precargados en ambos modos por decision funcional;
+  si Diana quiere que tambien arranquen vacios, se debe abrir otra HU.
+
+Validación hecha:
+  Sintaxis:           node --check sobre todos los modulos JS -> pass
+  Estatica:           git diff --check -> pass
+  Servidor local:     http://localhost:8055/ responde 200
+  Runtime navegador:  demo con semillas -> pass
+                      Datos reales sin filas -> pass
+                      Forecast Balandú 1808.pdf carga 14 fila(s) -> pass
+                      exportacion se deshabilita sin filas y se habilita
+                      despues de cargar ocupacion -> pass
+                      regreso a Modo demo -> pass
+
+Auto-reporte DoD:     Completo para TO-HU-071.
+```
+
+---
+
 ## SPRINT-24 — Auditoria de datos quemados [Estado: Cerrado]
 
 - **Agente(s):** Codex
