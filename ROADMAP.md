@@ -46,7 +46,7 @@ Este roadmap organiza el producto `Tablero de ocupación` antes de ejecutar nuev
 
 **HUs candidatas:** TO-HU-011, TO-HU-012, TO-HU-013, TO-HU-017, TO-HU-018, TO-HU-020, TO-HU-021.
 
-**Avance relacionado:** `SPRINT-05` adelanto TO-HU-011 y TO-HU-012 para recuperar pestanas y analisis basico por hotel. `SPRINT-07` cerro TO-HU-017, TO-HU-018, TO-HU-020 y TO-HU-021 para que el semaforo sea confiable y accionable. `SPRINT-08` cerro TO-HU-013 con ocupacion del mes y detalle diario. `SPRINT-14` amplio Hoteles con 12 barras mensuales, cumplimiento contra meta y detalle diario del mes activo. `SPRINT-15` (Claude Code) cerro TO-HU-047: la grafica de detalle diario paso de un contenedor de 160px a 240px con barras y valores mas grandes, tras reporte de que era demasiado pequena para leer. `SPRINT-18` (Claude Code) corrigio un efecto lateral de `SPRINT-17`: el filtro global de periodo competia con la navegacion propia de 12 meses y llegaba a mostrar "Sin datos de ocupacion" en una sede con dato real en otro mes; Hoteles vuelve a depender solo de su propia navegacion.
+**Avance relacionado:** `SPRINT-05` adelanto TO-HU-011 y TO-HU-012 para recuperar pestanas y analisis basico por hotel. `SPRINT-07` cerro TO-HU-017, TO-HU-018, TO-HU-020 y TO-HU-021 para que el semaforo sea confiable y accionable. `SPRINT-08` cerro TO-HU-013 con ocupacion del mes y detalle diario. `SPRINT-14` amplio Hoteles con 12 barras mensuales, cumplimiento contra meta y detalle diario del mes activo. `SPRINT-15` (Claude Code) cerro TO-HU-047: la grafica de detalle diario paso de un contenedor de 160px a 240px con barras y valores mas grandes, tras reporte de que era demasiado pequena para leer. `SPRINT-18` (Claude Code) corrigio un efecto lateral de `SPRINT-17`: el filtro global de periodo competia con la navegacion propia de 12 meses y llegaba a mostrar "Sin datos de ocupacion" en una sede con dato real en otro mes; Hoteles vuelve a depender solo de su propia navegacion. `SPRINT-20` (Codex) integro seguimiento presupuestal por sede dentro de cada hotel reutilizando `domain/budget.js`.
 
 **Criterio de salida:** sección Hoteles con pestañas por hotel, métricas operativas, forecast/real, inventario, semáforo y acción.
 
@@ -56,7 +56,7 @@ Este roadmap organiza el producto `Tablero de ocupación` antes de ejecutar nuev
 
 **HUs candidatas:** TO-HU-014, TO-HU-015, TO-HU-005, TO-HU-006, TO-HU-019, TO-HU-022.
 
-**Avance relacionado:** `SPRINT-08` cerro TO-HU-014 y TO-HU-015: la seccion se llama `Parques`, tiene pestanas por sede y metricas equivalentes en gris cuando faltan datos.
+**Avance relacionado:** `SPRINT-08` cerro TO-HU-014 y TO-HU-015: la seccion se llama `Parques`, tiene pestanas por sede y metricas equivalentes en gris cuando faltan datos. `SPRINT-20` (Codex) cerro TO-HU-065 y TO-HU-070: Parques adopta movimiento anual de 12 meses, cumplimiento del mes, accion sugerida, detalle diario del mes activo y seguimiento presupuestal por sede.
 
 **Criterio de salida:** cada parque/sede tiene pestaña propia con capacidad/cupos/sitios, uso, libres, cumplimiento y alerta.
 

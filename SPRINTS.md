@@ -6,6 +6,81 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-20 — Control completo por sede [Estado: Cerrado]
+
+- **Agente(s):** Codex
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E2, E3
+- **Objetivo del sprint:** que Hoteles y Parques tengan lectura integrada por sede: operacion, semaforo, accion sugerida y seguimiento presupuestal sin obligar a cambiar de pestaña.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-065 | Parques al nivel de Hoteles | Codex | Hecha | Movimiento anual, cumplimiento mensual y recomendacion |
+| TO-HU-069 | Presupuesto dentro de Hoteles | Codex | Hecha | Reusa `domain/budget.js` |
+| TO-HU-070 | Presupuesto dentro de Parques | Codex | Hecha | Reusa `domain/budget.js` |
+
+### Resumen de cierre
+
+Se evoluciono el tablero hacia control completo por sede. `src/ui/site-budget-panel.js` es un componente compartido nuevo que muestra presupuesto/ejecutado de la sede activa usando la logica ya restaurada por Claude Code en `domain/budget.js`; si el mes activo no tiene presupuesto, muestra el ultimo periodo cargado con una nota explicita, para no inventar datos ni dejar el bloque vacio. `hotels.js` integra este panel dentro de cada hotel, despues de las metricas operativas y antes de la accion sugerida.
+
+`parks.js` sube de nivel para acercarse a Hoteles: ahora tiene movimiento anual de 12 meses, seleccion de mes, cumplimiento del mes contra meta de uso, presupuesto de sede, accion sugerida y detalle diario del mes activo. Cuando un parque no tiene uso cargado, ya no queda una tabla vacia: muestra accion sugerida gris ("cargar uso operativo") y un estado vacio claro para el detalle diario.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/src/ui/site-budget-panel.js`, `src/ui/views/hotels.js`, `src/ui/views/parks.js` y `styles/app.css`.
+
+**Validacion realizada:** `node --check` sobre todos los modulos JS, `git diff --check`, servidor local `http://localhost:8055/` respondiendo 200 y prueba Playwright: Hoteles conserva 12 meses, accion sugerida y ahora muestra presupuesto de sede; Parques muestra 12 meses, cumplimiento, presupuesto y accion sugerida tanto en sede sin datos como en sede con datos; Ecoparque Mario Aramburo muestra uso 59.1% y filas de detalle; la pestaña Presupuesto sigue con 9 sedes y exportacion activa.
+
+```text
+HANDOFF — SPRINT-20 Control completo por sede
+──────────────────────────────────────
+HUs completas:        TO-HU-065, TO-HU-069, TO-HU-070
+HUs pendientes:       ninguna dentro del alcance del sprint
+
+Archivos tocados:     BACKLOG.md · SPRINTS.md · ROADMAP.md · MAPA_CODIGO.md
+                      05-tablero-ocupacion/v3-modular/src/ui/site-budget-panel.js
+                      05-tablero-ocupacion/v3-modular/src/ui/views/hotels.js
+                      05-tablero-ocupacion/v3-modular/src/ui/views/parks.js
+                      05-tablero-ocupacion/v3-modular/styles/app.css
+
+Archivos NO tocados:  tablero-seguimiento-ocupacion.html
+                      tablero-seguimiento-ocupacion-v2.html
+                      tablero-seguimiento-ocupacion-v3-demo.html
+                      v3-modular/src/ui/views/dashboard.js
+                      v3-modular/src/ui/views/budget.js
+                      v3-modular/src/ui/views/data-load.js, calendar.js,
+                      campaigns.js, contracts.js
+
+Datos/contratos:      Sin cambios en contratos de carga.
+
+Decisiones tomadas:   Presupuesto por sede se muestra dentro de Hoteles/Parques
+                      reutilizando `domain/budget.js`; si el mes activo no tiene
+                      presupuesto, se muestra el ultimo periodo cargado con nota
+                      explicita, no un dato inventado.
+                      Parques adopta el patron de Hoteles: 12 meses, cumplimiento
+                      del mes, accion sugerida y detalle diario del mes activo.
+
+Riesgos residuales:
+  - La recomendacion de Parques sigue siendo deterministica por semaforo de uso;
+    no usa todavia el motor mas rico de Hoteles (`strategic-recommendation.js`).
+  - Cuando ocupacion y presupuesto existen en meses distintos, el panel de sede
+    muestra el ultimo presupuesto cargado con nota. Es honesto para el demo, pero
+    en produccion conviene cargar ambos contratos para el mismo periodo operativo.
+
+Validacion hecha:
+  Sintaxis:           node --check sobre todos los modulos JS -> pass
+  Estatica:           git diff --check -> pass
+  Runtime navegador:  http://localhost:8055/ responde 200; Playwright confirma
+                      Hoteles con presupuesto integrado, Parques con 12 meses,
+                      cumplimiento, presupuesto, accion sugerida y detalle diario,
+                      y Presupuesto sin regresion visible.
+
+Auto-reporte DoD:     Completo para TO-HU-065, TO-HU-069 y TO-HU-070.
+```
+
+---
+
 ## SPRINT-19 — Seguimiento presupuestal (restauracion de v2) [Estado: Cerrado]
 
 - **Agente(s):** Claude Code

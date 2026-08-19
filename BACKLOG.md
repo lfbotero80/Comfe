@@ -169,13 +169,13 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-013: Como Diana, quiero que cada hotel muestre vista diaria y acumulada por periodo, para auditar evolución y cierre mensual. — **Hecha**
   - TO-HU-042: Como gerente hotelero, quiero ver 12 barras mensuales por hotel y el detalle diario solo del mes activo, para entender cómo se mueve el año sin perder el día a día. — **Hecha**
   - TO-HU-047: Como gerente hotelero, quiero que la gráfica de detalle diario sea grande y legible (no un gráfico pequeño), para leer el comportamiento del mes sin acercarme a la pantalla. — **Hecha**
-  - TO-HU-069 *(mediano, reutiliza `domain/budget.js`)*: Como gerente hotelero, quiero ver el seguimiento presupuestal de mi hotel dentro de la misma pestaña de Hoteles (no solo en la pestaña "Presupuesto" separada), para tener toda la información de mi sede en un mismo lugar. — **Pendiente**
+  - TO-HU-069 *(mediano, reutiliza `domain/budget.js`)*: Como gerente hotelero, quiero ver el seguimiento presupuestal de mi hotel dentro de la misma pestaña de Hoteles (no solo en la pestaña "Presupuesto" separada), para tener toda la información de mi sede en un mismo lugar. — **Hecha**
 
 - **E2-F3 — Sección Parques / pasadía / camping**
   - TO-HU-014: Como gerente de parque, quiero una sección de Parques con una pestaña por sede, para controlar cupos, sitios o visitantes sin forzar lógica hotelera. — **Hecha**
   - TO-HU-015: Como Diana, quiero que parques y camping tengan métricas equivalentes: capacidad, ocupación/uso, libres, cumplimiento y alarma, para compararlos sin distorsionar su operación. — **Hecha**
-  - TO-HU-065 *(grande)*: Como gerente de parque, quiero que Parques tenga el mismo nivel de detalle que Hoteles (movimiento anual de 12 meses, cumplimiento del mes contra meta, recomendación estratégica), para no quedar con una vista más pobre que la de alojamiento. — **Pendiente**
-  - TO-HU-070 *(mediano, reutiliza `domain/budget.js`)*: Como gerente de parque, quiero ver el seguimiento presupuestal de mi parque dentro de la misma pestaña de Parques, igual que en Hoteles, para tener toda la información de mi sede en un mismo lugar. — **Pendiente**
+  - TO-HU-065 *(grande)*: Como gerente de parque, quiero que Parques tenga el mismo nivel de detalle que Hoteles (movimiento anual de 12 meses, cumplimiento del mes contra meta, recomendación estratégica), para no quedar con una vista más pobre que la de alojamiento. — **Hecha**
+  - TO-HU-070 *(mediano, reutiliza `domain/budget.js`)*: Como gerente de parque, quiero ver el seguimiento presupuestal de mi parque dentro de la misma pestaña de Parques, igual que en Hoteles, para tener toda la información de mi sede en un mismo lugar. — **Hecha**
 
 - **E2-F4 — Estructura visible sin datos**
   - TO-HU-031: Como Diana, quiero ver sedes sin datos en gris, para confirmar que la estructura existe aunque falte cargar informacion. — **Hecha**
