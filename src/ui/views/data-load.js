@@ -2,6 +2,7 @@ import { listContracts } from '../../domain/data-contracts.js';
 import { buildReadinessSummary } from '../../domain/data-readiness.js';
 import { readStructuredFile } from '../../services/file-reader.js';
 import { exportOccupancyRows, sortedOccupancyRows } from '../../services/occupancy-export.js';
+import { exportBudgetRows, sortedBudgetRows } from '../../services/budget-export.js';
 import { validateFileRows } from '../../services/validators.js';
 import { appState, registerLoad, setCurrentOperator } from '../../state/app-state.js';
 import { badge, escapeHTML } from '../html.js';
@@ -14,7 +15,10 @@ export function renderDataLoad(){
           <h2>Carga por archivo</h2>
           <p class="metric-note">Suba archivos normalizados de ocupacion, presupuesto o reglas de Revenue. El tablero valida la estructura antes de incorporar la informacion al seguimiento.</p>
         </div>
-        <button type="button" class="btn-ghost" id="btnExportOccupancyAll" ${appState.occupancyInventoryRows.length ? '' : 'disabled'}>Exportar ocupacion CSV</button>
+        <div class="section-actions">
+          <button type="button" class="btn-ghost" id="btnExportOccupancyAll" ${appState.occupancyInventoryRows.length ? '' : 'disabled'}>Exportar ocupacion CSV</button>
+          <button type="button" class="btn-ghost" id="btnExportBudgetAll" ${appState.budgetRows.length ? '' : 'disabled'}>Exportar presupuesto CSV</button>
+        </div>
       </div>
       <div class="data-load-controls">
         ${renderResponsibleControl()}
@@ -57,6 +61,13 @@ export function bindDataLoadHandlers({ rerender, setStatus }){
   if(exportAllBtn){
     exportAllBtn.addEventListener('click', () => {
       exportOccupancyRows(sortedOccupancyRows(appState.occupancyInventoryRows), 'comfenalco-ocupacion-todas-las-sedes');
+    });
+  }
+
+  const exportBudgetBtn = document.getElementById('btnExportBudgetAll');
+  if(exportBudgetBtn){
+    exportBudgetBtn.addEventListener('click', () => {
+      exportBudgetRows(sortedBudgetRows(appState.budgetRows), 'comfenalco-presupuesto-todas-las-sedes');
     });
   }
 
