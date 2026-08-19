@@ -133,8 +133,8 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
 
 - **E1-F3 — Interpretación de archivos Zeus**
   - TO-HU-032: Como gerente hotelero, quiero que el tablero explique como interpreta un PDF Zeus por sede, corte y filas diarias, para saber que pasara al cargar cada hotel. — **Hecha**
-  - TO-HU-037: Como gerente hotelero, quiero subir directamente el PDF Forecast Zeus de mi sede, para que el tablero cargue automaticamente ocupacion diaria sin convertir manualmente a CSV. — **En sprint actual** (`SPRINT-10`)
-  - TO-HU-038: Como Diana, quiero que los archivos Zeus de sedes distintas se fusionen sin borrar la data ya cargada, para completar el tablero por hotel progresivamente. — **En sprint actual** (`SPRINT-10`)
+  - TO-HU-037: Como gerente hotelero, quiero subir directamente el PDF Forecast Zeus de mi sede, para que el tablero cargue automaticamente ocupacion diaria sin convertir manualmente a CSV. — **Hecha**
+  - TO-HU-038: Como Diana, quiero que los archivos Zeus de sedes distintas se fusionen sin borrar la data ya cargada, para completar el tablero por hotel progresivamente. — **Hecha**
 
 ### E2 · Control operativo por sede
 

@@ -6,11 +6,11 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
-## SPRINT-10 — Carga directa de PDFs Zeus [Estado: En curso]
+## SPRINT-10 — Carga directa de PDFs Zeus [Estado: Cerrado]
 
 - **Agente(s):** Codex
 - **Fecha apertura:** 2026-08-19
-- **Fecha cierre:** en curso
+- **Fecha cierre:** 2026-08-19
 - **Épica(s):** Proyecto Tablero de ocupación / E1
 - **Objetivo del sprint:** permitir que V3 modular cargue directamente PDFs Forecast Zeus por hotel y fusione la informacion por sede/fecha sin borrar cortes previos.
 
@@ -18,12 +18,56 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 | HU | Descripción corta | Agente | Estado | Notas |
 |---|---|---|---|---|
-| TO-HU-037 | Carga directa de PDF Zeus | Codex | En curso | PDF.js local + parser Zeus |
-| TO-HU-038 | Fusionar cargas por sede/fecha | Codex | En curso | No borrar otras sedes al cargar un hotel |
+| TO-HU-037 | Carga directa de PDF Zeus | Codex | Hecha | PDF.js local + parser Zeus integrado a Cargar datos |
+| TO-HU-038 | Fusionar cargas por sede/fecha | Codex | Hecha | No borra otras sedes al cargar un hotel |
 
 ### Resumen de cierre
 
-En curso.
+**Qué cambió:** V3 modular ahora permite cargar directamente PDFs Forecast Zeus desde el boton `Cargar datos`, en el contrato `Ocupacion e inventario diario`. Se vendorizo PDF.js local en `vendor/pdfjs/`, `file-reader.js` extrae texto del PDF en navegador y lo pasa a `zeus-forecast-parser.js`, que normaliza sede, corte, fecha, habitaciones disponibles, habitaciones ocupadas, inventario total y porcentaje de ocupacion. `app-state.js` ahora fusiona cargas de ocupacion por `sede + tipo_unidad + fecha`, para que cargar Balandu, Quirama y Piedras Blancas no borre Farallones ni otras sedes.
+
+**HUs trabajadas:** TO-HU-037 y TO-HU-038 quedaron en `Hecha`.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/src/domain/data-contracts.js`, `src/services/file-reader.js`, `src/services/zeus-forecast-parser.js`, `src/state/app-state.js`, `src/ui/views/data-load.js`, `vendor/pdfjs/pdf.mjs` y `vendor/pdfjs/pdf.worker.mjs`.
+
+**Validacion realizada:** `node --check` sobre todos los modulos JS; `git diff --check`; prueba Playwright real en navegador subiendo `Forecast Balandu 1808.pdf`, `Forecast Quirama 1808.pdf` y `Forecast Piedras Blancas 1808.pdf`; verificacion de que cada hotel cargado muestra su pestana con ocupacion compacta y detalle diario.
+
+**Decisiones / límites:** La carga directa PDF queda habilitada solo para `Ocupacion e inventario diario`, porque los PDFs Zeus Forecast tienen estructura hotelera. Presupuesto y reglas Revenue siguen por CSV/JSON. PDF.js queda local para no depender de internet/CDN.
+
+**Pendientes para revisar:** Probar visualmente en navegador con los tres PDFs y decidir si tambien se debe cargar Farallones desde PDF, no desde data semilla.
+
+```text
+HANDOFF — SPRINT-10 Carga directa de PDFs Zeus
+──────────────────────────────────────
+HUs completas:        TO-HU-037, TO-HU-038
+HUs pendientes:       ninguna dentro del alcance del sprint
+Archivos tocados:     BACKLOG.md · SPRINTS.md · ROADMAP.md · MAPA_CODIGO.md
+                      05-tablero-ocupacion/v3-modular/src/domain/data-contracts.js
+                      05-tablero-ocupacion/v3-modular/src/services/file-reader.js
+                      05-tablero-ocupacion/v3-modular/src/services/zeus-forecast-parser.js
+                      05-tablero-ocupacion/v3-modular/src/state/app-state.js
+                      05-tablero-ocupacion/v3-modular/src/ui/views/data-load.js
+                      05-tablero-ocupacion/v3-modular/vendor/pdfjs/pdf.mjs
+                      05-tablero-ocupacion/v3-modular/vendor/pdfjs/pdf.worker.mjs
+Archivos NO tocados:  05-tablero-ocupacion/tablero-seguimiento-ocupacion.html
+                      05-tablero-ocupacion/tablero-seguimiento-ocupacion-v2.html
+                      05-tablero-ocupacion/tablero-seguimiento-ocupacion-v3-demo.html
+Datos/contratos:      occupancyInventory ahora acepta .csv, .json y .pdf.
+                      PDF Zeus se normaliza a sede/fecha/inventario/ocupadas/libres/%/corte.
+Decisiones tomadas:   PDF directo solo aplica para Forecast Zeus de hoteles.
+                      Cargas de ocupacion se fusionan por sede + unidad + fecha.
+                      PDF.js queda vendorizado localmente, sin CDN.
+Riesgos residuales:
+  - Si Zeus cambia el layout del PDF, el parser puede requerir ajuste.
+  - Presupuesto y reglas Revenue siguen sin carga PDF; usan CSV/JSON.
+  - La validacion automatica cubrio navegador headless; falta prueba manual de Luis Felipe.
+Validación hecha:
+  Sintaxis:           node --check sobre todos los módulos JS -> pass
+  Runtime navegador:  Playwright subio PDFs Balandu, Quirama y Piedras Blancas -> pass
+  Fusion de datos:    los tres hoteles cargan sin borrar otras sedes -> pass
+  Documentación:      BACKLOG.md + SPRINTS.md + ROADMAP.md + MAPA_CODIGO.md actualizados
+Auto-reporte DoD:     Completo para carga directa de PDFs Zeus
+                      Prueba manual queda pendiente de Luis Felipe.
+```
 
 ---
 

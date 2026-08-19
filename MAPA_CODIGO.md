@@ -1,6 +1,6 @@
 # Mapa de código — Comfenalco IA
 
-Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-09`.
+Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-10`.
 
 ---
 
@@ -156,7 +156,7 @@ URL local: `http://localhost:8055/`
 | `src/data/commercial-calendar.js` | Calendario comercial migrado desde v2: actividades por mes, sede, tipo, publico y descripcion. |
 | `src/data/campaigns.js` | Catalogo de campanas migrado desde v2: causa, sedes, tarifa/producto, estado y medicion cuando exista. |
 | `src/services/csv.js` | Parser CSV simple con soporte de separador `;` o `,`, comillas y normalizacion de encabezados. |
-| `src/services/file-reader.js` | Lee archivos `.csv` y `.json`; `.xlsx` queda pendiente de libreria o conversion previa. |
+| `src/services/file-reader.js` | Lee archivos `.csv`, `.json` y PDFs Zeus para `occupancyInventory`; extrae texto con PDF.js local y delega normalizacion al parser Zeus. |
 | `src/services/zeus-forecast-parser.js` | Interpreta texto extraido de PDF Zeus Forecast por sede: detecta sede, corte, filas diarias, habitaciones disponibles/ocupadas y porcentaje, y devuelve filas `occupancyInventory`. |
 | `src/services/validators.js` | Valida formato, columnas obligatorias, fechas, periodos, sedes reconocidas, tipo de unidad, porcentajes y cuadratura de inventario/presupuesto/umbrales. |
 | `src/state/app-state.js` | Estado en memoria de la sesion local: archivos cargados, inventario/ocupacion, presupuesto y reglas de Revenue. |
@@ -168,6 +168,8 @@ URL local: `http://localhost:8055/`
 | `src/ui/views/calendar.js` | Vista recuperada de calendario comercial, con filtros por mes/sede y calendario operativo 2026. |
 | `src/ui/views/campaigns.js` | Vista recuperada de catalogo de campanas, con estado, resultado si hay ocupacion proyectada/real y boton `Agregar campaña nueva` para alta local de sesion. |
 | `src/ui/views/contracts.js` | Vista tecnica de contratos de datos; queda sin acceso desde el menu visible desde `SPRINT-09`. |
+| `vendor/pdfjs/pdf.mjs` | PDF.js local para extraer texto de PDFs Zeus en navegador sin depender de CDN. |
+| `vendor/pdfjs/pdf.worker.mjs` | Worker local de PDF.js requerido por la lectura de PDFs. |
 
 ### 3.3 — Contratos actuales
 
@@ -260,3 +262,13 @@ Plantillas CSV de S1:
 - `src/ui/views/parks.js` tambien muestra dia real en el detalle diario.
 - `src/ui/views/campaigns.js` agrega `Agregar campaña nueva` y formulario de alta local.
 - `src/state/app-state.js` agrega `addCampaign()` para sumar campañas a `campaignRows` durante la sesion.
+
+### 3.12 — Carga directa de PDFs Zeus en `SPRINT-10`
+
+`SPRINT-10` habilita la prueba directa con los PDFs reales de Zeus:
+
+- `src/domain/data-contracts.js` permite `.pdf` en el contrato `occupancyInventory`.
+- `src/services/file-reader.js` detecta `.pdf`, usa `vendor/pdfjs/pdf.mjs` y `vendor/pdfjs/pdf.worker.mjs` para extraer texto en navegador, y envia ese texto a `parseZeusForecastText()`.
+- `src/services/zeus-forecast-parser.js` convierte cada fila diaria Zeus en `sede`, `tipo_sede`, `tipo_unidad`, `fecha`, `inventario_total`, `unidades_ocupadas`, `unidades_libres`, `ocupacion_porcentaje`, `fuente` y `fecha_corte`.
+- `src/state/app-state.js` fusiona cargas por `sede + tipo_unidad + fecha`; cargar un hotel no borra los datos ya cargados de otro.
+- Validado con Playwright subiendo `Forecast Balandu 1808.pdf`, `Forecast Quirama 1808.pdf` y `Forecast Piedras Blancas 1808.pdf` desde la vista `Cargar datos`.

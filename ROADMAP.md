@@ -26,7 +26,7 @@ Este roadmap organiza el producto `Tablero de ocupación` antes de ejecutar nuev
 
 **HUs candidatas:** TO-HU-001, TO-HU-002, TO-HU-003, TO-HU-004, TO-HU-005, TO-HU-006, TO-HU-007.
 
-**Estado:** ejecutado en `SPRINT-04` el 2026-08-19.
+**Estado:** ejecutado en `SPRINT-04` el 2026-08-19; ampliado en `SPRINT-10` con carga directa de PDFs Zeus para ocupacion hotelera.
 
 **Criterio de salida:** existen plantillas/contratos claros para cargar ocupación, inventario, presupuesto y fuentes. El tablero puede rechazar datos incompletos o mal formateados.
 
