@@ -6,6 +6,83 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-28 — Contexto IA por sede [Estado: Cerrado]
+
+- **Agente(s):** Codex
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E3
+- **Objetivo del sprint:** preparar un paquete estructurado por sede para futuras recomendaciones IA y mostrar confianza/datos faltantes sin conectar todavia ningun modelo.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-073 | Paquete de contexto estructurado para IA por sede | Codex | Hecha | Dominio compartido para Hoteles/Parques |
+| TO-HU-076 | Confianza y datos faltantes en recomendacion IA | Codex | Hecha | Panel visible sin llamada a modelo |
+
+### Resumen de cierre
+
+Se implemento la base tecnica previa a cualquier IA real: `src/domain/ai-recommendation-context.js` arma un paquete estructurado por sede desde datos ya validados en `appState`. El contexto incluye sede, periodo activo, fuentes, ocupacion, presupuesto, reglas Revenue, campanas, calendario, confianza y datos faltantes. No llama a ningun modelo y no expone llaves ni simula una recomendacion IA.
+
+Se agrego `src/ui/ai-context-panel.js`, un componente compartido para Hoteles y Parques. Dentro de cada sede muestra `Base para analisis asistido`, confianza (`Alta`, `Media`, `Baja`), tres tarjetas de evidencia (Ocupacion, Presupuesto, Revenue), faltantes principales y un `details` con el paquete JSON compacto para revision. En modo real vacio la confianza queda baja y lista faltantes criticos; al cargar un PDF Zeus, la ocupacion entra al contexto y siguen visibles los faltantes de presupuesto/Revenue si no estan cargados.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/src/domain/ai-recommendation-context.js`, `src/ui/ai-context-panel.js`, `src/ui/views/hotels.js`, `src/ui/views/parks.js` y `styles/app.css`.
+
+**Validacion realizada:** `node --check` sobre todos los modulos JS; `git diff --check`; servidor local `http://localhost:8055/` respondiendo 200; prueba Playwright: en demo aparece el panel y el paquete; en modo real vacio muestra confianza baja y faltantes de ocupacion/presupuesto; al cargar `Forecast Balandú 1808.pdf`, Balandu muestra 14 filas en el contexto, paquete JSON parseable y faltantes de presupuesto/Revenue sin errores de consola.
+
+```text
+HANDOFF — SPRINT-28 Contexto IA por sede
+──────────────────────────────────────
+HUs completas:        TO-HU-073, TO-HU-076
+HUs pendientes:       TO-HU-074, TO-HU-075, TO-HU-077 quedan fuera del alcance
+
+Archivos tocados:     BACKLOG.md · SPRINTS.md · ROADMAP.md · MAPA_CODIGO.md
+                      05-tablero-ocupacion/v3-modular/src/domain/ai-recommendation-context.js
+                      05-tablero-ocupacion/v3-modular/src/ui/ai-context-panel.js
+                      05-tablero-ocupacion/v3-modular/src/ui/views/hotels.js
+                      05-tablero-ocupacion/v3-modular/src/ui/views/parks.js
+                      05-tablero-ocupacion/v3-modular/styles/app.css
+
+Archivos NO tocados:  tablero-seguimiento-ocupacion.html
+                      tablero-seguimiento-ocupacion-v2.html
+                      tablero-seguimiento-ocupacion-v3-demo.html
+                      v3-modular/src/services/file-reader.js
+                      v3-modular/src/services/zeus-forecast-parser.js
+                      v3-modular/src/domain/strategic-recommendation.js
+
+Datos/contratos:      No se cambiaron contratos ni plantillas.
+                      No se conecto ningun modelo IA.
+
+Decisiones tomadas:   El contexto IA se arma desde appState, no desde el DOM.
+                      La vista muestra confianza y faltantes antes de permitir
+                      una recomendacion asistida.
+                      El JSON de contexto queda visible solo bajo demanda en
+                      un details, para auditoria/revision.
+
+Riesgos residuales:
+- El panel puede sentirse tecnico para usuarios finales; se deja compacto y
+  colapsa el JSON, pero conviene revisarlo visualmente con Diana.
+- La confianza no equivale a aprobacion de negocio; solo mide suficiencia de
+  datos para un analisis asistido.
+- TO-HU-074/075 siguen pendientes: llamada IA bajo demanda y auditoria de
+  respuesta requieren backend/decision tecnica.
+
+Validación hecha:
+  Sintaxis:           node --check sobre todos los modulos JS -> pass
+  Estatica:           git diff --check -> pass
+  Servidor local:     http://localhost:8055/ responde 200
+  Runtime navegador:  demo con panel y paquete visible -> pass
+                      modo real vacio con confianza baja/faltantes -> pass
+                      Forecast Balandú 1808.pdf carga 14 filas y alimenta
+                      paquete JSON parseable -> pass
+  Documentación:      BACKLOG.md + SPRINTS.md + ROADMAP.md + MAPA_CODIGO.md actualizados
+
+Auto-reporte DoD:     Completo para TO-HU-073 y TO-HU-076.
+```
+
+---
+
 ## SPRINT-27 — Arquitectura IA para accion sugerida [Estado: Cerrado]
 
 - **Agente(s):** Codex

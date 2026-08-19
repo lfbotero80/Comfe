@@ -195,10 +195,10 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-021: Como Diana, quiero que ocupación alta sugiera revisar tarifa o proteger precio, para no vender barato cuando hay demanda. — **Hecha**
   - TO-HU-043: Como Diana, quiero que la acción sugerida combine semáforo, cumplimiento mensual y tendencia, para decidir si activar campaña, mantener comunicación o cerrar comunicación promocional. — **Hecha**
   - TO-HU-044: Como Luis Felipe, quiero evaluar una arquitectura de IA permanente para recomendaciones, para saber qué requiere más allá del HTML local. — **Hecha** (`SPRINT-27`; ver `05-tablero-ocupacion/ARQUITECTURA_IA_RECOMENDACIONES_SPRINT-27.md`)
-  - TO-HU-073 *(derivada de `SPRINT-27`)*: Como Diana, quiero que cada sede tenga un paquete de contexto estructurado para IA, para que la recomendación use solo datos validados y no lea la pantalla completa. — **Pendiente**
+  - TO-HU-073 *(derivada de `SPRINT-27`)*: Como Diana, quiero que cada sede tenga un paquete de contexto estructurado para IA, para que la recomendación use solo datos validados y no lea la pantalla completa. — **Hecha** (`SPRINT-28`)
   - TO-HU-074 *(derivada de `SPRINT-27`)*: Como Comercial/Reservas, quiero solicitar una recomendación IA bajo demanda por sede, para comparar la acción sugerida determinística con un análisis asistido. — **Pendiente**
   - TO-HU-075 *(derivada de `SPRINT-27`)*: Como administradora, quiero que toda recomendación IA guarde usuario, fecha, fuente de datos y versión de respuesta, para auditar decisiones. — **Pendiente**
-  - TO-HU-076 *(derivada de `SPRINT-27`)*: Como Diana, quiero que una recomendación IA con datos incompletos muestre confianza baja y datos faltantes, para no tomar decisiones con información insuficiente. — **Pendiente**
+  - TO-HU-076 *(derivada de `SPRINT-27`)*: Como Diana, quiero que una recomendación IA con datos incompletos muestre confianza baja y datos faltantes, para no tomar decisiones con información insuficiente. — **Hecha** (`SPRINT-28`)
   - TO-HU-077 *(derivada de `SPRINT-27`)*: Como jefatura, quiero recibir un resumen diario automatizado de sedes en riesgo, para actuar sin abrir manualmente cada pestaña. — **Pendiente**
 
 - **E3-F3 — Control presupuestal**
@@ -249,5 +249,5 @@ Candidatos previos, sin desarrollar todavía:
 
 1. **FT-05.9** (`HU-030` a `HU-033`): paridad de datos reales de Zeus entre las 4 sedes, una vez lleguen los archivos/fuentes reales.
 2. **TO-HU-026/027**: bitácora de decisiones y trazabilidad de quién cargó cada dato.
-3. **TO-HU-073/076**: paquete de contexto para IA y confianza/datos faltantes, antes de conectar cualquier modelo.
+3. **TO-HU-074/075**: recomendación IA bajo demanda y auditoría de la respuesta, solo cuando exista decisión de backend.
 4. **TO-HU-039**: carga de presupuesto/ejecución por archivo — ya cubierta indirectamente por el contrato `budgetExecution` (`SPRINT-04`/`SPRINT-19`); revisar si sigue aplicando tal como está escrita.

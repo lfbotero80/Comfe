@@ -2,6 +2,7 @@ import { PARKS } from '../../domain/sites.js';
 import { appState } from '../../state/app-state.js';
 import { classifyOccupancy, OCCUPANCY_TARGET } from '../../domain/occupancy.js';
 import { exportOccupancyRows, occupancyRowsBySite, occupancyRowsByType, slug } from '../../services/occupancy-export.js';
+import { renderAIContextPanel } from '../ai-context-panel.js';
 import { badge, escapeHTML, trafficLight } from '../html.js';
 import { renderSiteBudgetPanel } from '../site-budget-panel.js';
 
@@ -59,6 +60,7 @@ export function renderParks(){
       ${latest ? renderParkMetrics(activePark, monthRows, latest, status, activeMonth) : renderMissingState(activePark, activeMonth)}
       ${renderSiteBudgetPanel(activePark, activeMonth)}
       ${latest ? renderAction(status) : renderMissingAction(activePark)}
+      ${renderAIContextPanel(activePark, activeMonth)}
       ${renderDailyDetail(monthRows, activeMonth)}
     </section>
   `;
