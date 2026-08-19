@@ -63,6 +63,30 @@ export function classifyOccupancy(value, date){
   };
 }
 
+/**
+ * Clasifica una ocupacion **agregada de un periodo** (mes o ano), usando solo
+ * los umbrales. A diferencia de `classifyOccupancy`, no aplica reglas de
+ * calendario: un cierre operativo o un festivo son propiedades de un dia
+ * concreto y no pueden trasladarse a un promedio de varios dias sin falsear
+ * la lectura.
+ */
+export function classifyOccupancyValue(value){
+  const numeric = Number(value);
+  if(!Number.isFinite(numeric)){
+    return { id: 'missing', label: 'Sin dato', severity: 'gray', recommendation: 'Cargar ocupacion antes de decidir.' };
+  }
+  if(numeric >= 90){
+    return { id: 'price-up', label: 'Alta demanda', severity: 'green', recommendation: 'Proteger tarifa y evaluar incremento en ventanas similares.' };
+  }
+  if(numeric >= OCCUPANCY_TARGET){
+    return { id: 'standard', label: 'Estandar', severity: 'green', recommendation: 'Mantener tarifa y comunicacion normal.' };
+  }
+  if(numeric >= 40){
+    return { id: 'preventa', label: 'Preventa', severity: 'amber', recommendation: 'Activar comunicacion comercial y campana preventiva.' };
+  }
+  return { id: 'mas-cerca', label: 'Mas cerca', severity: 'red', recommendation: 'Activar campana de choque y tarifa Mas cerca.' };
+}
+
 export function occupancyGap(projected, actual){
   const p = Number(projected);
   const a = Number(actual);

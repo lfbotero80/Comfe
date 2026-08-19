@@ -49,11 +49,22 @@ function renderCommandBand(command, periodLabel){
   `;
 }
 
+/**
+ * Nota del KPI de ocupacion: dice exactamente sobre que se calculo, para que
+ * una cifra parcial nunca se lea como el periodo completo. Advierte tambien
+ * cuando mezcla habitaciones y cupos, que no son unidades comparables.
+ */
+function occupancyKpiNote(totals){
+  if(totals.avgOccupancy === null) return `${totals.withOccupancy} de ${totals.siteCount} sedes con dato`;
+  const base = `${totals.occupancyOccupied.toLocaleString('es-CO')} de ${totals.occupancyInventory.toLocaleString('es-CO')} unidades · ${totals.withOccupancy} de ${totals.siteCount} sedes · ${totals.occupancyDays} dia(s) cargado(s)`;
+  return totals.mixedUnitKinds ? `${base} · mezcla habitaciones y cupos` : base;
+}
+
 function renderExecutiveKpis(command){
   const totals = command.totals;
   return `
     <div class="score-grid three">
-      ${score('Ocupacion / uso', totals.avgOccupancy === null ? 'Sin dato' : `${totals.avgOccupancy.toFixed(0)}%`, `${totals.withOccupancy} de ${totals.siteCount} sedes con dato`, severityFromValue(totals.avgOccupancy, 70, 40))}
+      ${score('Ocupacion / uso', totals.avgOccupancy === null ? 'Sin dato' : `${totals.avgOccupancy.toFixed(1)}%`, occupancyKpiNote(totals), severityFromValue(totals.avgOccupancy, 70, 40))}
       ${score('Ejecucion presupuestal', totals.budgetPct === null ? 'Sin dato' : `${totals.budgetPct.toFixed(0)}%`, `${formatCOP(totals.executed)} de ${formatCOP(totals.budget)}`, totals.budgetSeverity)}
       ${score('Sedes con accion', String(totals.actionCount), 'Incluye riesgo o fuente pendiente', totals.actionCount ? 'amber' : 'green')}
     </div>
@@ -241,8 +252,12 @@ function renderMatrixRow(row){
     <tr>
       <td><strong>${escapeHTML(row.name)}</strong><span class="cell-note">${escapeHTML(row.source)}</span></td>
       <td>${escapeHTML(row.kind === 'hotel' ? 'Hotel' : 'Parque')}</td>
-      <td>${heatCell(row.occupancyLabel, row.occupancySeverity)}</td>
-      <td>${heatCell(row.budgetLabel, row.budgetSeverity)}</td>
+      <td>
+        ${heatCell(row.occupancyLabel, row.occupancySeverity)}
+        <span class="cell-note">${escapeHTML(row.occupancyCoverage)}</span>
+        ${row.occupancyMonths ? `<span class="cell-note">Mejor ${escapeHTML(row.occupancyMonths.highest.month)}: ${row.occupancyMonths.highest.pct.toFixed(0)}% · Peor ${escapeHTML(row.occupancyMonths.lowest.month)}: ${row.occupancyMonths.lowest.pct.toFixed(0)}%</span>` : ''}
+      </td>
+      <td>${heatCell(row.budgetLabel, row.budgetSeverity)}<span class="cell-note">${escapeHTML(row.budget.hasData ? row.budget.periodoLabel : 'Sin presupuesto')}</span></td>
       <td><span class="trend-pill ${escapeHTML(row.trend.direction)}">${escapeHTML(row.trend.label)}</span></td>
       <td>${badge(row.combinedLabel, row.combinedSeverity)}</td>
       <td>${escapeHTML(row.action)}</td>

@@ -1,6 +1,6 @@
 # Mapa de código — Comfenalco IA
 
-Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-38`.
+Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-39`.
 
 ---
 
@@ -153,6 +153,7 @@ URL local: `http://localhost:8055/`
 | `src/domain/sites.js` | Catálogo de hoteles y parques, con rol estrategico y capacidad conocida cuando existe. |
 | `src/domain/data-contracts.js` | Contratos de archivo de S1: `occupancyInventory`, `budgetExecution` y `revenueRules`, con columnas obligatorias/opcionales, tipos, fuentes, grano y plantilla CSV. |
 | `src/domain/occupancy.js` | Reglas de clasificacion de ocupacion: Estandar >=70, Preventa 40-69, Mas cerca <40, alta demanda >=90, cierre operativo y brecha proyectado/real. |
+| `src/domain/occupancy-aggregate.js` | Desde `SPRINT-39`. `aggregateOccupancy(rows)` calcula la ocupacion de un periodo como `sum(unidades_ocupadas)/sum(inventario_total)` — **ponderada por inventario, no promedio simple de porcentajes**, que distorsiona cuando el inventario varia entre dias. Devuelve siempre la cobertura del calculo (dias, meses, rango de fechas, filas descartadas) para que ninguna pantalla presente una cifra parcial como periodo completo. `monthExtremes()` da mejor/peor mes; `coverageLabel()` la etiqueta honesta. |
 | `src/domain/budget.js` | Desde `SPRINT-19`. `summarizeSite(sede, rows, mode)` resume presupuesto/ejecutado de una sede en 3 modos: `latest` (ultimo periodo), `accumulated` (suma de todos los periodos cargados, excluye `ejecutado` de filas no confiables) o un mes especifico (`2026-01`..`2026-12`). Respeta `dato_confiable` en los tres modos. `BUDGET_MONTHS` es la lista de los 12 meses de 2026. |
 | `src/domain/operational-calendar.js` | Reglas de calendario operativo: festivos Colombia 2026, cierre domingo/lunes sin festivo, temporada alta y tipo de dia. |
 | `src/domain/commercial-context.js` | Cruza sede, fecha, tramo del semaforo, calendario comercial y campanas para generar contexto accionable. |
@@ -549,3 +550,14 @@ Validacion clave: navegador limpio y navegador con `comfenalco_data_mode_v1=demo
 - `src/ui/views/budget.js` fue **eliminado**; `navigation.js` y `main.js` ya no registran la vista `budget`.
 - El export consolidado de las 9 sedes se movio a `Cargar datos`, junto al de ocupacion que ya vivia ahi.
 - Nota de diseno: separar la escala por familia es deliberado. Con las 9 sedes juntas, Quirama aplastaba visualmente a los parques chicos; separadas, la comparacion vuelve a ser informativa dentro de cada grupo, y coincide con que hoteles y parques son negocios distintos (`CLAUDE.md`). El consolidado total de la unidad sigue en el KPI del Dashboard.
+
+### 3.40 — Cifras ajustadas a la realidad en `SPRINT-39`
+
+`SPRINT-39` responde a una instruccion directa de Luis Felipe: "nada de sobreestimar o subestimar cifras". Lo que empezo como un tema visual (`TO-HU-061`: "Todo 2026" se ve igual que un mes) resulto ser un problema de correctitud:
+
+- **Causa real:** el Dashboard tomaba la ocupacion del **ultimo dia cargado** y la presentaba como la del periodo. Con marzo al 20% y agosto al 90%, "Todo 2026" mostraba 90%.
+- **Inconsistencia adicional:** el Dashboard usaba el ultimo dia del mes y Hoteles el promedio del mes — dos cifras distintas para la misma sede y mes.
+- **Correccion:** toda ocupacion de periodo pasa por `aggregateOccupancy()`, ponderada por inventario. Dashboard, Hoteles y Parques comparten ahora la misma definicion.
+- `classifyOccupancyValue()` clasifica agregados sin aplicar reglas de calendario de un dia suelto (cierre/festivo).
+- El KPI consolidado tambien se pondera por inventario y declara su base (`N de M unidades · X sedes · D dias`), advirtiendo cuando mezcla habitaciones con cupos.
+- Limite deliberado: no se excluyen los dias de cierre operativo del promedio — incluirlos puede leerse como subestimar y excluirlos como inflar; es decision de negocio y queda abierta para Luis Felipe.

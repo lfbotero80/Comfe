@@ -1,6 +1,7 @@
 import { PARKS } from '../../domain/sites.js';
 import { appState } from '../../state/app-state.js';
 import { classifyOccupancy, OCCUPANCY_TARGET } from '../../domain/occupancy.js';
+import { aggregateOccupancy } from '../../domain/occupancy-aggregate.js';
 import { exportOccupancyRows, occupancyRowsBySite, occupancyRowsByType, slug } from '../../services/occupancy-export.js';
 import { renderAIContextPanel } from '../ai-context-panel.js';
 import { badge, escapeHTML, trafficLight } from '../html.js';
@@ -267,11 +268,16 @@ function renderDailyDetail(rows, monthLabel){
   `;
 }
 
+// Ocupacion del periodo ponderada por inventario (`aggregateOccupancy`), no
+// promedio simple de porcentajes: asi Dashboard, Hoteles y Parques dan la misma
+// cifra para el mismo mes. Ver `SPRINT-39`.
 function monthSummary(rows){
   const clean = rows.filter(row => !Number.isNaN(Number(row.ocupacion_porcentaje)));
   const divisor = clean.length || 1;
+  const aggregate = aggregateOccupancy(rows);
   return {
-    average: clean.reduce((sum, row) => sum + Number(row.ocupacion_porcentaje), 0) / divisor,
+    average: aggregate.hasData ? aggregate.pct : 0,
+    aggregate,
     occupiedAverage: clean.reduce((sum, row) => sum + Number(row.unidades_ocupadas || 0), 0) / divisor,
     freeAverage: clean.reduce((sum, row) => sum + Number(row.unidades_libres || 0), 0) / divisor
   };

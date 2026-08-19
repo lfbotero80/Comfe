@@ -6,6 +6,57 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-39 — Cifras ajustadas a la realidad [Estado: Cerrado]
+
+- **Agente(s):** Claude Code
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E2
+- **Objetivo del sprint:** garantizar que ninguna cifra del tablero sobreestime ni subestime la realidad — instrucción explícita de Luis Felipe. Resuelve de raíz `TO-HU-061`/`TO-HU-083` ("Todo 2026" se veía igual a un mes).
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-061 | "Todo 2026" con lectura anual real | Claude Code | Hecha | La causa no era visual: mostraba un solo día |
+| TO-HU-083 | Lectura anual distinta de la mensual | Claude Code | Hecha | Mejor/peor mes + cobertura por sede |
+| TO-HU-096 | Cifras sin sobre/subestimar | Claude Code | Hecha | Ponderación por inventario y misma definición en todas las pantallas |
+
+### Resumen de cierre
+
+**Hallazgo (medido, no deducido).** Se cargó un caso controlado —marzo 20%, agosto 90% en la misma sede— y se comprobó que con el filtro en "Todo 2026" el Dashboard mostraba **90%**: tomaba la última fila de la serie completa, no el año. Por eso "Todo 2026" se veía idéntico a agosto — literalmente era agosto. El presupuesto, en cambio, sí acumulaba bien, así que el filtro anual mezclaba un presupuesto anual real con una ocupación de un solo día.
+
+**Segundo hallazgo, más grave:** "un mes" tampoco significaba lo mismo en cada pantalla. El Dashboard mostraba el último día del mes; Hoteles mostraba el promedio del mes. La misma sede y el mismo mes daban dos cifras distintas según dónde se mirara.
+
+**Qué cambió:**
+
+- `src/domain/occupancy-aggregate.js` (nuevo): `aggregateOccupancy(rows)` calcula la ocupación de un periodo como `sum(unidades_ocupadas) / sum(inventario_total)` — **ponderada por inventario, no promedio simple de porcentajes**. Cuando el inventario varía entre días (bloqueos, mantenimiento), el promedio simple distorsiona: 20/100 un día y 9/10 otro da 55% como promedio simple, pero la ocupación real del periodo es 29/110 = **26.4%**. Devuelve además siempre la cobertura del cálculo (días contados, meses, rango de fechas y filas descartadas por datos inválidos).
+- `src/domain/occupancy.js`: nuevo `classifyOccupancyValue(pct)` para clasificar cifras agregadas **sin** aplicar reglas de calendario. Un cierre operativo o un festivo son propiedades de un día concreto y no pueden trasladarse a un promedio de varios días sin falsear la lectura.
+- `src/domain/dashboard-command.js`: la ocupación por sede pasa a ser la agregada del periodo. El KPI consolidado también se pondera por inventario en vez de promediar las tasas de cada sede — una sede de 500 cupos y una de 48 habitaciones no pesan igual.
+- `src/ui/views/dashboard.js`: el KPI declara exactamente sobre qué se calculó (`29 de 110 unidades · 1 de 9 sedes · 2 día(s) cargado(s)`) y advierte cuando mezcla habitaciones con cupos, que no son unidades comparables. La matriz por sede muestra la cobertura y, cuando hay más de un mes cargado, el mejor y peor mes.
+- `src/ui/views/hotels.js` y `parks.js`: su `monthSummary` adopta la misma agregación ponderada, de modo que Dashboard, Hoteles y Parques dan la misma cifra para el mismo mes. Las 12 barras mensuales quedan sobre la misma base.
+
+**Verificación con datos controlados (caso de inventario variable):**
+
+| Filtro | Antes | Ahora | Comprobación |
+|---|---|---|---|
+| Todo 2026 | 90% | **26.4%** | 29/110 ✓ |
+| Marzo 2026 | 20% | 20.0% | 20/100 ✓ |
+| Agosto 2026 | 90% | 90.0% | 9/10 ✓ |
+| Hoteles (agosto) | 90.0% | 90.0% | coincide con el Dashboard ✓ |
+
+El promedio simple habría dado 55% para el año — más del doble de la cifra real. Ese es exactamente el tipo de sobreestimación que este sprint elimina.
+
+**Decisión deliberada — qué NO se hizo:** no se excluyeron los días de cierre operativo del cálculo. Incluirlos podría leerse como subestimar el desempeño comercial, y excluirlos como inflarlo; es una decisión de negocio, no técnica. Se dejó la versión neutra (todos los días cargados, con la cobertura declarada) y queda como pregunta abierta para Luis Felipe.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/src/domain/occupancy-aggregate.js` (nuevo), `src/domain/occupancy.js`, `src/domain/dashboard-command.js`, `src/ui/views/dashboard.js`, `src/ui/views/hotels.js`, `src/ui/views/parks.js`.
+
+**Validación realizada:** `node --check` en todos los módulos; servidor en puerto limpio (`8062`) para evitar la caché de módulos ES que volvió a aparecer durante la prueba; caso controlado de inventario variable verificado contra aritmética manual en los 4 escenarios de la tabla; matriz mostrando cobertura y mejor/peor mes; las 6 vistas cargan sin errores de consola.
+
+**Pendientes para revisar:** (1) decidir si los días de cierre operativo deben excluirse del promedio; (2) las cifras del Dashboard van a **bajar** frente a lo que se veía antes — no es una regresión, es la corrección de una sobreestimación.
+
+---
+
 ## SPRINT-38 — Presupuesto dentro de Hoteles y Parques [Estado: Cerrado]
 
 - **Agente(s):** Claude Code

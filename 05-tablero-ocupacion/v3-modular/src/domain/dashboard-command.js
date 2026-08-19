@@ -1,6 +1,7 @@
 import { budgetSeverity, budgetSites, formatCOP, siteRowsSorted, summarizeSite } from './budget.js';
 import { buildReadinessSummary } from './data-readiness.js';
-import { classifyOccupancy, OCCUPANCY_TARGET } from './occupancy.js';
+import { classifyOccupancyValue, OCCUPANCY_TARGET } from './occupancy.js';
+import { aggregateOccupancy, coverageLabel, monthExtremes } from './occupancy-aggregate.js';
 
 const SEVERITY_RANK = { red: 0, amber: 1, gray: 2, green: 3 };
 const KIND_RANK = { hotel: 0, parque: 1 };
@@ -33,9 +34,13 @@ function siteCommandRow(site, state, readiness){
     .slice()
     .sort((a, b) => String(a.fecha).localeCompare(String(b.fecha)));
   const latestOccupancy = occupancyRows.at(-1) || null;
-  const occupancyPct = latestOccupancy ? boundedPct(latestOccupancy.ocupacion_porcentaje) : null;
-  const occupancyStatus = latestOccupancy
-    ? classifyOccupancy(occupancyPct, latestOccupancy.fecha)
+  // La ocupacion del periodo es la agregada ponderada por inventario, no la del
+  // ultimo dia cargado: hasta `SPRINT-38`, "Todo 2026" mostraba un solo dia
+  // presentado como si fuera el ano completo (ver `SPRINT-39` en SPRINTS.md).
+  const occupancy = aggregateOccupancy(occupancyRows);
+  const occupancyPct = occupancy.hasData ? boundedPct(occupancy.pct) : null;
+  const occupancyStatus = occupancy.hasData
+    ? classifyOccupancyValue(occupancyPct)
     : { severity: 'gray', label: 'Sin dato', recommendation: 'Cargar ocupacion antes de decidir.' };
 
   const budgetRows = siteRowsSorted(state.budgetRows, site.name);
@@ -68,6 +73,9 @@ function siteCommandRow(site, state, readiness){
     responsible: latestDecision?.responsible || 'Sin responsable',
     source: latestOccupancy?.fuente || readiness?.lastSource || 'Sin fuente cargada',
     missing,
+    occupancy,
+    occupancyCoverage: coverageLabel(occupancy),
+    occupancyMonths: monthExtremes(occupancy.byMonth),
     latestDate: latestOccupancy?.fecha || '',
     plotX: occupancyPct === null ? 4 : occupancyPct,
     plotY: budget.hasData ? Math.min(budget.pct, 120) / 1.2 : 4,
@@ -78,7 +86,16 @@ function siteCommandRow(site, state, readiness){
 
 function commandTotals(rows, state){
   const withOccupancy = rows.filter(row => row.occupancyPct !== null);
-  const avgOccupancy = withOccupancy.length ? average(withOccupancy.map(row => row.occupancyPct)) : null;
+  // Ocupacion consolidada ponderada por inventario, no promedio simple de los
+  // porcentajes de cada sede: una sede de 500 cupos y una de 48 habitaciones no
+  // pesan igual, y promediar sus tasas distorsiona la cifra real.
+  const totalOccupied = withOccupancy.reduce((sum, row) => sum + (row.occupancy?.occupied || 0), 0);
+  const totalInventory = withOccupancy.reduce((sum, row) => sum + (row.occupancy?.inventory || 0), 0);
+  const avgOccupancy = totalInventory ? (totalOccupied / totalInventory) * 100 : null;
+  // Mezclar habitaciones y cupos en una sola tasa no es estrictamente
+  // comparable; se advierte en la vista cuando el filtro incluye ambas familias.
+  const mixedUnitKinds = new Set(withOccupancy.map(row => row.kind)).size > 1;
+  const occupancyDays = withOccupancy.reduce((sum, row) => sum + (row.occupancy?.days || 0), 0);
   const budget = rows.reduce((sum, row) => sum + (Number(row.budget.presupuesto) || 0), 0);
   const executed = rows.reduce((sum, row) => sum + (Number(row.budget.ejecutado) || 0), 0);
   const budgetPct = budget ? (executed / budget) * 100 : null;
@@ -89,6 +106,10 @@ function commandTotals(rows, state){
     siteCount: rows.length,
     withOccupancy: withOccupancy.length,
     avgOccupancy,
+    occupancyOccupied: totalOccupied,
+    occupancyInventory: totalInventory,
+    occupancyDays,
+    mixedUnitKinds,
     budget,
     executed,
     budgetPct,
