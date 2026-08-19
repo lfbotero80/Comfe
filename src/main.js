@@ -3,6 +3,7 @@ import { renderDashboard } from './ui/views/dashboard.js';
 import { renderDataLoad, bindDataLoadHandlers } from './ui/views/data-load.js';
 import { renderHotels, bindHotelHandlers } from './ui/views/hotels.js';
 import { renderParks, bindParkHandlers } from './ui/views/parks.js';
+import { renderBudget, bindBudgetHandlers } from './ui/views/budget.js';
 import { renderCalendar, bindCalendarHandlers } from './ui/views/calendar.js';
 import { renderCampaigns, bindCampaignHandlers } from './ui/views/campaigns.js';
 import { renderGlobalFilters, bindGlobalFilterHandlers } from './ui/global-filters.js';
@@ -12,6 +13,7 @@ const viewRenderers = {
   'data-load': renderDataLoad,
   hotels: renderHotels,
   parks: renderParks,
+  budget: renderBudget,
   calendar: renderCalendar,
   campaigns: renderCampaigns
 };
@@ -76,6 +78,10 @@ function renderActiveView(){
 
   if(activeView === 'parks'){
     bindParkHandlers({ rerender: renderActiveView });
+  }
+
+  if(activeView === 'budget'){
+    bindBudgetHandlers({ rerender: renderActiveView });
   }
 
   if(activeView === 'calendar'){

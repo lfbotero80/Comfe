@@ -34,8 +34,20 @@ export function registerLoad({ contractId, filename, acceptedRows, rejectedRows 
     loadedAt: new Date().toISOString()
   });
 
-  if(contractId === 'occupancyInventory') appState.occupancyInventoryRows = mergeByKey(appState.occupancyInventoryRows, acceptedRows, row => `${row.sede}__${row.tipo_unidad}__${row.fecha}`);
-  if(contractId === 'budgetExecution') appState.budgetRows = acceptedRows;
+  if(contractId === 'occupancyInventory'){
+    appState.occupancyInventoryRows = mergeByKey(
+      appState.occupancyInventoryRows, acceptedRows,
+      row => `${row.sede}__${row.tipo_unidad}__${row.fecha}`,
+      (a, b) => String(a.sede).localeCompare(String(b.sede)) || String(a.fecha).localeCompare(String(b.fecha))
+    );
+  }
+  if(contractId === 'budgetExecution'){
+    appState.budgetRows = mergeByKey(
+      appState.budgetRows, acceptedRows,
+      row => `${row.sede}__${row.periodo}`,
+      (a, b) => String(a.sede).localeCompare(String(b.sede)) || String(a.periodo).localeCompare(String(b.periodo))
+    );
+  }
   if(contractId === 'revenueRules') appState.revenueRuleRows = acceptedRows;
 }
 
@@ -53,12 +65,9 @@ export function addCampaign(campaign){
   });
 }
 
-function mergeByKey(existingRows, newRows, keyFn){
+function mergeByKey(existingRows, newRows, keyFn, sortFn){
   const rowsByKey = new Map();
   existingRows.forEach(row => rowsByKey.set(keyFn(row), row));
   newRows.forEach(row => rowsByKey.set(keyFn(row), row));
-  return [...rowsByKey.values()].sort((a, b) => {
-    const siteCompare = String(a.sede).localeCompare(String(b.sede));
-    return siteCompare || String(a.fecha).localeCompare(String(b.fecha));
-  });
+  return [...rowsByKey.values()].sort(sortFn);
 }
