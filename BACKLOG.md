@@ -202,7 +202,7 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-020: Como Comercial, quiero que baja ocupación sugiera campaña o tarifa de choque, para reaccionar antes de que cierre la ventana de venta. — **Hecha**
   - TO-HU-021: Como Diana, quiero que ocupación alta sugiera revisar tarifa o proteger precio, para no vender barato cuando hay demanda. — **Hecha**
   - TO-HU-043: Como Diana, quiero que la acción sugerida combine semáforo, cumplimiento mensual y tendencia, para decidir si activar campaña, mantener comunicación o cerrar comunicación promocional. — **Hecha**
-  - TO-HU-044: Como Luis Felipe, quiero evaluar una arquitectura de IA permanente para recomendaciones, para saber qué requiere más allá del HTML local. — **Hecha** (`SPRINT-27`; ver `05-tablero-ocupacion/ARQUITECTURA_IA_RECOMENDACIONES_SPRINT-27.md`)
+  - TO-HU-044: Como Luis Felipe, quiero evaluar una arquitectura de IA permanente para recomendaciones, para saber qué requiere más allá del HTML local. — **Pendiente** (propuesta lista en `05-tablero-ocupacion/ARQUITECTURA_IA_RECOMENDACIONES_SPRINT-27.md` desde `SPRINT-27`; construida sobre ella en `SPRINT-28`-`31` sin confirmación explícita registrada — ver regla 1.1 de `METODOLOGIA_SCRUM.md`)
   - TO-HU-073 *(derivada de `SPRINT-27`)*: Como Diana, quiero que cada sede tenga un paquete de contexto estructurado para IA, para que la recomendación use solo datos validados y no lea la pantalla completa. — **Hecha** (`SPRINT-28`)
   - TO-HU-074 *(derivada de `SPRINT-27`)*: Como Comercial/Reservas, quiero solicitar una recomendación IA bajo demanda por sede, para comparar la acción sugerida determinística con un análisis asistido. — **Pendiente**
   - TO-HU-075 *(derivada de `SPRINT-27`)*: Como administradora, quiero que toda recomendación IA guarde usuario, fecha, fuente de datos y versión de respuesta, para auditar decisiones. — **Pendiente**
@@ -221,7 +221,7 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-026: Como Diana, quiero registrar decisiones y responsables en bitácora, para dar seguimiento a campañas, tarifas y compromisos. — **Hecha** (`SPRINT-29`)
   - TO-HU-027: Como administradora, quiero identificar quién cargó o modificó datos, para mantener control operativo mínimo. — **Hecha** (`SPRINT-29`)
   - TO-HU-066 *(chico-mediano, reutiliza `services/csv-export.js`)*: Como Diana, quiero exportar ocupación e inventario por sede y consolidado en CSV, igual que ya existe para presupuesto, para compartir esos datos fuera del tablero. — **Hecha** (`SPRINT-22`)
-  - TO-HU-068 *(alcance cerrado en `SPRINT-23`: lectura de fuentes cargadas por sede dentro de Carga de datos)*: Como Diana, quiero ver un estado de "cumplimiento técnico" de Hoteles y Parques, para saber qué contratos de datos (ocupación, presupuesto, Revenue) están cargados por sede y cuáles faltan. — **Hecha** (`SPRINT-23`)
+  - TO-HU-068 *(construida en `SPRINT-23` con interpretación propia: lectura de fuentes cargadas por sede dentro de Carga de datos — el alcance original quedó anotado "por definir con Luis Felipe" y no se confirmó antes de construir; ver regla 1.1 de `METODOLOGIA_SCRUM.md`)*: Como Diana, quiero ver un estado de "cumplimiento técnico" de Hoteles y Parques, para saber qué contratos de datos (ocupación, presupuesto, Revenue) están cargados por sede y cuáles faltan. — **Pendiente de confirmar con Luis Felipe si esta interpretación es la que quería**
 
 - **E3-F5 — Calendario comercial y catálogo de campañas**
   - TO-HU-028: Como Diana, quiero conservar el calendario comercial como sección propia, para interpretar la ocupación según actividades, temporada y sede. — **Hecha**
@@ -247,15 +247,20 @@ Carpeta: `06-vigilancia-turismo-bienestar/`.
 
 ## Próximas HUs candidatas a paquete de sprint (sugerido, a confirmar con Luis Felipe)
 
-**Lista de correcciones de Luis Felipe (2026-08-19), registrada en el backlog sin desarrollar todavía** — `TO-HU-060` a `TO-HU-070`, agrupadas por tamaño relativo para facilitar priorizar:
+**Lista de correcciones de Luis Felipe (2026-08-19):** de las 11 HUs registradas (`TO-HU-060` a `TO-HU-070`), Codex cerró 10 entre `SPRINT-20` y `SPRINT-26`. Solo queda pendiente:
 
-- **Rápidas (chico/muy chico):** `TO-HU-064` (texto sidebar), `TO-HU-060` (convenciones vs. gráfica a la derecha), `TO-HU-062` (% repetido en presupuesto).
-- **Medianas:** ninguna pendiente de esta tanda.
-- **Grandes o que necesitan definir alcance antes de estimarse:** `TO-HU-061` ("Todo 2026" más potente — falta decidir qué agrega).
+- **`TO-HU-061`** *(grande, necesita definir diseño primero)*: el filtro "Todo 2026" debe ser una lectura considerablemente más completa que un mes puntual. `SPRINT-31` ya agregó tendencia anual visible, pero el propio Codex reconoce que "aun no es una experiencia anual completamente distinta a la mensual" — evoluciona junto con `TO-HU-083`.
+
+**Auditoría de Claude Code (2026-08-19) sobre el trabajo de Codex — 2 hallazgos de gobernanza, no de código, pendientes de tu confirmación explícita:**
+
+- **`TO-HU-044`**: HU redactada como decisión tuya ("Como Luis Felipe, quiero evaluar...") — Codex la cerró sola en `SPRINT-27` y avanzó a implementar en `SPRINT-28`-`31` sin que quede registrada tu validación de la especificación (`SPRINT-30` pedía explícitamente esa validación antes de seguir).
+- **`TO-HU-068`**: alcance ("estado de cumplimiento técnico") interpretado y cerrado por Codex en `SPRINT-23` sin esperar tu definición, aunque el backlog lo marcaba explícitamente "por definir con Luis Felipe".
+
+Ninguna de las dos requiere revertir código — ambas están bien implementadas. Necesitan tu mirada para confirmar si el rumbo tomado es el que querías.
 
 Candidatos previos, sin desarrollar todavía:
 
 1. **FT-05.9** (`HU-030` a `HU-033`): paridad de datos reales de Zeus entre las 4 sedes, una vez lleguen los archivos/fuentes reales.
-2. **TO-HU-026/027**: bitácora de decisiones y trazabilidad de quién cargó cada dato.
-3. **TO-HU-074/075**: recomendación IA bajo demanda y auditoría de la respuesta, solo cuando exista decisión de backend.
-4. **TO-HU-039**: carga de presupuesto/ejecución por archivo — ya cubierta indirectamente por el contrato `budgetExecution` (`SPRINT-04`/`SPRINT-19`); revisar si sigue aplicando tal como está escrita.
+2. **TO-HU-074/075**: recomendación IA bajo demanda y auditoría de la respuesta, solo cuando exista decisión de backend.
+3. **TO-HU-039**: carga de presupuesto/ejecución por archivo — ya cubierta indirectamente por el contrato `budgetExecution` (`SPRINT-04`/`SPRINT-19`); revisar si sigue aplicando tal como está escrita.
+4. **TO-HU-082**: top 3 acciones prioritarias con más relación a campañas/bitácora (Dashboard de Mando).

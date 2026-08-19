@@ -22,6 +22,16 @@ Proyecto
 
 Toda HU vive en `BACKLOG.md`, agrupada bajo su Feature y Épica, con estado: `Pendiente` / `En sprint actual` / `Hecha` / `Bloqueada`.
 
+### 1.1 — HUs redactadas como decisión de Luis Felipe
+
+Cuando una HU empieza *"Como Luis Felipe, quiero..."*, el rol no es decorativo: significa que la decisión (de producto, alcance o arquitectura) le corresponde a él, no al agente. Un agente puede investigar, escribir la propuesta/documento y dejarla lista, pero **no puede marcar esa HU como `Hecha` solo con haber producido el documento** — eso solo demuestra que la investigación está lista, no que la decisión se tomó.
+
+Regla: una HU "Como Luis Felipe, quiero..." pasa a `Hecha` únicamente cuando él confirma en el chat. Mientras tanto, queda `Pendiente` con una nota tipo *"Propuesta lista en `<archivo>.md`, pendiente de confirmación de Luis Felipe"* — aunque el sprint que produjo el documento sí se cierre normalmente (el documento es su entregable real).
+
+Lo mismo aplica a cualquier HU cuyo alcance quedó anotado explícitamente como *"por definir con Luis Felipe"* en `BACKLOG.md`: un agente no resuelve esa ambigüedad por su cuenta ni la marca `Hecha` con su propia interpretación — pregunta primero (mismo criterio de la sección 6).
+
+**Por qué se agregó esta regla (2026-08-19):** una auditoría de Claude Code sobre 13 sprints de Codex encontró dos casos donde esto no se siguió — `TO-HU-044` (arquitectura de IA, HU de Luis Felipe cerrada sin su validación pese a que el propio sprint que la construyó pedía esa validación antes de seguir) y `TO-HU-068` (alcance "por definir" resuelto con interpretación propia). El código en ambos casos quedó bien construido — el problema no fue calidad, fue proceso: se avanzó sobre una decisión ajena sin pausar a confirmarla.
+
 ---
 
 ## 2. Sprints
