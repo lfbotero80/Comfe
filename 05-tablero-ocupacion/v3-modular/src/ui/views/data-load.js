@@ -1,14 +1,20 @@
 import { listContracts } from '../../domain/data-contracts.js';
 import { readStructuredFile } from '../../services/file-reader.js';
+import { exportOccupancyRows, sortedOccupancyRows } from '../../services/occupancy-export.js';
 import { validateFileRows } from '../../services/validators.js';
-import { registerLoad } from '../../state/app-state.js';
+import { appState, registerLoad } from '../../state/app-state.js';
 import { escapeHTML } from '../html.js';
 
 export function renderDataLoad(){
   return `
     <section class="panel">
-      <h2>Carga por archivo</h2>
-      <p class="metric-note">Suba archivos normalizados de ocupacion, presupuesto o reglas de Revenue. El tablero valida la estructura antes de incorporar la informacion al seguimiento.</p>
+      <div class="section-head">
+        <div>
+          <h2>Carga por archivo</h2>
+          <p class="metric-note">Suba archivos normalizados de ocupacion, presupuesto o reglas de Revenue. El tablero valida la estructura antes de incorporar la informacion al seguimiento.</p>
+        </div>
+        <button type="button" class="btn-ghost" id="btnExportOccupancyAll">Exportar ocupacion CSV</button>
+      </div>
     </section>
     <section class="panel">
       <div class="section-head">
@@ -32,6 +38,13 @@ export function renderDataLoad(){
 }
 
 export function bindDataLoadHandlers({ setStatus }){
+  const exportAllBtn = document.getElementById('btnExportOccupancyAll');
+  if(exportAllBtn){
+    exportAllBtn.addEventListener('click', () => {
+      exportOccupancyRows(sortedOccupancyRows(appState.occupancyInventoryRows), 'comfenalco-ocupacion-todas-las-sedes');
+    });
+  }
+
   document.querySelectorAll('[data-file-contract]').forEach(input => {
     input.addEventListener('change', async event => {
       const file = event.target.files[0];

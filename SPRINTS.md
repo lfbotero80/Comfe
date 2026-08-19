@@ -6,6 +6,83 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-22 — Exportacion CSV de ocupacion [Estado: Cerrado]
+
+- **Agente(s):** Codex
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E3
+- **Objetivo del sprint:** cerrar la brecha de exportacion de ocupacion e inventario en CSV, igualando la salida que ya existe para presupuesto.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-066 | Exportar ocupacion e inventario CSV | Codex | Hecha | Consolidado, por tipo de sede y por sede; reusa `services/csv-export.js` |
+
+### Resumen de cierre
+
+Se agrego exportacion CSV para ocupacion e inventario, cubriendo la brecha que habia quedado frente a presupuesto. La vista `Carga por archivo` permite descargar el consolidado completo de ocupacion; `Hoteles` permite exportar todos los hoteles o el hotel activo; `Parques` permite exportar todos los parques o el parque activo.
+
+La exportacion usa un servicio nuevo, `src/services/occupancy-export.js`, que ordena las filas por sede, tipo de unidad y fecha, y descarga con las mismas reglas del exportador existente: separador `;` y BOM UTF-8 para Excel en español. Los botones por sede quedan deshabilitados cuando esa sede no tiene datos, para no generar CSV vacios que parezcan reportes validos.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/src/services/occupancy-export.js`, `src/ui/views/data-load.js`, `src/ui/views/hotels.js`, `src/ui/views/parks.js` y `styles/app.css`.
+
+**Validacion realizada:** `node --check` sobre todos los modulos JS, `git diff --check`, servidor local `http://localhost:8055/` respondiendo 200 y prueba Playwright con descargas reales: consolidado completo (`13` filas), Hoteles (`11` filas), Hosteria Los Farallones (`11` filas), Parques (`2` filas); Camping Los Farallones queda con exportacion por sede deshabilitada por falta de datos; sin errores JS.
+
+```text
+HANDOFF — SPRINT-22 Exportacion CSV de ocupacion
+──────────────────────────────────────
+HUs completas:        TO-HU-066
+HUs pendientes:       ninguna dentro del alcance del sprint
+
+Archivos tocados:     BACKLOG.md · SPRINTS.md · ROADMAP.md · MAPA_CODIGO.md
+                      05-tablero-ocupacion/v3-modular/src/services/occupancy-export.js
+                      05-tablero-ocupacion/v3-modular/src/ui/views/data-load.js
+                      05-tablero-ocupacion/v3-modular/src/ui/views/hotels.js
+                      05-tablero-ocupacion/v3-modular/src/ui/views/parks.js
+                      05-tablero-ocupacion/v3-modular/styles/app.css
+
+Archivos NO tocados:  tablero-seguimiento-ocupacion.html
+                      tablero-seguimiento-ocupacion-v2.html
+                      tablero-seguimiento-ocupacion-v3-demo.html
+                      v3-modular/src/ui/views/dashboard.js, budget.js,
+                      calendar.js, campaigns.js, contracts.js
+
+Datos/contratos:      Sin cambios en contratos de carga.
+
+Decisiones tomadas:   Se crea `occupancy-export.js` como capa de servicio
+                      especifica para ocupacion/inventario, reutilizando el
+                      exportador CSV generico de `SPRINT-19`.
+                      Los reportes se descargan consolidado, por hoteles,
+                      por parques y por sede activa.
+                      Si una sede no tiene filas cargadas, su boton de
+                      exportacion queda deshabilitado para evitar reportes
+                      vacios.
+
+Riesgos residuales:
+- El CSV exporta los datos actualmente presentes en memoria/local demo; no
+  persiste historico multiusuario ni audita quien descargo el reporte.
+- La exportacion por sede depende del nombre normalizado de sede que ya usa
+  el tablero. Si Zeus cambia nombres en PDFs futuros, la correccion debe
+  hacerse en el parser/normalizador, no en este exportador.
+
+Validación hecha:
+  Sintaxis:           node --check sobre todos los modulos JS -> pass
+  Estatica:           git diff --check -> pass
+  Servidor local:     http://localhost:8055/ responde 200
+  Runtime navegador:  Playwright descarga CSV consolidado, Hoteles,
+                      Hosteria Los Farallones y Parques con header esperado
+                      y filas correctas; boton por sede sin datos queda
+                      deshabilitado; sin errores JS.
+  Documentación:      BACKLOG.md + SPRINTS.md + ROADMAP.md + MAPA_CODIGO.md
+                      actualizados
+
+Auto-reporte DoD:     Completo para TO-HU-066.
+```
+
+---
+
 ## SPRINT-21 — Dashboard ejecutivo compacto [Estado: Cerrado]
 
 - **Agente(s):** Codex

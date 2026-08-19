@@ -3,6 +3,7 @@ import { appState } from '../../state/app-state.js';
 import { classifyOccupancy, OCCUPANCY_TARGET } from '../../domain/occupancy.js';
 import { commercialContextForSite } from '../../domain/commercial-context.js';
 import { buildStrategicRecommendation } from '../../domain/strategic-recommendation.js';
+import { exportOccupancyRows, occupancyRowsBySite, occupancyRowsByType, slug } from '../../services/occupancy-export.js';
 import { badge, escapeHTML, trafficLight } from '../html.js';
 import { renderSiteBudgetPanel } from '../site-budget-panel.js';
 
@@ -56,7 +57,11 @@ export function renderHotels(){
           <h2>${escapeHTML(activeHotel.name)}</h2>
           <p class="metric-note">${escapeHTML(activeHotel.role)}</p>
         </div>
-        ${status ? `<div class="alarm-context">${trafficLight(status.severity, 'horizontal')}${badge(status.label, status.severity)}</div>` : '<span class="pending-dot">Sin datos de ocupacion</span>'}
+        <div class="section-actions">
+          <button type="button" class="btn-ghost" data-export-hotel="${escapeHTML(activeHotel.name)}" ${rows.length ? '' : 'disabled'}>Exportar hotel</button>
+          <button type="button" class="btn-ghost" id="btnExportHotelsAll">Exportar hoteles</button>
+          ${status ? `<div class="alarm-context">${trafficLight(status.severity, 'horizontal')}${badge(status.label, status.severity)}</div>` : '<span class="pending-dot">Sin datos de ocupacion</span>'}
+        </div>
       </div>
 
       ${renderYearMovement(monthSummaries, activeMonth, year)}
@@ -84,6 +89,20 @@ export function bindHotelHandlers({ rerender }){
       rerender();
     });
   });
+
+  document.querySelectorAll('[data-export-hotel]').forEach(button => {
+    button.addEventListener('click', () => {
+      const siteName = button.dataset.exportHotel;
+      exportOccupancyRows(occupancyRowsBySite(appState.occupancyInventoryRows, siteName), `comfenalco-ocupacion-${slug(siteName)}`);
+    });
+  });
+
+  const exportAllBtn = document.getElementById('btnExportHotelsAll');
+  if(exportAllBtn){
+    exportAllBtn.addEventListener('click', () => {
+      exportOccupancyRows(occupancyRowsByType(appState.occupancyInventoryRows, 'hotel'), 'comfenalco-ocupacion-hoteles');
+    });
+  }
 }
 
 function rowsForHotel(hotel){

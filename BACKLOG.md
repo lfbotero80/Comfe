@@ -205,7 +205,7 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-025: Como Diana, quiero exportar reportes por sede y consolidado, para compartirlos con jefatura o analizarlos en Excel. — **Hecha** (presupuesto; ocupación queda pendiente — ver TO-HU-066)
   - TO-HU-026: Como Diana, quiero registrar decisiones y responsables en bitácora, para dar seguimiento a campañas, tarifas y compromisos. — **Pendiente**
   - TO-HU-027: Como administradora, quiero identificar quién cargó o modificó datos, para mantener control operativo mínimo. — **Pendiente**
-  - TO-HU-066 *(chico-mediano, reutiliza `services/csv-export.js`)*: Como Diana, quiero exportar ocupación e inventario por sede y consolidado en CSV, igual que ya existe para presupuesto, para compartir esos datos fuera del tablero. — **Pendiente**
+  - TO-HU-066 *(chico-mediano, reutiliza `services/csv-export.js`)*: Como Diana, quiero exportar ocupación e inventario por sede y consolidado en CSV, igual que ya existe para presupuesto, para compartir esos datos fuera del tablero. — **Hecha** (`SPRINT-22`)
   - TO-HU-068 *(por definir alcance con Luis Felipe)*: Como Diana, quiero ver un estado de "cumplimiento técnico" de Hoteles y Parques, para saber qué contratos de datos (ocupación, presupuesto, Revenue) están cargados por sede y cuáles faltan. — **Pendiente**
 
 - **E3-F5 — Calendario comercial y catálogo de campañas**
