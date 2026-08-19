@@ -1,0 +1,20 @@
+export const COLOMBIA_HOLIDAYS_2026 = [
+  { date:'2026-01-01', name:'Ano Nuevo' },
+  { date:'2026-01-12', name:'Reyes Magos' },
+  { date:'2026-03-23', name:'San Jose' },
+  { date:'2026-04-02', name:'Jueves Santo' },
+  { date:'2026-04-03', name:'Viernes Santo' },
+  { date:'2026-05-01', name:'Dia del Trabajo' },
+  { date:'2026-05-18', name:'Ascension del Senor' },
+  { date:'2026-06-08', name:'Corpus Christi' },
+  { date:'2026-06-15', name:'Sagrado Corazon' },
+  { date:'2026-06-29', name:'San Pedro y San Pablo' },
+  { date:'2026-07-20', name:'Independencia' },
+  { date:'2026-08-07', name:'Batalla de Boyaca' },
+  { date:'2026-08-17', name:'Asuncion de la Virgen' },
+  { date:'2026-10-12', name:'Dia de la Diversidad Etnica y Cultural' },
+  { date:'2026-11-02', name:'Todos los Santos' },
+  { date:'2026-11-16', name:'Independencia de Cartagena' },
+  { date:'2026-12-08', name:'Inmaculada Concepcion' },
+  { date:'2026-12-25', name:'Navidad' }
+];
