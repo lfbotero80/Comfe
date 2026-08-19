@@ -1,9 +1,10 @@
 import { listContracts } from '../../domain/data-contracts.js';
+import { buildReadinessSummary } from '../../domain/data-readiness.js';
 import { readStructuredFile } from '../../services/file-reader.js';
 import { exportOccupancyRows, sortedOccupancyRows } from '../../services/occupancy-export.js';
 import { validateFileRows } from '../../services/validators.js';
 import { appState, registerLoad } from '../../state/app-state.js';
-import { escapeHTML } from '../html.js';
+import { badge, escapeHTML } from '../html.js';
 
 export function renderDataLoad(){
   return `
@@ -19,6 +20,17 @@ export function renderDataLoad(){
     <section class="panel">
       <div class="section-head">
         <div>
+          <h2>Estado de informacion por sede</h2>
+          <p class="metric-note">Control operativo de fuentes cargadas: ocupacion/inventario, presupuesto y reglas de Revenue.</p>
+        </div>
+      </div>
+      <div id="readinessSummary">
+        ${renderReadinessSummary()}
+      </div>
+    </section>
+    <section class="panel">
+      <div class="section-head">
+        <div>
           <h2>Archivos Zeus por hotel</h2>
           <p class="metric-note">Zeus exporta un PDF por sede. El tablero debe convertir cada reporte a filas diarias del contrato de ocupacion e inventario.</p>
         </div>
@@ -29,7 +41,7 @@ export function renderDataLoad(){
         ${zeusStep('3', 'Tomar filas diarias', 'Cada fecha trae habitaciones disponibles, ocupadas y porcentaje de ocupacion.')}
         ${zeusStep('4', 'Normalizar', 'La salida queda en occupancyInventory: sede, fecha, total, ocupadas, libres, porcentaje y fuente.')}
       </div>
-      <div class="validation-item warn">Carga directa de PDF en navegador: pendiente de incorporar extractor PDF local. Hoy la carga confiable sigue siendo CSV/JSON normalizado.</div>
+      <div class="validation-item ok">Los PDFs Zeus se pueden subir directamente en Ocupacion e inventario diario; el tablero extrae sede, corte y filas diarias cuando el formato coincide con el forecast esperado.</div>
     </section>
     <div class="upload-grid">
       ${listContracts().map(contract => uploadCard(contract)).join('')}
@@ -67,6 +79,7 @@ export function bindDataLoadHandlers({ setStatus }){
             acceptedRows: validation.acceptedRows,
             rejectedRows: validation.rejectedRows
           });
+          refreshReadinessSummary();
           const withWarnings = validation.rejectedRows.length ? ` (${validation.rejectedRows.length} fila(s) rechazadas)` : '';
           setStatus(`${file.name}: ${validation.acceptedRows.length} fila(s) cargadas${withWarnings}`, validation.rejectedRows.length ? 'warn' : 'ok');
         }else{
@@ -80,6 +93,66 @@ export function bindDataLoadHandlers({ setStatus }){
       }
     });
   });
+}
+
+function refreshReadinessSummary(){
+  const target = document.getElementById('readinessSummary');
+  if(target) target.innerHTML = renderReadinessSummary();
+}
+
+function renderReadinessSummary(){
+  const summary = buildReadinessSummary(appState);
+  return `
+    <div class="readiness-groups">
+      ${renderReadinessGroup('Hoteles', summary.hotels)}
+      ${renderReadinessGroup('Parques', summary.parks)}
+    </div>
+  `;
+}
+
+function renderReadinessGroup(title, items){
+  return `
+    <div class="readiness-group">
+      <h3>${escapeHTML(title)}</h3>
+      <div class="readiness-list">
+        ${items.map(renderReadinessItem).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderReadinessItem(item){
+  return `
+    <article class="readiness-item ${item.status.severity}">
+      <div class="readiness-main">
+        <div>
+          <strong>${escapeHTML(item.site.name)}</strong>
+          <span>${escapeHTML(item.site.role)}</span>
+        </div>
+        ${badge(`${item.coverage}%`, item.status.severity)}
+      </div>
+      <div class="readiness-bar" aria-label="Cobertura de datos">
+        <span class="${item.status.severity}" style="width:${item.coverage}%"></span>
+      </div>
+      <div class="readiness-contracts">
+        ${item.contracts.map(renderContractChip).join('')}
+      </div>
+      <p class="readiness-source">${escapeHTML(item.status.label)} · ${item.loadedCount} de ${item.totalCount} frentes · ${escapeHTML(item.lastSource)}</p>
+    </article>
+  `;
+}
+
+function renderContractChip(contract){
+  const state = contract.loaded ? 'ok' : 'missing';
+  const title = contract.loaded
+    ? `${contract.rows} fila(s)${contract.detail ? ` · ${contract.detail}` : ''}`
+    : 'Pendiente';
+  return `
+    <span class="readiness-chip ${state}">
+      <b>${escapeHTML(contract.label)}</b>
+      <small>${escapeHTML(title)}</small>
+    </span>
+  `;
 }
 
 function uploadCard(contract){
