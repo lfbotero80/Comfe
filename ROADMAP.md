@@ -36,7 +36,7 @@ Este roadmap organiza el producto `Tablero de ocupación` antes de ejecutar nuev
 
 **HUs candidatas:** TO-HU-008, TO-HU-009, TO-HU-010, TO-HU-016, TO-HU-019, TO-HU-022.
 
-**Avance relacionado:** `SPRINT-05` adelanto TO-HU-008, TO-HU-016 y TO-HU-019 como correccion de producto sobre V3. `SPRINT-08` cerro TO-HU-009 y TO-HU-031 para que el dashboard muestre estructura completa por sede en gris cuando falte data. `SPRINT-09` cerro TO-HU-022 y TO-HU-033 con lectura tipo Power BI y presupuesto proyectado vs real en absolutos/%. TO-HU-010 queda bloqueada en la parte de ano anterior hasta tener fuente historica.
+**Avance relacionado:** `SPRINT-05` adelanto TO-HU-008, TO-HU-016 y TO-HU-019 como correccion de producto sobre V3. `SPRINT-08` cerro TO-HU-009 y TO-HU-031 para que el dashboard muestre estructura completa por sede en gris cuando falte data. `SPRINT-09` cerro TO-HU-022 y TO-HU-033 con lectura tipo Power BI y presupuesto proyectado vs real en absolutos/%. `SPRINT-12` (Claude Code) cerro TO-HU-040: elimino el panel de texto "Donde mirar hoy" y las tarjetas detalladas por hotel/parque (redundantes con las pestanas Hoteles/Parques), separo la ocupacion en dos graficas (Hoteles / Parques) ordenadas de mas critico a mejor con tendencia (sparkline) por sede, y ordeno el presupuesto igual. TO-HU-010 queda bloqueada en la parte de ano anterior hasta tener fuente historica.
 
 **Criterio de salida:** primera pantalla con todas las sedes, semáforo, ocupación proyectada, ocupación real, cumplimiento presupuestal y acción sugerida.
 

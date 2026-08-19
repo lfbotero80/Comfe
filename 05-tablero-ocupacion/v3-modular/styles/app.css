@@ -158,7 +158,8 @@ p{line-height:1.55}
 .bar-fill.gray{background:#D8DDD9}
 .bar-row.muted span,.bar-row.muted strong{color:#90958F}
 
-.occ-row{display:grid; grid-template-columns:160px 1fr 46px 70px; gap:10px; align-items:center; font-size:13px}
+.occ-row{display:grid; grid-template-columns:150px 1fr 60px 70px; gap:10px; align-items:center; font-size:13px}
+.occ-row strong{white-space:nowrap}
 .occ-row.muted span,.occ-row.muted strong{color:#90958F}
 .trend-svg{width:64px; height:22px; display:block}
 .trend-svg polyline{fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round}

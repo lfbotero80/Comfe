@@ -143,6 +143,7 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-009: Como jefatura, quiero ver ocupación proyectada, ocupación real, cumplimiento presupuestal y semáforo por sede, para entender el estado mensual/trimestral. — **Hecha**
   - TO-HU-010: Como Diana, quiero comparar cada sede contra meta/presupuesto y contra el mismo periodo del año anterior, para detectar brechas reales. — **Bloqueada** (comparacion contra ano anterior requiere fuente cargada; presupuesto/meta ya queda cubierto por TO-HU-022)
   - TO-HU-033: Como jefatura, quiero que el dashboard general tenga lectura visual tipo Power BI, para entender el estado del negocio sin recorrer cada sección. — **Hecha**
+  - TO-HU-040: Como jefatura, quiero que el dashboard sea solo gráficas ordenadas de más crítico a mejor (sin listas de texto ni tarjetas detalladas por sede), para ver en segundos dónde actuar y encontrar el detalle diario solo dentro de cada Hotel/Parque. — **Hecha**
 
 - **E2-F2 — Sección Hoteles**
   - TO-HU-011: Como gerente hotelero, quiero una sección de Hoteles con una pestaña por hotel, para revisar solo mi sede sin ruido. — **Hecha**

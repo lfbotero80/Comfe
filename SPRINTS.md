@@ -6,6 +6,36 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-12 — Dashboard solo-graficas [Estado: Cerrado]
+
+- **Agente(s):** Claude Code
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E2
+- **Objetivo del sprint:** rediseñar el dashboard general de V3 modular para que sea solo gráficas ordenadas por gravedad, sin listas de texto ni tarjetas detalladas duplicadas con las pestañas Hoteles/Parques, a partir de revisión directa de Luis Felipe con capturas.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-040 | Dashboard solo-gráficas ordenado por gravedad | Claude Code | Hecha | Sin texto, sin tarjetas por sede; detalle vive en Hoteles/Parques |
+
+### Resumen de cierre
+
+**Qué cambió:** `src/ui/views/dashboard.js` se reescribió completo. Se quitó la tarjeta KPI "Sedes con datos" (métrica de instrumento, no de negocio), el panel de texto "Dónde mirar hoy" y las 9 tarjetas detalladas por hotel/parque (duplicaban lo que ya vive en `hotels.js`/`parks.js`). La ocupación se separó en dos gráficas — "Hoteles — ocupación" y "Parques — ocupación / uso" — cada una ordenada de más crítico a mejor (rojo/ámbar primero, gris al final) en vez del orden alfabético anterior, con un sparkline SVG de tendencia por sede construido a partir de las fechas ya cargadas en `occupancyInventoryRows` (dato que existía pero no se usaba). El presupuesto quedó igual pero también ordenado de menor a mayor cumplimiento. `styles/app.css` agrega `.chart-grid`, `.occ-row`, `.trend-svg`/`.trend-empty` y `.score-grid.three`; se retiraron `.dashboard-grid`, `.alert-list`/`.alert-item` y el bloque `.kpi-grid`/`.kpi-card`/… por quedar sin uso.
+
+**HUs trabajadas:** TO-HU-040 quedó en `Hecha`.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/src/ui/views/dashboard.js`, `05-tablero-ocupacion/v3-modular/styles/app.css` (ajuste puntual de ancho de columna sobre lo ya commiteado en `SPRINT-11`).
+
+**Validación realizada:** `node --check` sobre todos los módulos JS; servidor local `http://localhost:8055/` respondió 200; revisión visual en navegador (Dashboard general con las 3 gráficas y sin las secciones retiradas, capturas confirmadas contra las que Luis Felipe compartió) y verificación de que Hoteles/Parques siguen funcionando sin errores de consola tras el cambio de CSS compartido.
+
+**Decisiones / límites:** El orden por gravedad usa el semáforo (`red`→`amber`→`green`→`gray`) de cada sitio, no un umbral distinto. El sparkline usa hasta 14 puntos más recientes por sede y escala al rango min/max de esos puntos (no a una escala fija 0-100), para que la variación se note incluso en rangos estrechos.
+
+**Nota de coordinación (importante para el proceso):** durante este sprint, Codex cerró en paralelo `SPRINT-11` (modal de campañas) editando el mismo `05-tablero-ocupacion/v3-modular/styles/app.css`. Como ambos editamos el archivo compartido directamente en disco (sin ramas/worktrees), el commit de Codex para `SPRINT-11` (`46e3777`) terminó incluyendo, sin querer, las reglas CSS que yo ya había guardado para este dashboard (`.chart-grid`, `.occ-row`, `.trend-svg`, `.score-grid.three`) — `git add <archivo>` capta el archivo completo, no solo el diff de quien comitea. No se revirtió ni se reescribió el historial: este commit de `SPRINT-12` solo agrega el ajuste que quedó pendiente después de ese commit (ancho de columna de `.occ-row`). Se deja registrado como límite real del proceso de commit-por-sprint cuando dos agentes tocan el mismo archivo en la misma sesión: falta una forma de aislar cambios (worktree por agente, o revisar `git diff` del archivo completo antes de comitear) para que la atribución sea exacta.
+
+---
+
 ## SPRINT-11 — Modal de campaña nueva [Estado: Cerrado]
 
 - **Agente(s):** Codex
