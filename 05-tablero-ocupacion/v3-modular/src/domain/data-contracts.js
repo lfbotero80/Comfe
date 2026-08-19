@@ -55,16 +55,16 @@ export const FILE_CONTRACTS = {
     source: 'OCUPACION HOTELES 2026.xlsx, Zeus Forecast PDF, Power BI Hoteles o archivo operativo validado.',
     businessUse: 'Fuente operativa para calcular inventario total, ocupado, libre y porcentaje de ocupacion por sede.',
     sampleRow: {
-      sede: 'Hosteria Los Farallones',
+      sede: 'Nombre de sede',
       tipo_sede: 'hotel',
       tipo_unidad: 'habitacion',
-      fecha: '2026-08-21',
-      inventario_total: '48',
-      unidades_ocupadas: '36',
-      unidades_libres: '12',
-      ocupacion_porcentaje: '75',
-      fuente: 'Zeus Forecast',
-      fecha_corte: '2026-08-17'
+      fecha: 'AAAA-MM-DD',
+      inventario_total: '0',
+      unidades_ocupadas: '0',
+      unidades_libres: '0',
+      ocupacion_porcentaje: '0',
+      fuente: 'Fuente del archivo',
+      fecha_corte: 'AAAA-MM-DD'
     }
   },
   budgetExecution: {
@@ -107,12 +107,12 @@ export const FILE_CONTRACTS = {
     source: 'Distribucion del Presupuesto Unidad de Turismo 2026 o corte financiero validado.',
     businessUse: 'Controla presupuesto, ejecutado y cumplimiento por sede para reporte de gestion.',
     sampleRow: {
-      sede: 'Hosteria Los Farallones',
-      periodo: '2026-04',
-      presupuesto: '327368328',
-      ejecutado: '222995430',
-      fuente: 'Distribucion del Presupuesto UIT 2026',
-      fecha_corte: '2026-04-30'
+      sede: 'Nombre de sede',
+      periodo: 'AAAA-MM',
+      presupuesto: '0',
+      ejecutado: '0',
+      fuente: 'Fuente financiera',
+      fecha_corte: 'AAAA-MM-DD'
     }
   },
   revenueRules: {
@@ -157,19 +157,19 @@ export const FILE_CONTRACTS = {
       tramo: ['estandar', 'preventa', 'mas_cerca', 'cierre_operativo', 'sin_dato']
     },
     grain: 'Una fila por sede, tipo de unidad, plan de venta y tramo.',
-    source: 'REVENUE PROPUESTA.xlsx y reglas vigentes validadas por Comercial/Reservas.',
+    source: 'Archivo de reglas Revenue validado por Comercial/Reservas.',
     businessUse: 'Traduce la ocupacion en accion: mantener tarifa, preventa, Mas Cerca, campana o proteger precio.',
     sampleRow: {
-      sede: 'Hotel Piedras Blancas',
+      sede: 'Nombre de sede',
       tipo_sede: 'hotel',
       tipo_unidad: 'habitacion',
-      plan_venta: 'Plan Americano',
+      plan_venta: 'Plan de venta',
       tramo: 'preventa',
       umbral_min: '40',
       umbral_max: '69',
-      accion_recomendada: 'Activar comunicacion flash',
-      fuente: 'REVENUE PROPUESTA.xlsx',
-      fecha_corte: '2026-07-20'
+      accion_recomendada: 'Accion comercial recomendada',
+      fuente: 'Reglas vigentes',
+      fecha_corte: 'AAAA-MM-DD'
     }
   }
 };

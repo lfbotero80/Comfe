@@ -6,6 +6,90 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-35 — Demo publico sin datos quemados [Estado: Cerrado]
+
+- **Agente(s):** Codex
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E1
+- **Objetivo del sprint:** dejar la URL pública compartible sin datos de negocio quemados y con persistencia local verificable para cargas reales.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-087 | URL pública sin datos quemados | Codex | Hecha | Arranque real/vacío, sin demo operativo ni catálogos comerciales precargados |
+| TO-HU-088 | Persistencia local completa | Codex | Hecha | Mantiene filas cargadas, archivos cargados y campañas agregadas tras recarga |
+
+### Resumen de cierre
+
+Se preparo la version compartible del tablero para Diana con dos certezas: la URL publica no arranca con datos de negocio quemados y lo que el usuario cargue persiste localmente en su navegador.
+
+**Qué cambió:** `src/state/app-state.js` deja de importar datos semilla, arranca por defecto en `Datos reales` y mantiene el modo demo sin semillas. Se agrego una migracion unica (`comfenalco_public_storage_schema_v1`) para limpiar restos de demos anteriores en navegadores que ya hubieran abierto la URL. Ademas, `loadedFiles` y `campaignRows` ahora persisten en `localStorage`, igual que ya persistian ocupacion, presupuesto, Revenue y bitacora desde `SPRINT-33`.
+
+Se vaciaron los modulos `src/data/demo-data.js`, `src/data/commercial-calendar.js` y `src/data/campaigns.js` para que no publiquen forecast, presupuesto, campanas ni calendario comercial precargados. Las plantillas CSV quedaron solo con encabezados, sin filas de ejemplo con cifras o tarifas. `src/domain/data-contracts.js` conserva contratos y reglas, pero sus `sampleRow` ya no incluyen cifras, tarifas o archivos fuente especificos. `src/ui/views/data-load.js` ya no muestra selector `Modo demo`; la pantalla de carga presenta `Datos reales` y aclara que la URL arranca sin datos precargados y guarda en el navegador.
+
+**HUs trabajadas:** `TO-HU-087` y `TO-HU-088`, ambas `Hecha`.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/src/state/app-state.js`, `src/ui/views/data-load.js`, `src/domain/data-contracts.js`, `src/data/demo-data.js`, `src/data/commercial-calendar.js`, `src/data/campaigns.js`, y las tres plantillas CSV en `v3-modular/templates/`.
+
+**Validación realizada:** `node --check` sobre todos los módulos JS; `git diff --check`; búsqueda negativa de cadenas de datos semilla/campañas/tarifas/presupuesto en `v3-modular/`; prueba Playwright en navegador limpio confirmando arranque sin ocupación ni presupuesto (`0 de 9 sedes con dato`, `$0 de $0`), carga real de `Forecast Quirama 1808.pdf` con 15 filas, persistencia tras recarga, historial de archivo cargado persistido, campañas iniciales en cero, campaña nueva persistida tras recarga.
+
+**Decisiones / límites:** se mantienen nombres de sedes, roles, contratos, umbrales de semáforo y festivos oficiales Colombia 2026 como estructura/reglas del instrumento, no como datos operativos cargados. La persistencia sigue siendo local por navegador; no hay base de datos compartida ni sincronización entre usuarios.
+
+**Pendientes para revisar:** si Diana necesita ver los mismos datos que Luis Felipe cargue, hará falta backend/persistencia centralizada. Si el calendario comercial y catálogo base deben volver, deben cargarse por archivo o por una fuente aprobada, no quemados en el build público.
+
+```text
+HANDOFF — SPRINT-35 Demo publico sin datos quemados
+──────────────────────────────────────
+HUs completas:        TO-HU-087, TO-HU-088
+HUs pendientes:       ninguna dentro del alcance del sprint
+
+Archivos tocados:     BACKLOG.md · SPRINTS.md · ROADMAP.md · MAPA_CODIGO.md
+                      05-tablero-ocupacion/v3-modular/src/state/app-state.js
+                      05-tablero-ocupacion/v3-modular/src/ui/views/data-load.js
+                      05-tablero-ocupacion/v3-modular/src/domain/data-contracts.js
+                      05-tablero-ocupacion/v3-modular/src/data/demo-data.js
+                      05-tablero-ocupacion/v3-modular/src/data/commercial-calendar.js
+                      05-tablero-ocupacion/v3-modular/src/data/campaigns.js
+                      05-tablero-ocupacion/v3-modular/templates/*.csv
+
+Archivos NO tocados:  tablero-seguimiento-ocupacion.html
+                      tablero-seguimiento-ocupacion-v2.html
+                      tablero-seguimiento-ocupacion-v3-demo.html
+                      v3-modular/src/ui/views/dashboard.js
+                      v3-modular/src/ui/views/hotels.js
+                      v3-modular/src/ui/views/parks.js
+                      v3-modular/src/services/file-reader.js
+                      v3-modular/src/services/zeus-forecast-parser.js
+
+Datos/contratos:      No se cambiaron columnas obligatorias ni parser Zeus.
+                      Se limpiaron datos semilla y plantillas con filas de ejemplo.
+
+Decisiones tomadas:   La URL publica arranca en Datos reales, sin precarga.
+                      Los datos cargados persisten localmente en el navegador.
+                      Las campanas agregadas y el historial de archivos tambien persisten.
+
+Riesgos residuales:
+- La persistencia es local por navegador; Diana no ve datos cargados por Luis Felipe.
+- Si el usuario borra cache/localStorage, pierde lo cargado.
+- Calendario comercial y catalogo base quedan vacios hasta que se carguen o se apruebe una fuente.
+
+Validación hecha:
+  Sintaxis:           node --check sobre todos los modulos JS -> pass
+  Estatica:           git diff --check -> pass
+  Datos quemados:     rg negativo para seeds/campanas/tarifas/presupuesto -> pass
+  Runtime navegador:  arranque limpio -> pass
+                      PDF Quirama 15 filas -> pass
+                      recarga conserva datos -> pass
+                      campana nueva persiste -> pass
+  Documentación:      BACKLOG.md + SPRINTS.md + ROADMAP.md + MAPA_CODIGO.md actualizados
+
+Auto-reporte DoD:     Completo para TO-HU-087 y TO-HU-088.
+```
+
+---
+
 ## SPRINT-34 — Documentación retroactiva: commit de hosting sin registro [Estado: Cerrado]
 
 - **Agente(s):** Claude Code (documentación retroactiva de un commit de Codex sin registro)

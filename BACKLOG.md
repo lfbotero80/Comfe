@@ -143,6 +143,8 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-067 *(mediano, requiere revisión completa del código)*: Como Luis Felipe, quiero una auditoría del tablero para confirmar que no hay información quemada en el código (ejemplo señalado: el mes de agosto aparece fijo para Hostería Los Farallones), para asegurar que todo lo que se muestra sale de datos realmente cargados. — **Hecha** (`SPRINT-24`; ver `05-tablero-ocupacion/AUDITORIA_DATOS_QUEMADOS_SPRINT-24.md`)
   - TO-HU-071 *(derivada de `SPRINT-24`)*: Como Luis Felipe, quiero separar el modo demo del modo datos reales, para que el tablero pueda arrancar vacío y no muestre datos semilla como si hubieran sido cargados por el usuario. — **Hecha** (`SPRINT-25`)
   - TO-HU-072 *(derivada de `SPRINT-24`)*: Como gerente de sede, quiero que una sede sin filas cargadas no muestre un mes fijo como agosto, para no confundir un estado vacío con un periodo operativo real. — **Hecha** (`SPRINT-26`)
+  - TO-HU-087: Como Luis Felipe, quiero que la URL pública del tablero arranque sin datos operativos, campañas ni calendario comercial quemados, para compartirla con Diana sin exponer información de negocio en el código. — **Hecha** (`SPRINT-35`)
+  - TO-HU-088: Como Diana, quiero que los datos que cargue en la URL pública persistan en mi navegador, incluyendo archivos cargados y campañas agregadas, para poder recargar y seguir revisando sin volver a subir todo. — **Hecha** (`SPRINT-35`)
 
 ### E2 · Control operativo por sede
 
