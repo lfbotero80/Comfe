@@ -6,6 +6,38 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-41 — Historial de cargas de archivos [Estado: Cerrado]
+
+- **Agente(s):** Claude Code
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E3
+- **Objetivo del sprint:** mostrar el historial de archivos cargados —fecha, nombre, tipo y responsable— para poder auditar de dónde salió cada dato del tablero.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-097 | Historial de cargas de archivos | Claude Code | Hecha | El dato ya se capturaba; faltaba la vista |
+
+### Resumen de cierre
+
+**Verificación previa que redujo el alcance:** antes de escribir la HU se revisó el código y `appState.loadedFiles` **ya capturaba y persistía** los cuatro campos pedidos (`loadedAt`, `filename`, `contractId`, `loadedBy`) más filas aceptadas y rechazadas, en `localStorage` desde `SPRINT-35`. Ninguna vista los mostraba. Por eso el sprint fue construir la pantalla, no capturar datos nuevos.
+
+**Qué se construyó:**
+
+- `src/ui/load-history-panel.js` (nuevo): tabla del historial dentro de `Cargar datos`, ordenada de más reciente a más antigua, con fecha y hora, nombre del archivo, formato, tipo de dato, responsable y filas aceptadas/rechazadas. Incluye export CSV propio.
+- `src/ui/views/data-load.js`: monta el panel y lo refresca en vivo tras cada carga exitosa (`refreshLoadHistory()`), con el mismo patrón que el bloque de cobertura por sede — sin volver a renderizar toda la pantalla, para no borrar los mensajes de validación.
+- `styles/app.css`: `.format-chip` para el formato del archivo.
+
+**Sobre la ambigüedad de "tipo de archivo" (quedaba por definir en el backlog):** se muestran **los dos sentidos**, porque ambos sirven para auditar y ninguno reemplaza al otro — el **tipo de dato** (contrato: ocupación / presupuesto / Revenue), que ya se guardaba, y el **formato** (`.pdf` / `.csv` / `.json`). El formato se deriva del nombre del archivo con `getExtension()` en vez de guardarse como campo nuevo, para que el historial ya existente también lo muestre y no haga falta migrar nada.
+
+**Validación realizada:** `node --check` en todos los módulos; en navegador: el historial aparece con la carga previa; se definió "Diana Florez" como responsable activo y se cargó `presupuesto-marzo.csv`, apareciendo de inmediato arriba con responsable, formato `.csv` y tipo `Presupuesto y ejecucion`; export CSV interceptado y verificado (BOM, separador `;`, 8 columnas); tras recargar la página el historial persiste completo; las 6 vistas cargan sin errores de consola.
+
+**Nota:** el historial es local al navegador, igual que el resto de los datos — Diana verá sus propias cargas, no las de otra persona. Se resuelve con el backend pendiente (`TO-HU-092`/`TO-HU-093`).
+
+---
+
 ## SPRINT-40 — Servidor local sin cache [Estado: Cerrado]
 
 - **Agente(s):** Claude Code

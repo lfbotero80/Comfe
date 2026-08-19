@@ -6,6 +6,7 @@ import { exportBudgetRows, sortedBudgetRows } from '../../services/budget-export
 import { validateFileRows } from '../../services/validators.js';
 import { appState, registerLoad, setCurrentOperator } from '../../state/app-state.js';
 import { badge, escapeHTML } from '../html.js';
+import { renderLoadHistoryPanel, bindLoadHistoryHandlers } from '../load-history-panel.js';
 
 export function renderDataLoad(){
   return `
@@ -38,6 +39,9 @@ export function renderDataLoad(){
         ${renderReadinessSummary()}
       </div>
     </section>
+    <div id="loadHistoryPanel">
+      ${renderLoadHistoryPanel()}
+    </div>
     <section class="panel">
       <div class="section-head">
         <div>
@@ -57,6 +61,7 @@ export function renderDataLoad(){
 }
 
 export function bindDataLoadHandlers({ rerender, setStatus }){
+  bindLoadHistoryHandlers();
   const exportAllBtn = document.getElementById('btnExportOccupancyAll');
   if(exportAllBtn){
     exportAllBtn.addEventListener('click', () => {
@@ -106,6 +111,7 @@ export function bindDataLoadHandlers({ rerender, setStatus }){
             rejectedRows: validation.rejectedRows
           });
           refreshReadinessSummary();
+          refreshLoadHistory();
           if(contractId === 'occupancyInventory') exportAllBtn.disabled = !appState.occupancyInventoryRows.length;
           const withWarnings = validation.rejectedRows.length ? ` (${validation.rejectedRows.length} fila(s) rechazadas)` : '';
           const responsible = appState.currentOperator || 'sin responsable definido';
@@ -121,6 +127,13 @@ export function bindDataLoadHandlers({ rerender, setStatus }){
       }
     });
   });
+}
+
+function refreshLoadHistory(){
+  const target = document.getElementById('loadHistoryPanel');
+  if(!target) return;
+  target.innerHTML = renderLoadHistoryPanel();
+  bindLoadHistoryHandlers();
 }
 
 function refreshReadinessSummary(){
