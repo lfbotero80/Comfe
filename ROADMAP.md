@@ -46,7 +46,7 @@ Este roadmap organiza el producto `Tablero de ocupación` antes de ejecutar nuev
 
 **HUs candidatas:** TO-HU-011, TO-HU-012, TO-HU-013, TO-HU-017, TO-HU-018, TO-HU-020, TO-HU-021.
 
-**Avance relacionado:** `SPRINT-05` adelanto TO-HU-011 y TO-HU-012 para recuperar pestanas y analisis basico por hotel. `SPRINT-07` cerro TO-HU-017, TO-HU-018, TO-HU-020 y TO-HU-021 para que el semaforo sea confiable y accionable. `SPRINT-08` cerro TO-HU-013 con ocupacion del mes y detalle diario.
+**Avance relacionado:** `SPRINT-05` adelanto TO-HU-011 y TO-HU-012 para recuperar pestanas y analisis basico por hotel. `SPRINT-07` cerro TO-HU-017, TO-HU-018, TO-HU-020 y TO-HU-021 para que el semaforo sea confiable y accionable. `SPRINT-08` cerro TO-HU-013 con ocupacion del mes y detalle diario. `SPRINT-14` amplio Hoteles con 12 barras mensuales, cumplimiento contra meta y detalle diario del mes activo.
 
 **Criterio de salida:** sección Hoteles con pestañas por hotel, métricas operativas, forecast/real, inventario, semáforo y acción.
 
@@ -66,7 +66,7 @@ Este roadmap organiza el producto `Tablero de ocupación` antes de ejecutar nuev
 
 **HUs candidatas:** TO-HU-016, TO-HU-017, TO-HU-018, TO-HU-019, TO-HU-020, TO-HU-021, TO-HU-026.
 
-**Avance relacionado:** `SPRINT-06` recupero TO-HU-028, TO-HU-029 y TO-HU-030 como correccion de fidelidad frente a v2: calendario comercial, catalogo de campanas y contexto comercial conectado a alertas. `SPRINT-07` cerro TO-HU-017, TO-HU-018, TO-HU-020 y TO-HU-021: umbrales, cierres/festivos/temporada y recomendaciones de proteger tarifa o activar campana. `SPRINT-11` recupero el patron modal de v2 para agregar campanas con causa, sede, tarifa, fecha y medicion. `SPRINT-13` compacto el modal para que sea operativo y no ocupe la pantalla completa. Sigue pendiente TO-HU-026 para bitacora/seguimiento de decisiones.
+**Avance relacionado:** `SPRINT-06` recupero TO-HU-028, TO-HU-029 y TO-HU-030 como correccion de fidelidad frente a v2: calendario comercial, catalogo de campanas y contexto comercial conectado a alertas. `SPRINT-07` cerro TO-HU-017, TO-HU-018, TO-HU-020 y TO-HU-021: umbrales, cierres/festivos/temporada y recomendaciones de proteger tarifa o activar campana. `SPRINT-11` recupero el patron modal de v2 para agregar campanas con causa, sede, tarifa, fecha y medicion. `SPRINT-13` compacto el modal para que sea operativo y no ocupe la pantalla completa. `SPRINT-14` separo la accion sugerida en un motor deterministico que combina semaforo, cumplimiento mensual y tendencia; IA permanente queda como evaluacion arquitectonica pendiente. Sigue pendiente TO-HU-026 para bitacora/seguimiento de decisiones.
 
 **Criterio de salida:** el semáforo de v2 gobierna la recomendación: mantener, preventa, Más Cerca, campaña, proteger tarifa o no actuar por cierre operativo.
 

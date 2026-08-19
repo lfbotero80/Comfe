@@ -6,6 +6,66 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-14 — Hoteles anual y accion sugerida [Estado: Cerrado]
+
+- **Agente(s):** Codex
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E2, E3
+- **Objetivo del sprint:** convertir la sección Hoteles en una lectura anual por sede con 12 barras mensuales, detalle diario del mes activo, cumplimiento contra meta y acción sugerida más estratégica.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-042 | Hoteles con 12 barras mensuales | Codex | Hecha | Una barra por mes y detalle diario del mes activo |
+| TO-HU-043 | Acción sugerida estratégica | Codex | Hecha | Combina semáforo, cumplimiento mensual y tendencia |
+
+### Resumen de cierre
+
+**Qué cambió:** La sección `Hoteles` ahora muestra, dentro de cada pestaña de hotel, una lectura anual con 12 barras mensuales. El mes activo queda resaltado y debajo aparece una barra de `Cumplimiento del mes` contra la meta de ocupación del 70%. El detalle diario se filtra al mes activo; si el usuario selecciona un mes sin datos, el tablero muestra estado vacío en gris sin romper el contexto. La `Accion sugerida` dejó de depender solo del último día y ahora combina semáforo vigente, cumplimiento mensual y tendencia reciente. Se agregó `src/domain/strategic-recommendation.js` como módulo de dominio para mantener esta lógica separada de la vista y dejar un punto futuro de conexión con IA real.
+
+**HUs trabajadas:** TO-HU-042 y TO-HU-043 quedaron en `Hecha`. TO-HU-044 queda `Pendiente` porque IA permanente real requiere arquitectura fuera del HTML local.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/src/ui/views/hotels.js`, `05-tablero-ocupacion/v3-modular/src/domain/strategic-recommendation.js` y `05-tablero-ocupacion/v3-modular/styles/app.css`.
+
+**Validación realizada:** `node --check` sobre todos los módulos JS; prueba Playwright en `http://localhost:8055/` entrando a `Hoteles`, verificando 12 barras mensuales, `Cumplimiento del mes`, `Accion sugerida`, detalle diario del mes activo y estado vacío al seleccionar un mes sin datos; sin errores de consola; captura visual revisada.
+
+**Decisiones / límites:** La recomendación estratégica de este sprint es determinística y explicable; no llama IA todavía. Esto es intencional: en demo local no existe backend, job programado ni almacenamiento persistente para una IA permanente. El nuevo módulo deja preparada la frontera para que un servicio de IA futuro consuma las mismas entradas y devuelva recomendaciones auditables.
+
+**Pendientes para revisar:** Definir arquitectura de IA permanente: backend/API, frecuencia de análisis tras carga, almacenamiento de recomendaciones, responsable de aprobación y trazabilidad de decisiones.
+
+```text
+HANDOFF — SPRINT-14 Hoteles anual y accion sugerida
+──────────────────────────────────────
+HUs completas:        TO-HU-042, TO-HU-043
+HUs pendientes:       TO-HU-044 pendiente: arquitectura de IA permanente
+Archivos tocados:     BACKLOG.md · SPRINTS.md · ROADMAP.md · MAPA_CODIGO.md
+                      05-tablero-ocupacion/v3-modular/src/ui/views/hotels.js
+                      05-tablero-ocupacion/v3-modular/src/domain/strategic-recommendation.js
+                      05-tablero-ocupacion/v3-modular/styles/app.css
+Archivos NO tocados:  05-tablero-ocupacion/tablero-seguimiento-ocupacion.html
+                      05-tablero-ocupacion/tablero-seguimiento-ocupacion-v2.html
+                      05-tablero-ocupacion/tablero-seguimiento-ocupacion-v3-demo.html
+Datos/contratos:      Sin cambios en contratos. Usa occupancyInventory existente.
+Decisiones tomadas:   Hoteles muestra 12 meses + cumplimiento mensual + detalle del mes activo.
+                      Accion sugerida queda en motor deterministico explicable.
+                      IA permanente se separa como arquitectura pendiente.
+Riesgos residuales:
+  - Meses sin archivo cargado aparecen en gris; no hay interpolacion.
+  - La recomendacion no reemplaza aprobacion humana ni IA real.
+  - Para IA permanente faltan backend, jobs, persistencia y auditoria.
+Validación hecha:
+  Sintaxis:           node --check sobre todos los módulos JS -> pass
+  Runtime navegador:  Hoteles muestra 12 barras, cumplimiento, accion y detalle -> pass
+  Estado sin datos:   mes sin forecast muestra estado vacio -> pass
+  Documentación:      BACKLOG.md + SPRINTS.md + ROADMAP.md + MAPA_CODIGO.md actualizados
+Auto-reporte DoD:     Completo para TO-HU-042 y TO-HU-043
+                      TO-HU-044 queda para decision arquitectonica.
+```
+
+---
+
 ## SPRINT-13 — Compactar modal de campaña [Estado: Cerrado]
 
 - **Agente(s):** Codex

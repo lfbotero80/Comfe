@@ -1,18 +1,44 @@
 import { HOTELS } from '../../domain/sites.js';
 import { appState } from '../../state/app-state.js';
-import { classifyOccupancy } from '../../domain/occupancy.js';
+import { classifyOccupancy, OCCUPANCY_TARGET } from '../../domain/occupancy.js';
 import { commercialContextForSite } from '../../domain/commercial-context.js';
+import { buildStrategicRecommendation } from '../../domain/strategic-recommendation.js';
 import { badge, escapeHTML, trafficLight } from '../html.js';
 
 let activeHotelId = HOTELS[0].id;
+const activeMonthByHotelId = {};
+const MONTHS = [
+  ['01', 'Ene'],
+  ['02', 'Feb'],
+  ['03', 'Mar'],
+  ['04', 'Abr'],
+  ['05', 'May'],
+  ['06', 'Jun'],
+  ['07', 'Jul'],
+  ['08', 'Ago'],
+  ['09', 'Sep'],
+  ['10', 'Oct'],
+  ['11', 'Nov'],
+  ['12', 'Dic']
+];
 
 export function renderHotels(){
   const activeHotel = HOTELS.find(hotel => hotel.id === activeHotelId) || HOTELS[0];
   const rows = rowsForHotel(activeHotel);
-  const monthRows = rowsForCurrentMonth(rows);
-  const latest = monthRows[monthRows.length - 1] || rows[rows.length - 1] || null;
+  const year = activeYear(rows);
+  const monthSummaries = monthlySummaries(rows, year);
+  const activeMonth = activeMonthByHotelId[activeHotel.id] || latestMonth(rows) || `${year}-08`;
+  const monthRows = rowsForMonth(rows, activeMonth);
+  const latest = monthRows[monthRows.length - 1] || null;
   const status = latest ? classifyOccupancy(latest.ocupacion_porcentaje, latest.fecha) : null;
-  const monthLabel = latest ? String(latest.fecha).slice(0, 7) : 'Sin periodo cargado';
+  const commercialContext = latest ? commercialContextForSite(activeHotel.name, latest.fecha, status) : { campaigns: [], activities: [] };
+  const strategicRecommendation = buildStrategicRecommendation({
+    siteName: activeHotel.name,
+    monthRows,
+    latestRow: latest,
+    status,
+    commercialContext
+  });
 
   return `
     <div class="tabs site-tabs">
@@ -32,10 +58,12 @@ export function renderHotels(){
         ${status ? `<div class="alarm-context">${trafficLight(status.severity, 'horizontal')}${badge(status.label, status.severity)}</div>` : '<span class="pending-dot">Sin datos de ocupacion</span>'}
       </div>
 
-      ${latest ? renderMetrics(monthRows, latest, status, monthLabel) : renderMissingState(activeHotel)}
-      ${latest ? renderAction(status) : ''}
-      ${latest ? renderCommercialContext(activeHotel, latest, status) : ''}
-      ${latest ? renderDailyDetail(monthRows.length ? monthRows : rows, monthLabel) : ''}
+      ${renderYearMovement(monthSummaries, activeMonth, year)}
+      ${renderCompliance(monthSummaries.find(month => month.period === activeMonth), activeMonth)}
+      ${latest ? renderMetrics(monthRows, latest, status, activeMonth) : renderMissingState(activeHotel, activeMonth)}
+      ${renderAction(strategicRecommendation)}
+      ${latest ? renderCommercialContext(activeHotel, latest, status, commercialContext) : ''}
+      ${renderDailyDetail(monthRows, activeMonth)}
     </section>
   `;
 }
@@ -44,6 +72,13 @@ export function bindHotelHandlers({ rerender }){
   document.querySelectorAll('[data-hotel-tab]').forEach(button => {
     button.addEventListener('click', () => {
       activeHotelId = button.dataset.hotelTab;
+      rerender();
+    });
+  });
+
+  document.querySelectorAll('[data-hotel-month]').forEach(button => {
+    button.addEventListener('click', () => {
+      activeMonthByHotelId[activeHotelId] = button.dataset.hotelMonth;
       rerender();
     });
   });
@@ -56,10 +91,8 @@ function rowsForHotel(hotel){
     .sort((a, b) => String(a.fecha).localeCompare(String(b.fecha)));
 }
 
-function rowsForCurrentMonth(rows){
-  if(!rows.length) return [];
-  const latestMonth = String(rows[rows.length - 1].fecha).slice(0, 7);
-  return rows.filter(row => String(row.fecha).startsWith(latestMonth));
+function rowsForMonth(rows, period){
+  return rows.filter(row => String(row.fecha).startsWith(period));
 }
 
 function renderMetrics(rows, row, status, monthLabel){
@@ -74,10 +107,10 @@ function renderMetrics(rows, row, status, monthLabel){
   `;
 }
 
-function renderMissingState(hotel){
+function renderMissingState(hotel, activeMonth){
   return `
     <div class="grid four">
-      ${metric('Ocupacion del mes', 'Pendiente', 'Sin archivo cargado')}
+      ${metric('Ocupacion del mes', 'Pendiente', activeMonth)}
       ${metric('Ocupadas / inventario', 'Pendiente', hotel.defaultUnitType)}
       ${metric('Libres promedio', 'Pendiente', 'Sin archivo cargado')}
       ${metric('Dia operativo', 'Pendiente', 'Sin fecha cargada')}
@@ -89,16 +122,65 @@ function renderMissingState(hotel){
   `;
 }
 
-function renderAction(status){
+function renderYearMovement(monthSummaries, activeMonth, year){
   return `
-    <div class="action-note ${status.severity}">
-      <strong>Accion sugerida:</strong> ${escapeHTML(status.recommendation)}
+    <section class="year-panel">
+      <div class="section-head compact">
+        <div>
+          <h3>Movimiento anual ${escapeHTML(year)}</h3>
+          <p class="metric-note">Una barra por mes; gris indica que falta archivo cargado.</p>
+        </div>
+      </div>
+      <div class="month-bars">
+        ${monthSummaries.map(month => renderMonthBar(month, activeMonth)).join('')}
+      </div>
+    </section>
+  `;
+}
+
+function renderMonthBar(month, activeMonth){
+  const height = month.hasData ? Math.max(18, month.average * 1.75) : 18;
+  const label = month.hasData ? `${month.average.toFixed(0)}%` : 's/d';
+  return `
+    <button type="button" class="month-bar ${month.severity} ${month.period === activeMonth ? 'active' : ''}" data-hotel-month="${escapeHTML(month.period)}">
+      <span class="month-value">${escapeHTML(label)}</span>
+      <span class="month-column ${month.severity}" style="height:${height}px"></span>
+      <span class="month-label">${escapeHTML(month.label)}</span>
+    </button>
+  `;
+}
+
+function renderCompliance(month, activeMonth){
+  const hasData = Boolean(month?.hasData);
+  const compliance = hasData ? month.compliance : 0;
+  const severity = hasData ? month.severity : 'gray';
+  return `
+    <section class="compliance-panel">
+      <div class="compliance-head">
+        <div>
+          <strong>Cumplimiento del mes</strong>
+          <span>${escapeHTML(activeMonth)} · meta ${OCCUPANCY_TARGET}% ocupacion</span>
+        </div>
+        ${badge(hasData ? `${compliance.toFixed(0)}%` : 'Pendiente', severity)}
+      </div>
+      <div class="compliance-track">
+        <div class="compliance-fill ${severity}" style="width:${Math.min(compliance, 130)}%"></div>
+        <span class="compliance-target" style="left:${Math.min(100, 100)}%"></span>
+      </div>
+    </section>
+  `;
+}
+
+function renderAction(recommendation){
+  return `
+    <div class="action-note strategic ${recommendation.severity}">
+      <strong>${escapeHTML(recommendation.title)}:</strong> ${escapeHTML(recommendation.action)}
+      <span>${escapeHTML(recommendation.rationale)}</span>
     </div>
   `;
 }
 
-function renderCommercialContext(hotel, row, status){
-  const context = commercialContextForSite(hotel.name, row.fecha, status);
+function renderCommercialContext(hotel, row, status, context){
   return `
     <div class="context-panel">
       <div>
@@ -132,34 +214,35 @@ function renderDailyDetail(rows, monthLabel){
   return `
     <div class="hotel-series">
       <h3>Detalle diario del mes ${escapeHTML(monthLabel)}</h3>
-      <div class="forecast-strip">
-        ${rows.map(row => {
+      ${rows.length ? `
+        <div class="forecast-strip">
+          ${rows.map(row => {
           const pct = Math.max(0, Math.min(Number(row.ocupacion_porcentaje) || 0, 100));
           const status = classifyOccupancy(pct, row.fecha);
           return `
             <div class="forecast-day">
               <div class="forecast-value">${pct.toFixed(0)}%</div>
-              <div class="forecast-column ${status.severity}" style="height:${Math.max(12, pct * 1.25)}px"></div>
+              <div class="forecast-column ${status.severity}" style="height:${Math.max(14, pct * 2)}px"></div>
               <span>${escapeHTML(String(row.fecha).slice(5).replace('-', '/'))}</span>
             </div>
           `;
-        }).join('')}
-      </div>
-      <div class="daily-table-wrap">
-        <table class="data-table compact-table">
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>Inventario</th>
-              <th>Ocupadas</th>
-              <th>Libres</th>
-              <th>Ocupacion</th>
-              <th>Dia</th>
-              <th>Tramo</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rows.map(row => {
+          }).join('')}
+        </div>
+        <div class="daily-table-wrap">
+          <table class="data-table compact-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Inventario</th>
+                <th>Ocupadas</th>
+                <th>Libres</th>
+                <th>Ocupacion</th>
+                <th>Dia</th>
+                <th>Tramo</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.map(row => {
               const status = classifyOccupancy(row.ocupacion_porcentaje, row.fecha);
               return `
                 <tr>
@@ -172,12 +255,43 @@ function renderDailyDetail(rows, monthLabel){
                   <td>${badge(status.label, status.severity)}</td>
                 </tr>
               `;
-            }).join('')}
-          </tbody>
-        </table>
-      </div>
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      ` : '<div class="empty-state"><strong>Sin detalle diario para este mes.</strong><span>Cargue el forecast de este hotel para activar barras, cumplimiento y accion sugerida.</span></div>'}
     </div>
   `;
+}
+
+function activeYear(rows){
+  const latest = rows[rows.length - 1];
+  return latest ? String(latest.fecha).slice(0, 4) : '2026';
+}
+
+function latestMonth(rows){
+  const latest = rows[rows.length - 1];
+  return latest ? String(latest.fecha).slice(0, 7) : null;
+}
+
+function monthlySummaries(rows, year){
+  return MONTHS.map(([month, label]) => {
+    const period = `${year}-${month}`;
+    const monthRows = rowsForMonth(rows, period);
+    if(!monthRows.length){
+      return { period, label, hasData: false, average: 0, compliance: 0, severity: 'gray' };
+    }
+    const summary = monthSummary(monthRows);
+    const severity = summary.average >= OCCUPANCY_TARGET ? 'green' : summary.average >= 40 ? 'amber' : 'red';
+    return {
+      period,
+      label,
+      hasData: true,
+      average: summary.average,
+      compliance: OCCUPANCY_TARGET ? (summary.average / OCCUPANCY_TARGET) * 100 : 0,
+      severity
+    };
+  });
 }
 
 function monthSummary(rows){

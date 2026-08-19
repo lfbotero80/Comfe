@@ -1,6 +1,6 @@
 # Mapa de código — Comfenalco IA
 
-Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-13`.
+Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-14`.
 
 ---
 
@@ -151,6 +151,7 @@ URL local: `http://localhost:8055/`
 | `src/domain/occupancy.js` | Reglas de clasificacion de ocupacion: Estandar >=70, Preventa 40-69, Mas cerca <40, alta demanda >=90, cierre operativo y brecha proyectado/real. |
 | `src/domain/operational-calendar.js` | Reglas de calendario operativo: festivos Colombia 2026, cierre domingo/lunes sin festivo, temporada alta y tipo de dia. |
 | `src/domain/commercial-context.js` | Cruza sede, fecha, tramo del semaforo, calendario comercial y campanas para generar contexto accionable. |
+| `src/domain/strategic-recommendation.js` | Motor deterministico de `Accion sugerida` para hoteles: combina semaforo, cumplimiento mensual, tendencia y contexto comercial. Punto futuro para conectar IA real sin mezclarla con la vista. |
 | `src/data/demo-data.js` | Datos semilla para que el demo modular no arranque vacio: forecast real de Hosteria Los Farallones y cortes presupuestales disponibles. |
 | `src/data/colombia-holidays-2026.js` | Festivos oficiales de Colombia 2026 migrados desde v2 para no generar falsas alarmas por cierres normales o festivos. |
 | `src/data/commercial-calendar.js` | Calendario comercial migrado desde v2: actividades por mes, sede, tipo, publico y descripcion. |
@@ -163,7 +164,7 @@ URL local: `http://localhost:8055/`
 | `src/ui/html.js` | Helpers pequeños para escapar HTML, crear badges y renderizar el semaforo real de tres luces. |
 | `src/ui/views/dashboard.js` | Dashboard general solo-graficas tipo Power BI (desde `SPRINT-12`): banda principal, 3 KPIs de negocio, y 3 graficas — ocupacion Hoteles y ocupacion Parques (separadas, ordenadas de mas critico a mejor, con sparkline de tendencia por sede) y presupuesto ejecutado vs proyectado (ordenado igual). Sin listas de texto ni tarjetas detalladas por sede — ese detalle vive solo en `hotels.js`/`parks.js`. Sedes sin dato quedan en gris al final de cada grafica. |
 | `src/ui/views/data-load.js` | Vista de carga de archivos, descarga de plantillas, resultado de validacion por fila y explicacion de interpretacion Zeus por hotel. |
-| `src/ui/views/hotels.js` | Vista de hoteles con pestanas internas por hotel, ocupacion del mes, ocupadas/inventario en un solo indicador, semaforo contextual, accion sugerida, contexto comercial y detalle diario del mes con dia real. |
+| `src/ui/views/hotels.js` | Vista de hoteles con pestanas internas por hotel, 12 barras mensuales, cumplimiento del mes contra meta, ocupadas/inventario en un solo indicador, semaforo contextual, accion sugerida, contexto comercial y detalle diario del mes activo con dia real. |
 | `src/ui/views/parks.js` | Vista `Parques` con pestanas por sede, uso del mes, capacidad, usados/libres, alarma y detalle diario; no muestra semaforo cuando falta dato. |
 | `src/ui/views/calendar.js` | Vista recuperada de calendario comercial, con filtros por mes/sede y calendario operativo 2026. |
 | `src/ui/views/campaigns.js` | Vista recuperada de catalogo de campanas, con estado, resultado si hay ocupacion proyectada/real y boton `Agregar campaña nueva` que abre un modal tipo v2. |
@@ -288,3 +289,12 @@ Plantillas CSV de S1:
 
 - `src/ui/views/campaigns.js` agrupa `Tarifa aplicada` y `Fecha de ejecucion` en una fila de dos columnas en desktop.
 - `styles/app.css` baja el modal a 640px de ancho maximo, reduce padding, alto de inputs, tamano de texto y acciones, manteniendo layout responsive a una columna en movil.
+
+### 3.15 — Hoteles anual y accion sugerida en `SPRINT-14`
+
+`SPRINT-14` agrega una lectura anual dentro de cada hotel:
+
+- `src/ui/views/hotels.js` construye 12 barras mensuales por hotel, resalta el mes activo y filtra el detalle diario a ese mes.
+- La barra `Cumplimiento del mes` compara el promedio mensual contra `OCCUPANCY_TARGET` (70%).
+- `src/domain/strategic-recommendation.js` decide la `Accion sugerida` con semaforo, cumplimiento mensual, tendencia reciente y contexto comercial; no usa IA real todavia.
+- `styles/app.css` contiene `.year-panel`, `.month-bars`, `.month-bar`, `.compliance-panel` y estados visuales asociados.

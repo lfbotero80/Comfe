@@ -149,6 +149,7 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-011: Como gerente hotelero, quiero una sección de Hoteles con una pestaña por hotel, para revisar solo mi sede sin ruido. — **Hecha**
   - TO-HU-012: Como gerente hotelero, quiero ver por hotel la proyección del mes, ocupación real %, unidades disponibles, ocupadas y libres, para gestionar inventario diario. — **Hecha**
   - TO-HU-013: Como Diana, quiero que cada hotel muestre vista diaria y acumulada por periodo, para auditar evolución y cierre mensual. — **Hecha**
+  - TO-HU-042: Como gerente hotelero, quiero ver 12 barras mensuales por hotel y el detalle diario solo del mes activo, para entender cómo se mueve el año sin perder el día a día. — **Hecha**
 
 - **E2-F3 — Sección Parques / pasadía / camping**
   - TO-HU-014: Como gerente de parque, quiero una sección de Parques con una pestaña por sede, para controlar cupos, sitios o visitantes sin forzar lógica hotelera. — **Hecha**
@@ -168,6 +169,8 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-019: Como Diana, quiero que cada alarma genere una acción sugerida, para pasar del dato a la decisión. — **Hecha**
   - TO-HU-020: Como Comercial, quiero que baja ocupación sugiera campaña o tarifa de choque, para reaccionar antes de que cierre la ventana de venta. — **Hecha**
   - TO-HU-021: Como Diana, quiero que ocupación alta sugiera revisar tarifa o proteger precio, para no vender barato cuando hay demanda. — **Hecha**
+  - TO-HU-043: Como Diana, quiero que la acción sugerida combine semáforo, cumplimiento mensual y tendencia, para decidir si activar campaña, mantener comunicación o cerrar comunicación promocional. — **Hecha**
+  - TO-HU-044: Como Luis Felipe, quiero evaluar una arquitectura de IA permanente para recomendaciones, para saber qué requiere más allá del HTML local. — **Pendiente**
 
 - **E3-F3 — Control presupuestal**
   - TO-HU-022: Como Diana, quiero ver presupuesto, ejecutado y % de cumplimiento por sede y periodo, para controlar desempeño financiero. — **Hecha**
