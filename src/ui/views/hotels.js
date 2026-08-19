@@ -4,6 +4,7 @@ import { classifyOccupancy, OCCUPANCY_TARGET } from '../../domain/occupancy.js';
 import { commercialContextForSite } from '../../domain/commercial-context.js';
 import { buildStrategicRecommendation } from '../../domain/strategic-recommendation.js';
 import { exportOccupancyRows, occupancyRowsBySite, occupancyRowsByType, slug } from '../../services/occupancy-export.js';
+import { renderAIContextPanel } from '../ai-context-panel.js';
 import { badge, escapeHTML, trafficLight } from '../html.js';
 import { renderSiteBudgetPanel } from '../site-budget-panel.js';
 
@@ -69,6 +70,7 @@ export function renderHotels(){
       ${latest ? renderMetrics(monthRows, latest, status, activeMonth) : renderMissingState(activeHotel, activeMonth)}
       ${renderSiteBudgetPanel(activeHotel, activeMonth)}
       ${renderAction(strategicRecommendation)}
+      ${renderAIContextPanel(activeHotel, activeMonth)}
       ${latest ? renderCommercialContext(activeHotel, latest, status, commercialContext) : ''}
       ${renderDailyDetail(monthRows, activeMonth)}
     </section>
