@@ -1,22 +1,23 @@
 import { appState } from '../../state/app-state.js';
 import { HOTELS, PARKS } from '../../domain/sites.js';
 import { classifyOccupancy } from '../../domain/occupancy.js';
-import { commercialContextForSite } from '../../domain/commercial-context.js';
-import { badge, escapeHTML, trafficLight } from '../html.js';
+import { escapeHTML } from '../html.js';
+
+const SEVERITY_RANK = { red: 0, amber: 1, green: 2, gray: 3 };
 
 export function renderDashboard(){
   const inventoryRows = latestInventoryRows();
   const hotelRows = inventoryRows.filter(row => row.tipo_sede === 'hotel');
-  const parkRows = inventoryRows.filter(row => row.tipo_sede === 'parque');
-  const alertItems = hotelRows
+  const alertItems = inventoryRows
     .map(row => ({ row, status: classifyOccupancy(row.ocupacion_porcentaje, row.fecha) }))
     .filter(item => ['red', 'amber'].includes(item.status.severity));
   const avgOccupancy = average(hotelRows.map(row => Number(row.ocupacion_porcentaje)));
-  const budgetRows = budgetSummaryRows();
+  const budgetRows = budgetSummaryRows().sort((a, b) => a.pct - b.pct);
   const budgetTotal = budgetTotals(budgetRows);
   const urgent = alertItems.filter(item => item.status.severity === 'red').length;
-  const allSites = HOTELS.concat(PARKS);
-  const sitesWithData = allSites.filter(site => appState.occupancyInventoryRows.some(row => row.sede === site.name)).length;
+
+  const hotelItems = HOTELS.map(site => siteOccupancy(site)).sort(bySeverity);
+  const parkItems = PARKS.map(site => siteOccupancy(site)).sort(bySeverity);
 
   return `
     <section class="powerbi-hero">
@@ -31,79 +32,34 @@ export function renderDashboard(){
       </div>
     </section>
 
-    <div class="score-grid">
-      ${score('Ocupacion hotelera', avgOccupancy === null ? 'Sin dato' : `${avgOccupancy.toFixed(0)}%`, 'Promedio con datos cargados', avgOccupancy === null ? 'gray' : avgOccupancy >= 70 ? 'green' : avgOccupancy >= 40 ? 'amber' : 'red')}
-      ${score('Sedes con datos', `${sitesWithData} de ${allSites.length}`, 'Estructura total del instrumento', sitesWithData === allSites.length ? 'green' : 'gray')}
+    <div class="score-grid three">
+      ${score('Ocupacion hotelera', avgOccupancy === null ? 'Sin dato' : `${avgOccupancy.toFixed(0)}%`, 'Promedio vs. meta 70%', avgOccupancy === null ? 'gray' : avgOccupancy >= 70 ? 'green' : avgOccupancy >= 40 ? 'amber' : 'red')}
       ${score('Presupuesto ejecutado', budgetTotal.budget ? `${budgetTotal.pct.toFixed(0)}%` : 'Sin dato', `${formatCOP(budgetTotal.executed)} de ${formatCOP(budgetTotal.budget)}`, budgetTotal.severity)}
-      ${score('Alertas comerciales', alertItems.length, 'Preventa o Mas cerca', urgent ? 'red' : alertItems.length ? 'amber' : 'green')}
+      ${score('Alertas activas', alertItems.length, 'Preventa o Mas cerca, todas las sedes', urgent ? 'red' : alertItems.length ? 'amber' : 'green')}
     </div>
 
-    <div class="dashboard-grid">
-      <section class="panel">
-        <h2>Donde mirar hoy</h2>
-        <div class="alert-list">
-          ${alertItems.length ? alertItems.map(item => `
-            <div class="alert-item">
-              <div>
-                <strong>${escapeHTML(item.row.sede)}</strong>
-                <div class="metric-note">${escapeHTML(item.row.fecha)} · ${escapeHTML(item.row.ocupacion_porcentaje)}% · ${escapeHTML(item.row.unidades_libres)} libres</div>
-                <div class="operation-note">${escapeHTML(item.status.context.label)}</div>
-                ${renderCompactContext(item.row, item.status)}
-              </div>
-              <div style="display:flex;align-items:center;gap:10px">${trafficLight(item.status.severity, 'horizontal')}${badge(item.status.label, item.status.severity)}</div>
-            </div>
-          `).join('') : '<p class="metric-note">Carga un archivo de ocupacion e inventario para ver alertas reales.</p>'}
-        </div>
-      </section>
-
-      <section class="panel">
-        <h2>Ocupacion visual por sede</h2>
-        <div class="bar-chart">
-          ${allSites.map(site => occupancyBar(site)).join('')}
-        </div>
-      </section>
-
-      <section class="panel budget-panel">
-        <h2>Presupuesto proyectado vs real</h2>
-        <div class="budget-list">
-          ${budgetRows.map(row => `
-            <div class="budget-row">
-              <div>
-                <strong>${escapeHTML(row.sede)}</strong>
-                <span>${escapeHTML(row.periodo)} · ${formatCOP(row.ejecutado)} de ${formatCOP(row.presupuesto)}</span>
-              </div>
-              <div class="bar-track"><div class="bar-fill ${row.severity}" style="width:${Math.min(row.pct, 130)}%"></div></div>
-              <strong>${row.pct.toFixed(0)}%</strong>
-            </div>
-          `).join('')}
-        </div>
-      </section>
+    <div class="chart-grid">
+      ${occupancyPanel('Hoteles — ocupacion', 'Ordenado de mas critico a mas alto. Detalle diario en la pestana Hoteles.', hotelItems)}
+      ${occupancyPanel('Parques — ocupacion / uso', 'Ordenado de mas critico a mas alto. Detalle diario en la pestana Parques.', parkItems)}
     </div>
 
-    <section class="panel">
+    <section class="panel budget-panel">
       <div class="section-head">
         <div>
-          <h2>Hoteles</h2>
-          <p class="metric-note">Sedes de alojamiento. Las sedes sin archivo cargado quedan en gris.</p>
+          <h2>Presupuesto ejecutado vs. proyectado</h2>
+          <p class="metric-note">Ordenado de menor a mayor cumplimiento, todas las sedes con dato cargado.</p>
         </div>
       </div>
-      <div class="kpi-grid">
-        ${HOTELS.map(hotel => siteCard(hotel)).join('')}
+      <div class="bar-chart">
+        ${budgetRows.length ? budgetRows.map(row => `
+          <div class="bar-row">
+            <span>${escapeHTML(row.sede)}</span>
+            <div class="bar-track"><div class="bar-fill ${row.severity}" style="width:${Math.min(row.pct, 130)}%"></div></div>
+            <strong>${row.pct.toFixed(0)}%</strong>
+          </div>
+        `).join('') : '<p class="metric-note">Sin datos de presupuesto cargados.</p>'}
       </div>
     </section>
-
-    <section class="panel">
-      <div class="section-head">
-        <div>
-          <h2>Parques</h2>
-          <p class="metric-note">Pasadia, camping o cupos. La estructura queda visible aunque falte el archivo.</p>
-        </div>
-      </div>
-      <div class="kpi-grid">
-        ${PARKS.map(park => siteCard(park)).join('')}
-      </div>
-    </section>
-
   `;
 }
 
@@ -117,6 +73,76 @@ function score(label, value, note, severity){
   `;
 }
 
+function occupancyPanel(title, note, items){
+  return `
+    <section class="panel">
+      <div class="section-head">
+        <div>
+          <h2>${escapeHTML(title)}</h2>
+          <p class="metric-note">${escapeHTML(note)}</p>
+        </div>
+      </div>
+      <div class="bar-chart">
+        ${items.map(occupancyRow).join('')}
+      </div>
+    </section>
+  `;
+}
+
+function occupancyRow(item){
+  if(!item.hasData){
+    return `
+      <div class="occ-row muted">
+        <span>${escapeHTML(item.name)}</span>
+        <div class="bar-track"><div class="bar-fill gray" style="width:100%"></div></div>
+        <strong>Sin dato</strong>
+        <span class="trend-empty">—</span>
+      </div>
+    `;
+  }
+  return `
+    <div class="occ-row">
+      <span>${escapeHTML(item.name)}</span>
+      <div class="bar-track"><div class="bar-fill ${item.severity}" style="width:${item.pct}%"></div></div>
+      <strong>${item.pct.toFixed(0)}%</strong>
+      ${sparkline(item.trendPoints, item.severity)}
+    </div>
+  `;
+}
+
+function siteOccupancy(site){
+  const rows = appState.occupancyInventoryRows.filter(row => row.sede === site.name);
+  const latest = rows[rows.length - 1];
+  if(!latest){
+    return { name: site.name, hasData: false, severity: 'gray', pct: null, trendPoints: [] };
+  }
+  const pct = Math.max(0, Math.min(Number(latest.ocupacion_porcentaje) || 0, 100));
+  const status = classifyOccupancy(pct, latest.fecha);
+  const trendPoints = rows.slice(-14).map(row => ({ fecha: row.fecha, pct: Number(row.ocupacion_porcentaje) })).filter(point => !Number.isNaN(point.pct));
+  return { name: site.name, hasData: true, severity: status.severity, pct, trendPoints };
+}
+
+function bySeverity(a, b){
+  return (SEVERITY_RANK[a.severity] ?? 4) - (SEVERITY_RANK[b.severity] ?? 4);
+}
+
+function sparkline(points, severity){
+  if(points.length < 2) return '<span class="trend-empty">—</span>';
+  const values = points.map(point => point.pct);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = max - min || 1;
+  const width = 64;
+  const height = 22;
+  const stepX = width / (values.length - 1);
+  const coords = values.map((value, index) => {
+    const x = (index * stepX).toFixed(1);
+    const y = (height - ((value - min) / range) * height).toFixed(1);
+    return `${x},${y}`;
+  }).join(' ');
+  return `<svg class="trend-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none"><polyline class="${severity}" points="${coords}"/></svg>`;
+}
+
 function latestInventoryRows(){
   const bySite = new Map();
   appState.occupancyInventoryRows.forEach(row => {
@@ -127,75 +153,6 @@ function latestInventoryRows(){
     }
   });
   return [...bySite.values()];
-}
-
-function siteCard(site){
-  const rows = appState.occupancyInventoryRows.filter(row => row.sede === site.name);
-  const latest = rows[rows.length - 1];
-  const status = latest ? classifyOccupancy(latest.ocupacion_porcentaje, latest.fecha) : null;
-  const context = latest ? commercialContextForSite(site.name, latest.fecha, status) : null;
-  const pct = latest ? Number(latest.ocupacion_porcentaje) : null;
-  const occupancy = latest ? occupancyCompact(latest) : 'Pendiente';
-
-  return `
-    <article class="kpi-card">
-      <div class="kpi-stripe ${status ? status.severity : 'gray'}"></div>
-      <div class="kpi-body">
-        <div class="kpi-title-row">
-          <div class="kpi-name">
-            <strong>${escapeHTML(site.name)}</strong>
-            <span>${escapeHTML(site.role)}</span>
-          </div>
-          ${status ? trafficLight(status.severity) : '<span class="pending-dot">Sin datos</span>'}
-        </div>
-        <div class="kpi-row"><span class="label">Tramo</span>${status ? badge(status.label, status.severity) : badge('Pendiente', 'gray')}</div>
-        ${status ? `<div class="kpi-row"><span class="label">Dia</span><span class="value">${escapeHTML(status.context.dayName)}</span></div>` : ''}
-        <div class="kpi-row"><span class="label">Ocupacion</span><span class="value">${escapeHTML(occupancy)}</span></div>
-        ${latest ? `<div class="kpi-row"><span class="label">Libres</span><span class="value">${escapeHTML(latest.unidades_libres)}</span></div>` : ''}
-        <div class="action-note ${status ? status.severity : 'gray'}">${escapeHTML(status ? `${status.recommendation} ${context.action}` : 'Cargue el archivo de ocupacion de la sede para calcular tramo y accion.')}</div>
-      </div>
-    </article>
-  `;
-}
-
-function occupancyBar(site){
-  const rows = appState.occupancyInventoryRows.filter(row => row.sede === site.name);
-  const latest = rows[rows.length - 1];
-  if(!latest){
-    return `
-      <div class="bar-row muted">
-        <span>${escapeHTML(site.name)}</span>
-        <div class="bar-track"><div class="bar-fill gray" style="width:100%"></div></div>
-        <strong>Sin dato</strong>
-      </div>
-    `;
-  }
-  const pct = Math.max(0, Math.min(Number(latest.ocupacion_porcentaje) || 0, 100));
-  const status = classifyOccupancy(pct, latest.fecha);
-  return `
-    <div class="bar-row">
-      <span>${escapeHTML(site.name)}</span>
-      <div class="bar-track"><div class="bar-fill ${status.severity}" style="width:${pct}%"></div></div>
-      <strong>${pct.toFixed(0)}%</strong>
-    </div>
-  `;
-}
-
-function occupancyCompact(row){
-  const occupied = Number(row.unidades_ocupadas);
-  const total = Number(row.inventario_total);
-  const pct = Number(row.ocupacion_porcentaje);
-  if(Number.isNaN(occupied) || Number.isNaN(total) || Number.isNaN(pct)) return 'Sin dato';
-  return `${occupied} de ${total} (${pct.toFixed(1)}%)`;
-}
-
-function renderCompactContext(row, status){
-  const context = commercialContextForSite(row.sede, row.fecha, status);
-  const names = context.campaigns.length
-    ? context.campaigns.map(campaign => campaign.name)
-    : context.activities.map(activity => activity.activity);
-  if(!names.length) return '';
-  return `<div class="context-inline">Contexto comercial: ${escapeHTML(names.slice(0, 2).join(' · '))}</div>`;
 }
 
 function budgetSummaryRows(){
