@@ -6,6 +6,81 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-30 — Especificación Dashboard de Mando [Estado: Cerrado]
+
+- **Agente(s):** Codex
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E2
+- **Objetivo del sprint:** definir la lógica directiva del Dashboard general antes de volver a tocar código.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-078 | Especificación funcional del Dashboard de Mando | Codex | Hecha | Define reglas, jerarquía visual y HUs de implementación |
+
+### Resumen de cierre
+
+Se detuvo la inercia de seguir ajustando piezas visuales del Dashboard general sin una logica directiva cerrada. Se creo `05-tablero-ocupacion/DISENO_DASHBOARD_MANDO_SPRINT-30.md` como especificacion funcional previa a desarrollo. El documento declara que el Dashboard general debe decidir y priorizar, no resumir todas las secciones, y separa responsabilidades: Dashboard decide; Hoteles/Parques explican detalle operativo; Presupuesto profundiza finanzas; Carga controla fuentes; Bitacora registra compromisos.
+
+La especificacion define la estructura objetivo del Dashboard de Mando: banda de estado general de unidad, tres indicadores directivos, matriz de mando por sede, cuadrante ocupacion vs presupuesto, top 3 acciones y bloque secundario de calidad del dato. Tambien define reglas propuestas para estado combinado por sede, estado general de la unidad y diferencia entre lectura mensual y `Todo 2026`.
+
+Se alimento `BACKLOG.md` con nuevas HUs de implementacion: `TO-HU-079` estado general combinado, `TO-HU-080` matriz de mando por sede, `TO-HU-081` cuadrante ocupacion vs presupuesto, `TO-HU-082` top 3 acciones y `TO-HU-083` lectura anual distinta. `ROADMAP.md` quedo actualizado para que el siguiente sprint no vuelva a improvisar: primero dominio de mando + banda + matriz; despues cuadrante + acciones; finalmente lectura anual.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md` y `05-tablero-ocupacion/DISENO_DASHBOARD_MANDO_SPRINT-30.md`.
+
+**Validacion realizada:** revision documental de `BACKLOG.md`, `ROADMAP.md`, ultimos sprints y `MAPA_CODIGO.md`; contraste contra `src/ui/views/dashboard.js` y `src/domain/strategic-recommendation.js`; `git diff --check`.
+
+**Decisiones / límites:** No se toco codigo runtime en este sprint. Las HUs de implementacion quedan pendientes a proposito para no marcar como hecho un dashboard que aun no existe en pantalla. El proximo sprint recomendado debe empezar por una capa de dominio de mando antes de reordenar HTML/CSS.
+
+**Pendientes para revisar:** validar con Luis Felipe si la estructura propuesta es la correcta antes de implementar; si se aprueba, abrir `SPRINT-31` con `TO-HU-079` y `TO-HU-080`.
+
+```text
+HANDOFF — SPRINT-30 Especificación Dashboard de Mando
+──────────────────────────────────────
+HUs completas:        TO-HU-078
+HUs pendientes:       TO-HU-079, TO-HU-080, TO-HU-081,
+                      TO-HU-082, TO-HU-083 quedan para implementacion
+
+Archivos tocados:     BACKLOG.md · SPRINTS.md · ROADMAP.md · MAPA_CODIGO.md
+                      05-tablero-ocupacion/DISENO_DASHBOARD_MANDO_SPRINT-30.md
+
+Archivos NO tocados:  05-tablero-ocupacion/v3-modular/src/ui/views/dashboard.js
+                      05-tablero-ocupacion/v3-modular/src/domain/strategic-recommendation.js
+                      05-tablero-ocupacion/v3-modular/styles/app.css
+                      tablero-seguimiento-ocupacion.html
+                      tablero-seguimiento-ocupacion-v2.html
+                      tablero-seguimiento-ocupacion-v3-demo.html
+
+Datos/contratos:      No se cambiaron datos, contratos ni plantillas.
+
+Decisiones tomadas:   El Dashboard general debe ser tablero de mando, no resumen.
+                      La prioridad pasa a estado combinado, matriz por sede,
+                      cuadrante ocupacion vs presupuesto y top 3 acciones.
+                      La lectura mensual y Todo 2026 deben ser distintas.
+                      La implementacion queda separada en HUs nuevas.
+
+Riesgos residuales:
+- Si se implementa sin validar la especificacion, se puede volver a iterar en
+  circulo sobre estetica.
+- El estado combinado depende de calidad de datos; sedes sin presupuesto o
+  Revenue deben mostrarse como dato insuficiente, no como buen desempeno.
+- TO-HU-010 sigue bloqueada para comparacion contra ano anterior por falta de
+  fuente historica cargada.
+
+Validación hecha:
+  Documental:         backlog, roadmap, sprints y mapa revisados -> pass
+  Producto:           dashboard actual contrastado contra objetivo directivo -> pass
+  Estatica:           git diff --check -> pass
+  Runtime:            no aplica; sprint sin cambios de codigo
+  Documentación:      BACKLOG.md + SPRINTS.md + ROADMAP.md + MAPA_CODIGO.md actualizados
+
+Auto-reporte DoD:     Completo para TO-HU-078.
+```
+
+---
+
 ## SPRINT-29 — Bitácora y responsables locales [Estado: Cerrado]
 
 - **Agente(s):** Codex

@@ -1,6 +1,6 @@
 # Mapa de código — Comfenalco IA
 
-Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-28`.
+Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-30`.
 
 ---
 
@@ -40,6 +40,7 @@ Versiones principales:
 | `abrir-v3-modular.command` | Lanzador macOS para abrir `v3-modular/` con servidor local en `http://localhost:8055/`. |
 | `AUDITORIA_DATOS_QUEMADOS_SPRINT-24.md` | Informe de auditoria de datos quemados de la V3 modular: distingue datos semilla, catalogos estructurales, reglas de negocio y riesgos pendientes (`TO-HU-071`, `TO-HU-072`). |
 | `ARQUITECTURA_IA_RECOMENDACIONES_SPRINT-27.md` | Documento de arquitectura para evolucionar `Accion sugerida` hacia IA asistida: recomienda no conectar IA desde HTML local, mantener motor deterministico como fallback, y exigir backend, auditoria, contexto estructurado y aprobacion humana antes de IA real. |
+| `DISENO_DASHBOARD_MANDO_SPRINT-30.md` | Especificacion funcional previa a codigo para redisenar el Dashboard general como tablero de mando directivo: estado combinado, KPIs directivos, matriz por sede, cuadrante ocupacion vs presupuesto, top 3 acciones, calidad de dato y lectura anual distinta. |
 | `v3-modular/` | **Base modular paralela** — creada en `SPRINT-01` para dejar de crecer el monolito. No reemplaza producción ni v2. |
 
 Las versiones `tablero-seguimiento-ocupacion.html`, `tablero-seguimiento-ocupacion-v2.html` y `tablero-seguimiento-ocupacion-v3-demo.html` son **un solo archivo HTML autocontenido** (HTML + CSS + JS inline), sin build step, sin backend. Persistencia en `localStorage` del navegador. Sin dependencias externas (se quitó Chart.js — el gráfico de presupuesto es divs+CSS puro — para que el tablero funcione sin internet).
@@ -465,3 +466,13 @@ Plantillas CSV de S1:
 - `styles/app.css`: agrega estilos compartidos para select/textarea, formulario de bitacora y panel de responsable.
 
 Limite deliberado: la persistencia es local al navegador, suficiente para demo local; auditoria multiusuario, permisos reales y versionado de respuestas IA siguen requiriendo backend.
+
+### 3.31 — Especificacion Dashboard de Mando en `SPRINT-30`
+
+`SPRINT-30` no toca runtime; deja una decision de producto documentada antes de reescribir el Dashboard:
+
+- `DISENO_DASHBOARD_MANDO_SPRINT-30.md` (nuevo): define el problema, principio de producto y jerarquia de lectura directiva del Dashboard general.
+- Define la nueva estructura objetivo: banda de mando, tres KPIs directivos, matriz de mando por sede, cuadrante ocupacion vs presupuesto, top 3 acciones y calidad del dato.
+- Define reglas propuestas para estado combinado por sede y estado general de la unidad.
+- Diferencia lectura mensual vs `Todo 2026`; `Todo 2026` debe mostrar acumulado, tendencia por meses, cobertura de meses cargados y sedes recurrentemente criticas.
+- Alimenta backlog con TO-HU-079 a TO-HU-083 como implementacion posterior. El siguiente sprint recomendado es dominio de mando + banda + matriz por sede.

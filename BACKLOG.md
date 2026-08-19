@@ -164,6 +164,12 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-062 *(chico)*: Como Diana, quiero que el % de cumplimiento del presupuesto no se repita en el bloque de presupuesto del dashboard (hoy aparece en el badge del encabezado de cada sede y de nuevo junto a la barra "Real cumplido"), para no leer el mismo dato dos veces. — **Hecha**
   - TO-HU-063 *(mediano)*: Como jefatura, quiero redistribuir tamaños en los bloques "Ocupación hotelera" y "Ejecución presupuestal" del dashboard (hoy tienen mucho espacio en blanco y la información se ve muy pequeña), para aprovechar mejor el espacio y leer los datos sin esforzarme. — **Hecha**
   - TO-HU-064 *(muy chico)*: Como usuaria, quiero que el subtítulo del sidebar diga "Unidad de Turismo" en vez de "Ocupación y presupuesto", para que sea consistente con el encabezado de cada pantalla. — **Hecha**
+  - TO-HU-078: Como Luis Felipe, quiero una especificación funcional del Dashboard de Mando antes de desarrollar, para dejar de iterar sobre piezas visuales sin una lógica directiva clara. — **Hecha** (`SPRINT-30`; ver `05-tablero-ocupacion/DISENO_DASHBOARD_MANDO_SPRINT-30.md`)
+  - TO-HU-079: Como director, quiero ver un estado general de la unidad combinando ocupación, presupuesto y cobertura de datos, para saber si el negocio está crítico, en atención, bajo control o sin dato suficiente. — **Pendiente**
+  - TO-HU-080: Como jefatura, quiero una matriz de mando por sede con ocupación, presupuesto, tendencia, semáforo, acción sugerida y responsable, para decidir sin entrar a cada pestaña. — **Pendiente**
+  - TO-HU-081: Como director, quiero un cuadrante ocupación vs presupuesto por sede, para detectar rápidamente si el riesgo principal es comercial, financiero, operativo o de datos. — **Pendiente**
+  - TO-HU-082: Como Diana, quiero ver las tres acciones prioritarias del día con responsable y fuente, para convertir el tablero en seguimiento operativo. — **Pendiente**
+  - TO-HU-083: Como usuario directivo, quiero que la lectura anual y mensual sean visualmente distintas, para que "Todo 2026" no se vea igual a mirar un mes. — **Pendiente** (evoluciona TO-HU-061)
 
 - **E2-F2 — Sección Hoteles**
   - TO-HU-011: Como gerente hotelero, quiero una sección de Hoteles con una pestaña por hotel, para revisar solo mi sede sin ruido. — **Hecha**
