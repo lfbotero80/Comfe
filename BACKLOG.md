@@ -127,6 +127,7 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-003: Como usuario, quiero que el tablero valide columnas obligatorias, fechas, sede y tipo de habitación/sitio, para evitar cargar información incompleta o mal estructurada. — **Hecha**
   - TO-HU-004: Como Diana, quiero ver errores de carga claros por fila y columna, para corregir el archivo antes de usarlo en decisiones. — **Hecha**
   - TO-HU-045: Como gerente de sede, quiero saber de inmediato si mi archivo se cargó, se rechazó o el formato no es compatible, para confiar en que el dato quedó (o no) sin adivinar. — **Hecha**
+  - TO-HU-089: Como usuaria del tablero, quiero que el mensaje con el archivo cargado solo aparezca en el módulo Cargar datos, para no exponer ese detalle en Dashboard, Hoteles, Parques u otras secciones. — **Hecha** (`SPRINT-36`)
 
 - **E1-F2 — Modelo de datos por sede y unidad**
   - TO-HU-005: Como Diana, quiero que cada sede tenga inventario total, ocupado, libre y % de ocupación, para auditar capacidad real y uso. — **Hecha**

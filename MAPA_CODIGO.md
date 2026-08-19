@@ -147,7 +147,7 @@ URL local: `http://localhost:8055/`
 
 | Modulo | Responsabilidad |
 |---|---|
-| `src/main.js` | Orquesta navegacion, titulo de vista y render de la pantalla activa. Desde `SPRINT-18`, los filtros globales (`#globalFilters`) solo se renderizan y enlazan cuando `activeView === 'dashboard'`; en el resto de vistas quedan `hidden`. `setStatus(text, type)` colorea el pill del header segun `ok`/`warn`/`error`/`pending`; desde `SPRINT-16`, lo mantiene oculto cuando no hay texto real. Desde `SPRINT-29`, registra la vista `decisions`. |
+| `src/main.js` | Orquesta navegacion, titulo de vista y render de la pantalla activa. Desde `SPRINT-18`, los filtros globales (`#globalFilters`) solo se renderizan y enlazan cuando `activeView === 'dashboard'`; en el resto de vistas quedan `hidden`. `setStatus(text, type)` colorea el pill del header segun `ok`/`warn`/`error`/`pending`; desde `SPRINT-16`, lo mantiene oculto cuando no hay texto real. Desde `SPRINT-29`, registra la vista `decisions`. Desde `SPRINT-36`, `syncStatusVisibility()` oculta el pill fuera de `data-load`, para que el nombre del archivo cargado no aparezca en todas las secciones. |
 | `src/ui/global-filters.js` | Renderiza y enlaza filtros globales de periodo, unidad y semaforo. Expone `monthLabel()` para que dashboard y vistas por sede nombren el periodo con lenguaje humano. |
 | `src/config/navigation.js` | Define las vistas del menu lateral con iconos: dashboard, hoteles, parques, presupuesto (`$`, desde `SPRINT-19`), calendario comercial, catalogo de campanas y bitacora (`SPRINT-29`). La carga de datos se abre desde el boton primario del header. `Estructura de archivos` ya no aparece en navegacion desde `SPRINT-09`. |
 | `src/domain/sites.js` | Catálogo de hoteles y parques, con rol estrategico y capacidad conocida cuando existe. |
@@ -518,3 +518,12 @@ Limite deliberado: el sprint no cambia contratos, carga de datos, Hoteles, Parqu
 - `src/domain/data-contracts.js`: conserva contratos y umbrales, pero sus `sampleRow` usan valores neutros y no revelan cifras, tarifas o nombres de archivos fuente internos.
 
 Limite deliberado: nombres de sedes, roles, contratos, umbrales de semaforo y festivos publicos Colombia 2026 siguen en codigo porque son estructura/reglas del instrumento, no datos operativos cargados. La persistencia sigue siendo local por navegador; no sincroniza datos entre Luis Felipe y Diana.
+
+### 3.36 — Estado de carga solo en su modulo en `SPRINT-36`
+
+`SPRINT-36` limita el mensaje del archivo cargado a la vista `Cargar datos`:
+
+- `src/main.js`: agrega `syncStatusVisibility()`, llamada desde `renderActiveView()` y `setStatus()`. El pill `#dataStatus` conserva texto/clase, pero queda oculto cuando `activeView !== 'data-load'`.
+- No cambia `data-load.js`, contratos, validadores, parser Zeus ni persistencia. El resultado de carga sigue visible en la tarjeta de validacion y en Cargar datos, pero deja de exponerse como estado global en Dashboard/Hoteles/Parques/etc.
+
+Limite deliberado: otros flujos que reutilizan `setStatus()` (Campanas/Bitacora) tambien quedan sin pill global fuera de Cargar datos; si se quiere feedback visible ahi, debe implementarse como mensaje contextual de cada modulo.

@@ -6,6 +6,74 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-36 — Estado de carga solo en su módulo [Estado: Cerrado]
+
+- **Agente(s):** Codex
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E1
+- **Objetivo del sprint:** evitar que el nombre/estado del archivo cargado quede visible globalmente en todas las pantallas.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-089 | Estado de archivo limitado a Cargar datos | Codex | Hecha | Oculta pill del header fuera de la vista de carga |
+
+### Resumen de cierre
+
+Se corrigio el comportamiento del estado global del header: el mensaje con nombre de archivo cargado ya no queda expuesto en Dashboard, Hoteles, Parques, Presupuesto, Calendario, Campanas ni Bitacora. `src/main.js` conserva internamente el texto del ultimo estado, pero `syncStatusVisibility()` solo lo muestra cuando la vista activa es `data-load`.
+
+**Qué cambió:** `setStatus(text, type)` deja de decidir por si solo si el pill del header es visible. Ahora actualiza texto/clase y delega en `syncStatusVisibility()`, que oculta el pill cuando `activeView !== 'data-load'`. `renderActiveView()` llama esa sincronizacion en cada navegacion, por lo que el detalle del archivo se esconde inmediatamente al salir de Cargar datos y reaparece si el usuario vuelve a esa vista.
+
+**HUs trabajadas:** `TO-HU-089` queda `Hecha`.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/src/main.js`.
+
+**Validación realizada:** `node --check` sobre todos los modulos JS; `git diff --check`; servidor local `http://localhost:8055/` respondiendo 200; prueba Playwright cargando `Forecast Quirama 1808.pdf`, verificando que el estado es visible en Cargar datos, queda oculto al navegar a Dashboard y vuelve a aparecer al regresar a Cargar datos.
+
+**Decisiones / límites:** no se cambia la validacion de archivos, persistencia ni parser Zeus. El detalle de carga sigue existiendo dentro de la vista de carga y en la bitacora/localStorage, pero no se muestra como informacion transversal de todas las pantallas.
+
+```text
+HANDOFF — SPRINT-36 Estado de carga solo en su módulo
+──────────────────────────────────────
+HUs completas:        TO-HU-089
+HUs pendientes:       ninguna dentro del alcance del sprint
+
+Archivos tocados:     BACKLOG.md · SPRINTS.md · MAPA_CODIGO.md
+                      05-tablero-ocupacion/v3-modular/src/main.js
+
+Archivos NO tocados:  tablero-seguimiento-ocupacion.html
+                      tablero-seguimiento-ocupacion-v2.html
+                      tablero-seguimiento-ocupacion-v3-demo.html
+                      v3-modular/src/ui/views/data-load.js
+                      v3-modular/src/services/file-reader.js
+                      v3-modular/src/services/zeus-forecast-parser.js
+                      v3-modular/src/state/app-state.js
+
+Datos/contratos:      Sin cambios en contratos, plantillas ni datos.
+
+Decisiones tomadas:   El estado de carga deja de ser global.
+                      Solo se muestra cuando la vista activa es Cargar datos.
+
+Riesgos residuales:
+- Los mensajes de Campanas/Bitacora que usan setStatus tambien quedan ocultos fuera
+  de Cargar datos; si se quieren conservar, necesitan un estado contextual propio.
+
+Validación hecha:
+  Sintaxis:           node --check sobre todos los modulos JS -> pass
+  Estatica:           git diff --check -> pass
+  Servidor local:     http://localhost:8055/ responde 200
+  Runtime navegador:  carga PDF Quirama -> estado visible en Cargar datos -> pass
+                      navegar a Dashboard -> estado oculto -> pass
+                      volver a Cargar datos -> estado visible -> pass
+  Documentación:      BACKLOG.md + SPRINTS.md + MAPA_CODIGO.md actualizados
+
+Auto-reporte DoD:     Completo para TO-HU-089.
+```
+
+---
+
 ## SPRINT-35 — Demo publico sin datos quemados [Estado: Cerrado]
 
 - **Agente(s):** Codex
@@ -87,6 +155,8 @@ Validación hecha:
 
 Auto-reporte DoD:     Completo para TO-HU-087 y TO-HU-088.
 ```
+
+**Nota de autorización y verificación independiente (Claude Code, 2026-08-19):** este sprint incluye `git push` a `main` y despliegue a `gh-pages` — ambos requieren permiso explícito de Luis Felipe desde `SPRINT-34`. Luis Felipe confirmó directamente en el chat que autorizó esto con Codex por fuera de este registro, porque necesita exponer el desarrollo a Diana. Se verificó independientemente navegando a `https://lfbotero80.github.io/Comfe/`: el sitio está vivo, público, sin autenticación; Dashboard, Presupuesto, Calendario y Campañas confirmados sin datos reales de negocio (`0 de 9 sedes con dato`, `0 campañas`, `0 actividades`); sin errores de consola. **Efecto secundario que vale la pena tener presente:** `demo-data.js`, `commercial-calendar.js` y `campaigns.js` quedaron vacíos para todo el repositorio, no solo para el build público — la V3 modular local (`abrir-v3-modular.command`) ya no arranca con datos semilla; cualquier prueba local futura (de cualquier agente) necesita cargar archivos de ejemplo primero, ya no hay fixture rica precargada.
 
 ---
 
