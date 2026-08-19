@@ -6,6 +6,42 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-15 — Retroalimentacion de carga y legibilidad del tablero [Estado: Cerrado]
+
+- **Agente(s):** Claude Code
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E1, E2
+- **Objetivo del sprint:** corregir tres problemas de uso reportados por Luis Felipe tras revisar V3 en vivo: la carga de archivos no confirmaba éxito/error, la gráfica diaria de Hoteles era pequeña, y el presupuesto del dashboard no permitía comparar proyectado vs. real de un vistazo.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-045 | Confirmación de carga exitosa/error/formato incompatible | Claude Code | Hecha | Bug real: el mensaje se borraba solo antes de leerse |
+| TO-HU-046 | Presupuesto como barras comparables Proyectado/Real | Claude Code | Hecha | Reemplaza la barra de % de relleno |
+| TO-HU-047 | Gráfica diaria de Hoteles más grande y legible | Claude Code | Hecha | Contenedor y barras ampliados, valores más grandes |
+
+### Resumen de cierre
+
+**Qué cambió:**
+
+- **Bug real encontrado y corregido (`data-load.js`):** tras una carga exitosa (o parcialmente exitosa), el handler llamaba `rerender()` sobre toda la vista de "Carga de datos", lo que regeneraba las tarjetas de subida desde cero y borraba el mensaje de validación (`"N fila(s) listas para cargar..."`) que él mismo acababa de mostrar — el usuario solo alcanzaba a ver el pill genérico del header, sin color ni énfasis. Como `renderDataLoad()` no depende de ningún dato mutable de `appState`, se quitó el `rerender()` innecesario: el mensaje ahora queda visible, con estado `pending` mientras lee el archivo y `ok`/`warn`/`error` al terminar. `event.target.value` se limpia al final para poder resubir el mismo archivo si hace falta.
+- **`main.js`:** `setStatus(text, type)` ahora colorea el pill del header (`ok` verde, `warn` ámbar, `error` rojo, `pending` gris) en vez de un texto plano sin estado visual.
+- **`styles/app.css`:** `.status-pill.ok/.warn/.error/.pending` y `.validation-item.pending` nuevos; `.forecast-strip` pasa de 160px a 240px de alto mínimo, columnas de 38px a 48px mínimo, `.forecast-value` de 12px a 14px en negrita 800; `.budget-compare-list/.budget-compare-row/.budget-compare-bars/.budget-compare-bar` nuevos para el presupuesto comparativo.
+- **`hotels.js`:** la barra de detalle diario escala `pct * 2` en vez de `pct * 1.25`, usando el nuevo alto disponible del contenedor.
+- **`dashboard.js`:** el bloque de presupuesto deja de ser una sola barra de % relleno (`bar-row`) y pasa a `budgetCompareRow()` — dos barras por sede ("Proyectado" y "Real cumplido"), escaladas ambas contra `max(presupuesto, ejecutado)` de esa sede para que la más larga llegue a 100% y la comparación sea proporcional, con el valor en pesos junto a cada barra y el % de cumplimiento como badge.
+
+**Investigación de un cuarto reporte (no reproducido):** Luis Felipe también reportó que el dashboard no se actualiza cuando se carga información en Hoteles. Se probó en vivo (carga real de un CSV de Recinto Quirama vía "Cargar datos", luego navegación a Dashboard) y el dashboard sí reflejó el dato nuevo de inmediato — `renderDashboard()` lee `appState` en cada render, sin caché. La explicación más probable es que el bug de `TO-HU-045` (mensaje de confirmación que desaparecía) generaba la sensación de que la carga no había surtido efecto en ningún lado. Queda para revisión de Luis Felipe si el síntoma persiste después de este sprint con un caso concreto.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/src/ui/views/data-load.js`, `src/main.js`, `src/ui/views/hotels.js`, `src/ui/views/dashboard.js`, `styles/app.css`.
+
+**Validación realizada:** `node --check` en todos los módulos JS; servidor local `localhost:8055` respondió 200; pruebas en navegador simulando carga real de archivo (éxito con fila válida de Quirama, error con `.txt` no soportado) confirmando mensaje visible y con color correcto en ambos casos; revisión visual de la gráfica diaria de Hoteles (Hostería Los Farallones, mes 2026-08) y del bloque de presupuesto comparativo; sin errores en consola.
+
+**Nota de coordinación:** Codex cerró `SPRINT-14` (Hoteles anual y acción sugerida) en paralelo, tocando `hotels.js` y `app.css` — los mismos archivos que yo estaba editando. Se esperó a que Codex comiteara antes de tocar el índice de git (no se hizo `git add` mientras su commit estaba pendiente), pero el commit `3d94152` de Codex sí terminó incluyendo, sin querer, mi cambio de escala del gráfico diario (`pct * 2` en `forecast-column`) porque ya estaba guardado en el mismo archivo cuando Codex hizo `git add hotels.js` — mismo patrón exacto que ya pasó entre `SPRINT-11` y `SPRINT-12`. El contenido quedó correcto (ambos cambios conviven bien, verificado en navegador), solo la atribución del commit no es exacta. Este `SPRINT-15` solo agrega lo que quedó pendiente después de ese commit: `data-load.js`, `main.js`, `dashboard.js`, y el resto de `app.css` (status-pill, validation-item.pending, budget-compare-*).
+
+---
+
 ## SPRINT-14 — Hoteles anual y accion sugerida [Estado: Cerrado]
 
 - **Agente(s):** Codex

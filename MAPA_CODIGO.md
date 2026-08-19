@@ -1,6 +1,6 @@
 # Mapa de código — Comfenalco IA
 
-Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-14`.
+Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-15`.
 
 ---
 
@@ -144,7 +144,7 @@ URL local: `http://localhost:8055/`
 
 | Modulo | Responsabilidad |
 |---|---|
-| `src/main.js` | Orquesta navegacion, titulo de vista y render de la pantalla activa. |
+| `src/main.js` | Orquesta navegacion, titulo de vista y render de la pantalla activa. `setStatus(text, type)` (desde `SPRINT-15`) colorea el pill del header segun `ok`/`warn`/`error`/`pending`, compartido por carga de archivos y campanas. |
 | `src/config/navigation.js` | Define las vistas del menu lateral con iconos: dashboard, hoteles, parques, calendario comercial y catalogo de campanas. La carga de datos se abre desde el boton primario del header. `Estructura de archivos` ya no aparece en navegacion desde `SPRINT-09`. |
 | `src/domain/sites.js` | Catálogo de hoteles y parques, con rol estrategico y capacidad conocida cuando existe. |
 | `src/domain/data-contracts.js` | Contratos de archivo de S1: `occupancyInventory`, `budgetExecution` y `revenueRules`, con columnas obligatorias/opcionales, tipos, fuentes, grano y plantilla CSV. |
@@ -162,9 +162,9 @@ URL local: `http://localhost:8055/`
 | `src/services/validators.js` | Valida formato, columnas obligatorias, fechas, periodos, sedes reconocidas, tipo de unidad, porcentajes y cuadratura de inventario/presupuesto/umbrales. |
 | `src/state/app-state.js` | Estado en memoria de la sesion local: archivos cargados, inventario/ocupacion, presupuesto, reglas de Revenue y campanas agregadas durante la sesion. |
 | `src/ui/html.js` | Helpers pequeños para escapar HTML, crear badges y renderizar el semaforo real de tres luces. |
-| `src/ui/views/dashboard.js` | Dashboard general solo-graficas tipo Power BI (desde `SPRINT-12`): banda principal, 3 KPIs de negocio, y 3 graficas — ocupacion Hoteles y ocupacion Parques (separadas, ordenadas de mas critico a mejor, con sparkline de tendencia por sede) y presupuesto ejecutado vs proyectado (ordenado igual). Sin listas de texto ni tarjetas detalladas por sede — ese detalle vive solo en `hotels.js`/`parks.js`. Sedes sin dato quedan en gris al final de cada grafica. |
-| `src/ui/views/data-load.js` | Vista de carga de archivos, descarga de plantillas, resultado de validacion por fila y explicacion de interpretacion Zeus por hotel. |
-| `src/ui/views/hotels.js` | Vista de hoteles con pestanas internas por hotel, 12 barras mensuales, cumplimiento del mes contra meta, ocupadas/inventario en un solo indicador, semaforo contextual, accion sugerida, contexto comercial y detalle diario del mes activo con dia real. |
+| `src/ui/views/dashboard.js` | Dashboard general solo-graficas tipo Power BI (desde `SPRINT-12`, presupuesto comparativo desde `SPRINT-15`): banda principal, 3 KPIs de negocio, y 3 graficas — ocupacion Hoteles y ocupacion Parques (separadas, ordenadas de mas critico a mejor, con sparkline de tendencia por sede) y presupuesto: dos barras por sede (`Proyectado` y `Real cumplido`, funcion `budgetCompareRow()`) escaladas contra el mayor de los dos valores, en vez de una sola barra de % de relleno. Sin listas de texto ni tarjetas detalladas por sede — ese detalle vive solo en `hotels.js`/`parks.js`. Sedes sin dato quedan en gris al final de cada grafica. |
+| `src/ui/views/data-load.js` | Vista de carga de archivos, descarga de plantillas, resultado de validacion por fila y explicacion de interpretacion Zeus por hotel. Desde `SPRINT-15`, el handler de carga ya no llama `rerender()` tras un exito (`renderDataLoad()` no depende de `appState`, y ese `rerender()` borraba el mensaje de validacion antes de que se alcanzara a leer) — el mensaje ahora persiste con estado `pending`/`ok`/`warn`/`error`. |
+| `src/ui/views/hotels.js` | Vista de hoteles con pestanas internas por hotel, 12 barras mensuales, cumplimiento del mes contra meta, ocupadas/inventario en un solo indicador, semaforo contextual, accion sugerida, contexto comercial y detalle diario del mes activo con dia real. Grafica de detalle diario ampliada en `SPRINT-15` (contenedor 240px, barras escaladas `pct * 2`, valores en 14px/800). |
 | `src/ui/views/parks.js` | Vista `Parques` con pestanas por sede, uso del mes, capacidad, usados/libres, alarma y detalle diario; no muestra semaforo cuando falta dato. |
 | `src/ui/views/calendar.js` | Vista recuperada de calendario comercial, con filtros por mes/sede y calendario operativo 2026. |
 | `src/ui/views/campaigns.js` | Vista recuperada de catalogo de campanas, con estado, resultado si hay ocupacion proyectada/real y boton `Agregar campaña nueva` que abre un modal tipo v2. |
@@ -298,3 +298,14 @@ Plantillas CSV de S1:
 - La barra `Cumplimiento del mes` compara el promedio mensual contra `OCCUPANCY_TARGET` (70%).
 - `src/domain/strategic-recommendation.js` decide la `Accion sugerida` con semaforo, cumplimiento mensual, tendencia reciente y contexto comercial; no usa IA real todavia.
 - `styles/app.css` contiene `.year-panel`, `.month-bars`, `.month-bar`, `.compliance-panel` y estados visuales asociados.
+
+### 3.16 — Retroalimentacion de carga y legibilidad en `SPRINT-15`
+
+`SPRINT-15` corrige tres problemas de uso reportados por Luis Felipe tras revisar V3:
+
+- **Bug real:** `src/ui/views/data-load.js` llamaba `rerender()` tras una carga exitosa, lo que regeneraba las tarjetas de subida y borraba el mensaje de validacion antes de que se pudiera leer. Se quito ese `rerender()` (innecesario: `renderDataLoad()` no depende de `appState`) y el mensaje ahora persiste con estado `pending` (leyendo) → `ok`/`warn`/`error` (resultado).
+- `src/main.js` expone `setStatus(text, type)`: colorea el pill del header del topbar segun el resultado, en vez de texto plano sin estado visual.
+- `src/ui/views/hotels.js`: la barra de `Detalle diario del mes` escala `pct * 2` (antes `pct * 1.25`), aprovechando el `.forecast-strip` ampliado a 240px de alto minimo.
+- `src/ui/views/dashboard.js`: el bloque de presupuesto reemplaza la barra unica de % de relleno por `budgetCompareRow()` — dos barras por sede (`Proyectado` y `Real cumplido`), escaladas contra el mayor de los dos valores de esa sede, con el monto en pesos junto a cada barra.
+- `styles/app.css` agrega `.status-pill.ok/.warn/.error/.pending`, `.validation-item.pending`, `.budget-compare-list/.budget-compare-row/.budget-compare-bars/.budget-compare-bar`, y amplia `.forecast-strip/.forecast-column/.forecast-value`.
+- Se investigo un cuarto reporte ("el dashboard no se actualiza al cargar en Hoteles") sin poder reproducirlo: `renderDashboard()` ya lee `appState` en cada render sin cache. Probable confusion causada por el bug de confirmacion de carga de arriba.

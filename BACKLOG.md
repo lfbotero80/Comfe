@@ -125,6 +125,7 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-002: Como gerente de sede, quiero subir un archivo con inventario diario, unidades ocupadas y unidades libres, para actualizar el tablero sin tocar código. — **Hecha**
   - TO-HU-003: Como usuario, quiero que el tablero valide columnas obligatorias, fechas, sede y tipo de habitación/sitio, para evitar cargar información incompleta o mal estructurada. — **Hecha**
   - TO-HU-004: Como Diana, quiero ver errores de carga claros por fila y columna, para corregir el archivo antes de usarlo en decisiones. — **Hecha**
+  - TO-HU-045: Como gerente de sede, quiero saber de inmediato si mi archivo se cargó, se rechazó o el formato no es compatible, para confiar en que el dato quedó (o no) sin adivinar. — **Hecha**
 
 - **E1-F2 — Modelo de datos por sede y unidad**
   - TO-HU-005: Como Diana, quiero que cada sede tenga inventario total, ocupado, libre y % de ocupación, para auditar capacidad real y uso. — **Hecha**
@@ -144,12 +145,14 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-010: Como Diana, quiero comparar cada sede contra meta/presupuesto y contra el mismo periodo del año anterior, para detectar brechas reales. — **Bloqueada** (comparacion contra ano anterior requiere fuente cargada; presupuesto/meta ya queda cubierto por TO-HU-022)
   - TO-HU-033: Como jefatura, quiero que el dashboard general tenga lectura visual tipo Power BI, para entender el estado del negocio sin recorrer cada sección. — **Hecha**
   - TO-HU-040: Como jefatura, quiero que el dashboard sea solo gráficas ordenadas de más crítico a mejor (sin listas de texto ni tarjetas detalladas por sede), para ver en segundos dónde actuar y encontrar el detalle diario solo dentro de cada Hotel/Parque. — **Hecha**
+  - TO-HU-046: Como Diana, quiero ver presupuesto proyectado y real cumplido como dos barras comparables por sede (no un solo % de relleno), para distinguir de un vistazo si el problema es de proyección o de ejecución. — **Hecha**
 
 - **E2-F2 — Sección Hoteles**
   - TO-HU-011: Como gerente hotelero, quiero una sección de Hoteles con una pestaña por hotel, para revisar solo mi sede sin ruido. — **Hecha**
   - TO-HU-012: Como gerente hotelero, quiero ver por hotel la proyección del mes, ocupación real %, unidades disponibles, ocupadas y libres, para gestionar inventario diario. — **Hecha**
   - TO-HU-013: Como Diana, quiero que cada hotel muestre vista diaria y acumulada por periodo, para auditar evolución y cierre mensual. — **Hecha**
   - TO-HU-042: Como gerente hotelero, quiero ver 12 barras mensuales por hotel y el detalle diario solo del mes activo, para entender cómo se mueve el año sin perder el día a día. — **Hecha**
+  - TO-HU-047: Como gerente hotelero, quiero que la gráfica de detalle diario sea grande y legible (no un gráfico pequeño), para leer el comportamiento del mes sin acercarme a la pantalla. — **Hecha**
 
 - **E2-F3 — Sección Parques / pasadía / camping**
   - TO-HU-014: Como gerente de parque, quiero una sección de Parques con una pestaña por sede, para controlar cupos, sitios o visitantes sin forzar lógica hotelera. — **Hecha**

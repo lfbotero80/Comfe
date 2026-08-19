@@ -50,14 +50,8 @@ export function renderDashboard(){
           <p class="metric-note">Ordenado de menor a mayor cumplimiento, todas las sedes con dato cargado.</p>
         </div>
       </div>
-      <div class="bar-chart">
-        ${budgetRows.length ? budgetRows.map(row => `
-          <div class="bar-row">
-            <span>${escapeHTML(row.sede)}</span>
-            <div class="bar-track"><div class="bar-fill ${row.severity}" style="width:${Math.min(row.pct, 130)}%"></div></div>
-            <strong>${row.pct.toFixed(0)}%</strong>
-          </div>
-        `).join('') : '<p class="metric-note">Sin datos de presupuesto cargados.</p>'}
+      <div class="budget-compare-list">
+        ${budgetRows.length ? budgetRows.map(budgetCompareRow).join('') : '<p class="metric-note">Sin datos de presupuesto cargados.</p>'}
       </div>
     </section>
   `;
@@ -153,6 +147,32 @@ function latestInventoryRows(){
     }
   });
   return [...bySite.values()];
+}
+
+function budgetCompareRow(row){
+  const scale = Math.max(row.presupuesto, row.ejecutado, 1);
+  const projectedWidth = (row.presupuesto / scale) * 100;
+  const actualWidth = (row.ejecutado / scale) * 100;
+  return `
+    <div class="budget-compare-row">
+      <div class="budget-compare-head">
+        <strong>${escapeHTML(row.sede)}</strong>
+        <span class="badge ${row.severity}">${row.pct.toFixed(0)}% cumplido</span>
+      </div>
+      <div class="budget-compare-bars">
+        <div class="budget-compare-bar">
+          <span class="budget-compare-label">Proyectado</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${projectedWidth}%"></div></div>
+          <strong>${formatCOP(row.presupuesto)}</strong>
+        </div>
+        <div class="budget-compare-bar">
+          <span class="budget-compare-label">Real cumplido</span>
+          <div class="bar-track"><div class="bar-fill ${row.severity}" style="width:${actualWidth}%"></div></div>
+          <strong>${formatCOP(row.ejecutado)}</strong>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 function budgetSummaryRows(){

@@ -26,7 +26,7 @@ Este roadmap organiza el producto `Tablero de ocupación` antes de ejecutar nuev
 
 **HUs candidatas:** TO-HU-001, TO-HU-002, TO-HU-003, TO-HU-004, TO-HU-005, TO-HU-006, TO-HU-007.
 
-**Estado:** ejecutado en `SPRINT-04` el 2026-08-19; ampliado en `SPRINT-10` con carga directa de PDFs Zeus para ocupacion hotelera.
+**Estado:** ejecutado en `SPRINT-04` el 2026-08-19; ampliado en `SPRINT-10` con carga directa de PDFs Zeus para ocupacion hotelera. `SPRINT-15` (Claude Code) corrigio un bug real: la carga exitosa borraba su propio mensaje de confirmacion antes de que se pudiera leer (`rerender()` innecesario en `data-load.js`); ahora confirma exito/advertencia/error con color, y el pill del header tambien queda coloreado.
 
 **Criterio de salida:** existen plantillas/contratos claros para cargar ocupación, inventario, presupuesto y fuentes. El tablero puede rechazar datos incompletos o mal formateados.
 
@@ -36,7 +36,7 @@ Este roadmap organiza el producto `Tablero de ocupación` antes de ejecutar nuev
 
 **HUs candidatas:** TO-HU-008, TO-HU-009, TO-HU-010, TO-HU-016, TO-HU-019, TO-HU-022.
 
-**Avance relacionado:** `SPRINT-05` adelanto TO-HU-008, TO-HU-016 y TO-HU-019 como correccion de producto sobre V3. `SPRINT-08` cerro TO-HU-009 y TO-HU-031 para que el dashboard muestre estructura completa por sede en gris cuando falte data. `SPRINT-09` cerro TO-HU-022 y TO-HU-033 con lectura tipo Power BI y presupuesto proyectado vs real en absolutos/%. `SPRINT-12` (Claude Code) cerro TO-HU-040: elimino el panel de texto "Donde mirar hoy" y las tarjetas detalladas por hotel/parque (redundantes con las pestanas Hoteles/Parques), separo la ocupacion en dos graficas (Hoteles / Parques) ordenadas de mas critico a mejor con tendencia (sparkline) por sede, y ordeno el presupuesto igual. TO-HU-010 queda bloqueada en la parte de ano anterior hasta tener fuente historica.
+**Avance relacionado:** `SPRINT-05` adelanto TO-HU-008, TO-HU-016 y TO-HU-019 como correccion de producto sobre V3. `SPRINT-08` cerro TO-HU-009 y TO-HU-031 para que el dashboard muestre estructura completa por sede en gris cuando falte data. `SPRINT-09` cerro TO-HU-022 y TO-HU-033 con lectura tipo Power BI y presupuesto proyectado vs real en absolutos/%. `SPRINT-12` (Claude Code) cerro TO-HU-040: elimino el panel de texto "Donde mirar hoy" y las tarjetas detalladas por hotel/parque (redundantes con las pestanas Hoteles/Parques), separo la ocupacion en dos graficas (Hoteles / Parques) ordenadas de mas critico a mejor con tendencia (sparkline) por sede, y ordeno el presupuesto igual. `SPRINT-15` (Claude Code) cerro TO-HU-046: el presupuesto paso de una sola barra de % de relleno a dos barras comparables por sede (`Proyectado` vs `Real cumplido`), escaladas contra el mayor de los dos valores, con el monto en pesos visible. TO-HU-010 queda bloqueada en la parte de ano anterior hasta tener fuente historica.
 
 **Criterio de salida:** primera pantalla con todas las sedes, semáforo, ocupación proyectada, ocupación real, cumplimiento presupuestal y acción sugerida.
 
@@ -46,7 +46,7 @@ Este roadmap organiza el producto `Tablero de ocupación` antes de ejecutar nuev
 
 **HUs candidatas:** TO-HU-011, TO-HU-012, TO-HU-013, TO-HU-017, TO-HU-018, TO-HU-020, TO-HU-021.
 
-**Avance relacionado:** `SPRINT-05` adelanto TO-HU-011 y TO-HU-012 para recuperar pestanas y analisis basico por hotel. `SPRINT-07` cerro TO-HU-017, TO-HU-018, TO-HU-020 y TO-HU-021 para que el semaforo sea confiable y accionable. `SPRINT-08` cerro TO-HU-013 con ocupacion del mes y detalle diario. `SPRINT-14` amplio Hoteles con 12 barras mensuales, cumplimiento contra meta y detalle diario del mes activo.
+**Avance relacionado:** `SPRINT-05` adelanto TO-HU-011 y TO-HU-012 para recuperar pestanas y analisis basico por hotel. `SPRINT-07` cerro TO-HU-017, TO-HU-018, TO-HU-020 y TO-HU-021 para que el semaforo sea confiable y accionable. `SPRINT-08` cerro TO-HU-013 con ocupacion del mes y detalle diario. `SPRINT-14` amplio Hoteles con 12 barras mensuales, cumplimiento contra meta y detalle diario del mes activo. `SPRINT-15` (Claude Code) cerro TO-HU-047: la grafica de detalle diario paso de un contenedor de 160px a 240px con barras y valores mas grandes, tras reporte de que era demasiado pequena para leer.
 
 **Criterio de salida:** sección Hoteles con pestañas por hotel, métricas operativas, forecast/real, inventario, semáforo y acción.
 
