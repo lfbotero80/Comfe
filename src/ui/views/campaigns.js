@@ -117,14 +117,16 @@ function renderNewCampaignModal(){
             <span>Sede(s)</span>
             <input name="sites" required placeholder="Ej. Piedras Blancas, Balandú">
           </label>
-          <label class="form-field">
-            <span>Tarifa aplicada</span>
-            <input name="rate" required placeholder="Ej. Tramo Preventa">
-          </label>
-          <label class="form-field">
-            <span>Fecha de ejecución</span>
-            <input name="executionDate" type="date">
-          </label>
+          <div class="form-grid two">
+            <label class="form-field">
+              <span>Tarifa aplicada</span>
+              <input name="rate" required placeholder="Ej. Tramo Preventa">
+            </label>
+            <label class="form-field">
+              <span>Fecha de ejecución</span>
+              <input name="executionDate" type="date">
+            </label>
+          </div>
           <div class="form-grid two">
             <label class="form-field">
               <span>Ocupación proyectada antes (%)</span>
