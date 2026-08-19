@@ -81,90 +81,75 @@ function score(label, value, note, severity){
   `;
 }
 
-const RISK_GROUPS = [
-  { id: 'both', label: 'Ocupacion y presupuesto por debajo de la meta', hint: 'Riesgo comercial y financiero al tiempo. Revisar primero.', severity: 'red' },
-  { id: 'occupancy', label: 'Solo la ocupacion esta por debajo', hint: 'Riesgo comercial: la venta no llega, la ejecucion si.', severity: 'amber' },
-  { id: 'budget', label: 'Solo el presupuesto esta por debajo', hint: 'Riesgo financiero: se ocupa, pero no se ejecuta lo presupuestado.', severity: 'amber' },
-  { id: 'ok', label: 'Ocupacion y presupuesto en meta', hint: 'Sostener y proteger tarifa.', severity: 'green' },
-  { id: 'insufficient', label: 'Sin informacion suficiente para evaluar', hint: 'Falta ocupacion o presupuesto: no se puede clasificar el riesgo.', severity: 'gray' }
-];
+// Orden de lectura: primero lo mas critico. El tipo de riesgo se ve en la forma
+// de las barras (cual se va a la izquierda), no hace falta escribirlo.
+const RISK_ORDER = { both: 0, occupancy: 1, budget: 2, ok: 3, insufficient: 4 };
+const GAP_SCALE = 50; // pts de brecha que ocupan media barra; mas alla se topea
 
 /**
- * Reemplaza al cuadrante cartesiano de `SPRINT-31` (ver `SPRINT-43`).
+ * Reemplaza al cuadrante cartesiano de `SPRINT-31` (ver `SPRINT-43`/`SPRINT-44`).
  *
- * Responde la misma pregunta —que tipo de problema tiene cada sede— pero sin
- * pedirle al lector que aprenda a interpretar un plano de coordenadas: agrupa
- * por tipo de riesgo, usa el nombre completo de la sede y pone cada cifra al
- * lado de su meta, de modo que no hace falta una linea de referencia.
+ * Cada sede es una fila con dos barras divergentes desde la meta: ocupacion
+ * arriba, presupuesto abajo. Si la barra se va a la izquierda esta por debajo
+ * de su meta; a la derecha, por encima. Asi el **tipo** de riesgo se ve en la
+ * forma —una barra izquierda o las dos— sin tener que nombrarlo por escrito,
+ * y sin pedirle al lector que interprete coordenadas.
  */
 function renderRiskGroups(rows){
-  const grouped = RISK_GROUPS
-    .map(group => ({ ...group, items: rows.filter(row => row.riskGroup === group.id) }))
-    .filter(group => group.items.length);
+  const ordered = rows.slice().sort((a, b) =>
+    (RISK_ORDER[a.riskGroup] ?? 9) - (RISK_ORDER[b.riskGroup] ?? 9) || a.name.localeCompare(b.name));
 
   return `
     <section class="panel command-card risk-groups-card">
       <div class="section-head">
         <div>
           <h2>Riesgo por sede</h2>
-          <p class="metric-note">Agrupado por tipo de problema. Metas: ocupacion ${OCCUPANCY_TARGET}%, ejecucion presupuestal ${BUDGET_TARGET}%.</p>
+          <p class="metric-note">Distancia a la meta. Izquierda = por debajo · derecha = por encima.</p>
         </div>
       </div>
-      ${grouped.length ? grouped.map(renderRiskGroup).join('') : '<div class="empty-state"><strong>Sin sedes para el filtro</strong><span>Ajuste los filtros para ver el riesgo por sede.</span></div>'}
+      <div class="gap-legend">
+        <span><i class="gap-swatch occ"></i>Ocupacion (meta ${OCCUPANCY_TARGET}%)</span>
+        <span><i class="gap-swatch bud"></i>Presupuesto (meta ${BUDGET_TARGET}%)</span>
+      </div>
+      <div class="gap-chart">
+        ${ordered.length ? ordered.map(renderGapRow).join('') : '<div class="empty-state"><strong>Sin sedes para el filtro</strong><span>Ajuste los filtros para ver el riesgo por sede.</span></div>'}
+      </div>
     </section>
   `;
 }
 
-function renderRiskGroup(group){
+function renderGapRow(row){
   return `
-    <div class="risk-group ${group.severity}">
-      <div class="risk-group-head">
-        <strong>${escapeHTML(group.label)}</strong>
-        <span class="risk-group-count">${group.items.length} sede${group.items.length === 1 ? '' : 's'}</span>
-      </div>
-      <p class="risk-group-hint">${escapeHTML(group.hint)}</p>
-      <div class="risk-group-list">
-        ${group.items.map(renderRiskItem).join('')}
+    <div class="gap-row ${row.riskGroup}">
+      <span class="gap-name" title="${escapeHTML(row.name)}">${escapeHTML(shortName(row.name))}</span>
+      <div class="gap-bars">
+        ${renderGapBar(row.occupancyPct, OCCUPANCY_TARGET, row.occupancySeverity, 'occ')}
+        ${renderGapBar(row.budgetPct, BUDGET_TARGET, row.budgetSeverity, 'bud')}
       </div>
     </div>
   `;
 }
 
-function renderRiskItem(row){
-  return `
-    <article class="risk-item">
-      <div class="risk-item-name">
-        <strong>${escapeHTML(row.name)}</strong>
-        <span>${escapeHTML(row.kind === 'hotel' ? 'Hotel' : 'Parque')}</span>
-      </div>
-      ${renderRiskMetric('Ocupacion', row.occupancyPct, OCCUPANCY_TARGET, row.occupancySeverity)}
-      ${renderRiskMetric('Presupuesto', row.budgetPct, BUDGET_TARGET, row.budgetSeverity)}
-    </article>
-  `;
-}
-
-/**
- * Cada cifra se muestra junto a su meta y con la brecha en puntos, para que se
- * lea sin comparar contra una linea dibujada — que en el cuadrante anterior
- * ademas estaba mal calibrada (la meta de 90% se dibujaba donde iba 108%).
- */
-function renderRiskMetric(label, pct, target, severity){
+function renderGapBar(pct, target, severity, kind){
   if(pct === null || pct === undefined){
     return `
-      <div class="risk-metric gray">
-        <span class="risk-metric-label">${escapeHTML(label)}</span>
-        <strong>Sin dato</strong>
-        <span class="risk-metric-gap">meta ${target}%</span>
+      <div class="gap-line">
+        <div class="gap-bar empty ${kind}"><span class="gap-axis"></span></div>
+        <span class="gap-value muted">s/d</span>
       </div>
     `;
   }
   const gap = pct - target;
-  const gapText = gap >= 0 ? `+${gap.toFixed(0)} pts sobre meta` : `${gap.toFixed(0)} pts bajo meta`;
+  const width = Math.min(Math.abs(gap), GAP_SCALE) / GAP_SCALE * 50;
+  const side = gap < 0 ? 'left' : 'right';
+  const capped = Math.abs(gap) > GAP_SCALE ? ' capped' : '';
   return `
-    <div class="risk-metric ${severity}">
-      <span class="risk-metric-label">${escapeHTML(label)}</span>
-      <strong>${pct.toFixed(0)}%</strong>
-      <span class="risk-metric-gap">${escapeHTML(gapText)} · meta ${target}%</span>
+    <div class="gap-line">
+      <div class="gap-bar ${kind} ${side}${capped}">
+        <span class="gap-axis"></span>
+        <span class="gap-fill ${severity}" style="width:${width}%"></span>
+      </div>
+      <span class="gap-value ${severity}">${pct.toFixed(0)}%</span>
     </div>
   `;
 }

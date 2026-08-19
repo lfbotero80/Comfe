@@ -6,6 +6,78 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-44 — Riesgo por sede pasa de texto a gráfico [Estado: Cerrado]
+
+- **Agente(s):** Claude Code
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Commit:** `SPRINT-44 — Riesgo por sede pasa de texto a grafico (Claude Code)`
+
+- **Objetivo del sprint:** el bloque que reemplazó al cuadrante en `SPRINT-43` era correcto pero no era visual. Luis Felipe lo rechazó de inmediato: *"pero es que eso no se parece a un dashboard visual, eso es demasiado texto."* Tenía razón: se había cambiado un gráfico malo por párrafos.
+
+| HU | Título | Agente | Estado | Nota |
+|---|---|---|---|---|
+| TO-HU-100 | Riesgo por sede como gráfico, no como texto | Claude Code | Hecha | Barras divergentes contra la meta |
+
+**Qué se hizo**
+
+El bloque **"Riesgo por sede"** pasa a ser un **gráfico de barras divergentes contra la meta**. Cada sede es una fila con dos barras finas: ocupación arriba (meta 70%), presupuesto abajo (meta 90%). El eje vertical central es la meta; la barra crece **hacia la izquierda si está por debajo** y **hacia la derecha si está por encima**. El tipo de riesgo deja de ser una etiqueta escrita y pasa a ser la **forma** de la fila:
+
+- dos barras a la izquierda → problema comercial y financiero a la vez
+- solo la de arriba a la izquierda → problema de ocupación
+- solo la de abajo a la izquierda → problema de ejecución presupuestal
+- ambas a la derecha → sede en meta
+- barra rayada con `s/d` → no hay dato, y se distingue a simple vista de una sede en crisis
+
+Las filas se ordenan por gravedad (ambos → ocupación → presupuesto → en meta → sin dato) y las sedes sin información suficiente quedan atenuadas al final, no compitiendo con las críticas.
+
+**Detalles de lectura corregidos durante el sprint** (los tres se detectaron mirando el render, no el código):
+
+1. Los porcentajes quedaban pegados al borde del panel, lejos de su propia barra. Ahora cada barra lleva su valor en una columna fija de 38 px a su derecha: quedan alineados entre sedes y adyacentes a su barra.
+2. Los nombres de sede se cortaban con puntos suspensivos (`Ecoparque Mario Ar...`). La columna pasó a 152 px y los nombres largos parten en dos líneas en vez de truncarse — en un tablero directivo la sede tiene que quedar identificable.
+3. El panel quedaba con ~550 px de hueco muerto abajo, porque la columna vecina (*Prioridad directiva*) es más alta. Las filas ahora se reparten el alto disponible (`grid-auto-rows:minmax(30px,1fr)`), sin apretarse cuando el panel es corto.
+
+La escala está topada en 50 puntos de brecha (`GAP_SCALE`); más allá de eso la barra se dibuja rayada para no mentir sobre el tamaño de la diferencia.
+
+**Archivos tocados**
+
+- `src/ui/views/dashboard.js`: `renderRiskGroups()` y `renderGapRow()` reemplazan el listado de grupos con texto por el gráfico divergente; `renderGapBar()` calcula lado, ancho y tope, y emite el valor junto a su barra.
+- `styles/app.css`: se retiró el CSS de `.risk-group*` / `.risk-item*` / `.risk-metric*` y se agregó `.gap-legend`, `.gap-chart`, `.gap-row`, `.gap-name`, `.gap-bars`, `.gap-line`, `.gap-bar`, `.gap-axis`, `.gap-fill`, `.gap-value` y el estado `.gap-bar.empty`. El override móvil pasa a `88px` de columna de nombre.
+
+**Validación realizada:** `node --check` sobre todos los módulos JS. Servidor local sin caché en `http://localhost:8082/` (puerto de prueba, no el 8055 de Luis Felipe) respondiendo 200. Escenario cargado a propósito para que aparecieran los cinco casos a la vez: Piedras Blancas 30%/50% (ambos bajos), Quirama 40%/95% (solo ocupación), Balandú 85%/60% (solo presupuesto), Farallones 90%/98% (en meta) y Salados 60% sin presupuesto (dato insuficiente). Se verificó en el render que el orden, el lado de cada barra, el color y el rayado correspondían al caso. Consola sin errores. Las 6 vistas (`dashboard`, `hotels`, `parks`, `calendar`, `campaigns`, `decisions`) renderizan contenido.
+
+**Riesgos / pendientes:** la lectura depende de que las metas (70% ocupación, 90% presupuesto) sean las correctas; están declaradas en la leyenda para que se puedan discutir. Falta la confirmación visual de Luis Felipe sobre esta versión — es la segunda iteración del mismo bloque y la primera fue rechazada por él, así que no se da por buena sin su visto.
+
+```
+HANDOFF — SPRINT-44 Riesgo por sede pasa de texto a grafico
+Agente:             Claude Code
+Estado:             Cerrado
+Commit:             SPRINT-44 — Riesgo por sede pasa de texto a grafico (Claude Code)
+
+Que quedo listo:    El bloque "Riesgo por sede" del Dashboard general ya no es
+                    un listado de grupos con texto: es un grafico de barras
+                    divergentes contra la meta. Ocupacion arriba (meta 70%),
+                    presupuesto abajo (meta 90%), eje central = meta, izquierda
+                    = por debajo, derecha = por encima. El tipo de riesgo se ve
+                    en la forma de la fila. Sin dato = barra rayada con "s/d".
+
+Que NO se toco:     El dominio. `dashboard-command.js` y `riskGroupFor()` quedan
+                    igual que en SPRINT-43. Este sprint es solo presentacion.
+
+Riesgos abiertos:   - Falta el visto bueno visual de Luis Felipe. Es la segunda
+                      iteracion de este bloque; la primera la rechazo.
+                    - Las metas 70/90 estan cableadas (OCCUPANCY_TARGET,
+                      BUDGET_TARGET). Si cambian, cambia toda la lectura.
+
+Validacion:         node --check: todos los modulos -> pass
+                    Servidor sin cache :8082 -> 200
+                    5 escenarios (ambos bajos / solo ocupacion / solo
+                    presupuesto / en meta / sin dato) -> forma y orden correctos
+                    Consola sin errores; 6 vistas renderizan
+```
+
+---
+
 ## SPRINT-43 — Riesgo por sede reemplaza el cuadrante [Estado: Cerrado]
 
 - **Agente(s):** Claude Code
