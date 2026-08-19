@@ -153,6 +153,8 @@ Reglas del handoff:
 
 **Publicar o desplegar el tablero (o cualquier parte del repo) en un servicio de hosting de terceros — GitHub Pages, Vercel, Netlify, Sites de OpenAI, Cloudflare o cualquier otro — requiere permiso explícito de Luis Felipe antes de hacerlo**, con el mismo criterio que ya rige para `git push`. Esto incluye crear archivos de configuración de despliegue (`hosting.json`, workflows, etc.) como preparación — avisar y pedir confirmación antes, no despues. La razón: el tablero contiene datos reales de negocio (tarifas, presupuesto, ocupación); publicarlo en cualquier lugar fuera del repo local es una decisión de exposición de datos, no una decisión técnica.
 
+**Nota sobre el canal de autorización (2026-08-19, tras `SPRINT-35`):** el permiso de Luis Felipe no tiene que llegar por este mismo chat — puede dárselo a Codex directamente en su propia sesión (como pasó con el despliegue a `gh-pages` para mostrarle el tablero a Diana). Cuando eso pase, el agente que lo ejecutó debe dejarlo explícito en el `Resumen de cierre`/`HANDOFF` ("Luis Felipe autorizó esto directamente el <fecha>, para <motivo>") — no basta con hacer el despliegue y esperar a que se note. Si un agente encuentra una acción de este tipo sin esa nota, se trata como no autorizada hasta que Luis Felipe la confirme (igual que pasó con `c586bec`), y una vez confirmada se documenta retroactivamente, no se revierte solo por sospecha.
+
 Antes de abrir cualquier sprint nuevo, cada agente **debe leer `SPRINTS.md` completo** (al menos las últimas 2-3 entradas) para saber qué hizo el otro agente recientemente y no duplicar ni pisar trabajo.
 
 ---
