@@ -153,6 +153,7 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-053: Como jefatura, quiero que las graficas de ocupacion tengan convenciones al lado y no ocupen todo el bloque, para entender el color sin perder contexto. — **Hecha**
   - TO-HU-054: Como Diana, quiero que el % de ejecucion del presupuesto aparezca junto a la barra, para asociarlo visualmente al avance y no al valor monetario. — **Hecha**
   - TO-HU-055: Como usuario, quiero filtros globales visibles en el instrumento, para revisar periodo, tipo de unidad y estado sin entrar a cada tabla. — **Hecha**
+  - TO-HU-057: Como Luis Felipe, quiero que los filtros globales solo aparezcan y afecten el Dashboard (donde comparo sedes), no las pantallas que ya tienen su propia navegación (Hoteles, Parques) ni las que no filtran nada (Calendario, Campañas), para no ver un control que confunde o esconde datos que sí existen. — **Hecha**
 
 - **E2-F2 — Sección Hoteles**
   - TO-HU-011: Como gerente hotelero, quiero una sección de Hoteles con una pestaña por hotel, para revisar solo mi sede sin ruido. — **Hecha**

@@ -1,6 +1,6 @@
 # Mapa de código — Comfenalco IA
 
-Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-15`.
+Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-18`.
 
 ---
 
@@ -144,7 +144,7 @@ URL local: `http://localhost:8055/`
 
 | Modulo | Responsabilidad |
 |---|---|
-| `src/main.js` | Orquesta navegacion, titulo de vista, filtros globales y render de la pantalla activa. `setStatus(text, type)` colorea el pill del header segun `ok`/`warn`/`error`/`pending`; desde `SPRINT-16`, lo mantiene oculto cuando no hay texto real. |
+| `src/main.js` | Orquesta navegacion, titulo de vista y render de la pantalla activa. Desde `SPRINT-18`, los filtros globales (`#globalFilters`) solo se renderizan y enlazan cuando `activeView === 'dashboard'`; en el resto de vistas quedan `hidden`. `setStatus(text, type)` colorea el pill del header segun `ok`/`warn`/`error`/`pending`; desde `SPRINT-16`, lo mantiene oculto cuando no hay texto real. |
 | `src/ui/global-filters.js` | Renderiza y enlaza filtros globales de periodo, unidad y semaforo. Expone `monthLabel()` para que dashboard y vistas por sede nombren el periodo con lenguaje humano. |
 | `src/config/navigation.js` | Define las vistas del menu lateral con iconos: dashboard, hoteles, parques, calendario comercial y catalogo de campanas. La carga de datos se abre desde el boton primario del header. `Estructura de archivos` ya no aparece en navegacion desde `SPRINT-09`. |
 | `src/domain/sites.js` | Catálogo de hoteles y parques, con rol estrategico y capacidad conocida cuando existe. |
@@ -165,8 +165,8 @@ URL local: `http://localhost:8055/`
 | `src/ui/html.js` | Helpers pequeños para escapar HTML, crear badges y renderizar el semaforo real de tres luces. |
 | `src/ui/views/dashboard.js` | Dashboard general solo-graficas tipo Power BI: banda principal sin contador de alertas, 2 KPIs de negocio, ocupacion Hoteles y ocupacion Parques en bloques verticales con cuerpo 50/50 (grafica + convenciones), y presupuesto comparativo por sede. El presupuesto usa dos barras (`Proyectado` y `Real cumplido`, funcion `budgetCompareRow()`), escaladas contra el mayor de los dos valores, y muestra el % de ejecucion junto a la barra real. Sedes sin dato quedan en gris al final de cada grafica. Obedece filtros globales de periodo, unidad y semaforo. |
 | `src/ui/views/data-load.js` | Vista de carga de archivos, descarga de plantillas, resultado de validacion por fila y explicacion de interpretacion Zeus por hotel. Desde `SPRINT-15`, el handler de carga ya no llama `rerender()` tras un exito (`renderDataLoad()` no depende de `appState`, y ese `rerender()` borraba el mensaje de validacion antes de que se alcanzara a leer) — el mensaje ahora persiste con estado `pending`/`ok`/`warn`/`error`. |
-| `src/ui/views/hotels.js` | Vista de hoteles con pestanas internas por hotel, 12 barras mensuales, cumplimiento del mes contra meta, ocupadas/inventario en un solo indicador, semaforo contextual, accion sugerida, contexto comercial y detalle diario del mes activo con dia real. Grafica de detalle diario ampliada en `SPRINT-15` (contenedor 240px, barras escaladas `pct * 2`, valores en 14px/800). |
-| `src/ui/views/parks.js` | Vista `Parques` con pestanas por sede, uso del mes, capacidad, usados/libres, alarma y detalle diario; no muestra semaforo cuando falta dato. |
+| `src/ui/views/hotels.js` | Vista de hoteles con pestanas internas por hotel, 12 barras mensuales, cumplimiento del mes contra meta, ocupadas/inventario en un solo indicador, semaforo contextual, accion sugerida, contexto comercial y detalle diario del mes activo con dia real. Grafica de detalle diario ampliada en `SPRINT-15` (contenedor 240px, barras escaladas `pct * 2`, valores en 14px/800). El mes activo depende solo de `activeMonthByHotelId`/`latestMonth()` — `SPRINT-17` metio un fallback al filtro global de periodo que causaba falsos "Sin dato"; se quito en `SPRINT-18`. No obedece filtros globales (tiene su propia navegacion). |
+| `src/ui/views/parks.js` | Vista `Parques` con pestanas por sede, uso del mes, capacidad, usados/libres, alarma y detalle diario; no muestra semaforo cuando falta dato. Siempre usa el ultimo mes con dato de la sede (`latestMonthRows()`) — no tiene navegacion propia de mes ni obedece filtros globales (se quito en `SPRINT-18` la dependencia del periodo global que introdujo `SPRINT-17`). Pendiente: darle a Parques una navegacion de 12 meses como la de Hoteles. |
 | `src/ui/views/calendar.js` | Vista recuperada de calendario comercial, con filtros por mes/sede y calendario operativo 2026. |
 | `src/ui/views/campaigns.js` | Vista recuperada de catalogo de campanas, con estado, resultado si hay ocupacion proyectada/real y boton `Agregar campaña nueva` que abre un modal tipo v2. |
 | `src/ui/views/contracts.js` | Vista tecnica de contratos de datos; queda sin acceso desde el menu visible desde `SPRINT-09`. |
@@ -331,3 +331,15 @@ Plantillas CSV de S1:
 - `src/ui/views/dashboard.js`: KPIs, graficas y presupuesto obedecen los filtros; ocupacion usa layout 50/50 grafica/convenciones; presupuesto agrega convenciones y ubica el % junto a la barra.
 - `src/ui/views/hotels.js` y `src/ui/views/parks.js`: toman el periodo global cuando corresponde; si el filtro esta en `Todo 2026`, usan el ultimo mes con dato de la sede para mantener el demo legible.
 - `styles/app.css`: agrega estilos de filtro global, selectores, convenciones inline, layout 50/50 de ocupacion y columna de porcentaje presupuestal junto a barra.
+
+**Correccion en `SPRINT-18`:** los puntos "renderiza filtros en todas las vistas" y "toman el periodo global" de arriba quedaron mal — Luis Felipe reporto que los filtros aparecian "en todos lados", incluida Calendario/Campanas donde no filtraban nada, y que Hoteles llego a mostrar "Sin datos de ocupacion" para una sede con dato real en otro mes, por el fallback silencioso al filtro global. `SPRINT-18` acota los filtros globales solo al Dashboard (ver seccion 3.19) — esta entrada se deja como registro historico de lo que se hizo en `SPRINT-17`, no como estado vigente.
+
+### 3.19 — Correccion de alcance de filtros globales en `SPRINT-18`
+
+`SPRINT-18` corrige el sobre-alcance de `SPRINT-17`, reportado por Luis Felipe ("Codex se equivoco con los filtros y los puso en todos lados"), reproducido en navegador antes de tocar codigo:
+
+- `src/main.js`: `#globalFilters` solo se renderiza y enlaza (`bindGlobalFilterHandlers`) cuando `activeView === 'dashboard'`; en cualquier otra vista queda `hidden` y vacio. Antes se renderizaba (decorativo, sin efecto) en las 5 vistas.
+- `src/ui/views/hotels.js`: se quito el fallback al filtro global en el calculo de `activeMonth` — vuelve a depender solo de `activeMonthByHotelId` y `latestMonth(rows)`, como en `SPRINT-14`. Se quito el import de `monthLabel` (sin uso) y la nota volvio a "Una barra por mes; gris indica que falta archivo cargado."
+- `src/ui/views/parks.js`: `rowsForPeriod(rows, period)` se simplifico a `latestMonthRows(rows)` — ya no depende de `appState.filters.period`. Vuelve al comportamiento de antes de `SPRINT-17`.
+- El Dashboard no se toco: ahi los tres filtros si comparan varias sedes a la vez y siguen funcionando igual que en `SPRINT-17`.
+- Pendiente real (no resuelto aqui): Parques no tiene navegacion propia de mes como Hoteles (12 barras) — nunca la tuvo, no es una regresion de `SPRINT-17`, pero es candidata a HU futura.

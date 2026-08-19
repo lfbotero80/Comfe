@@ -54,10 +54,17 @@ function renderNav(){
 function renderActiveView(){
   const item = NAV_ITEMS.find(navItem => navItem.id === activeView) || { title: 'Carga de datos' };
   titleEl.textContent = item.title;
-  globalFiltersEl.innerHTML = renderGlobalFilters();
   viewEl.innerHTML = viewRenderers[activeView]();
   headerDataLoadButton.classList.toggle('active', activeView === 'data-load');
-  bindGlobalFilterHandlers({ rerender: renderActiveView });
+
+  if(activeView === 'dashboard'){
+    globalFiltersEl.hidden = false;
+    globalFiltersEl.innerHTML = renderGlobalFilters();
+    bindGlobalFilterHandlers({ rerender: renderActiveView });
+  }else{
+    globalFiltersEl.hidden = true;
+    globalFiltersEl.innerHTML = '';
+  }
 
   if(activeView === 'data-load'){
     bindDataLoadHandlers({ setStatus });

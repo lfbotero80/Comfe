@@ -6,6 +6,45 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-18 — Correccion de alcance de filtros globales [Estado: Cerrado]
+
+- **Agente(s):** Claude Code
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E2
+- **Objetivo del sprint:** corregir el alcance de los filtros globales de `SPRINT-17` — Luis Felipe reportó que Codex "los puso en todos lados". Los filtros aparecían y en algunos casos afectaban silenciosamente pantallas donde no correspondía.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-057 | Filtros globales acotados solo al Dashboard | Claude Code | Hecha | Corrige sobre-alcance de TO-HU-055 |
+
+### Resumen de cierre
+
+**Qué se encontró (reproducido en navegador antes de tocar código):**
+
+- La barra de filtros (`#globalFilters`) vivía en el layout compartido (`index.html`), fuera de `#appView` — se renderizaba en **las 5 pestañas**, incluyendo Calendario comercial y Campañas, donde ningún archivo lee `appState.filters` — filtros decorativos que no filtraban nada ahí. En Calendario, además, quedaba encima de los filtros propios de Mes/Sede que la pestaña ya tenía, duplicando el concepto.
+- En Hoteles, `activeMonth` mezclaba el mes elegido con clic en las 12 barras (`activeMonthByHotelId`, de `SPRINT-14`) con el filtro global de Periodo (`appState.filters.period`) como *fallback* silencioso. Reproducido: con el filtro global en "Marzo 2026" (sin dato para Hostería Los Farallones), la pantalla de Hoteles mostraba **"Sin datos de ocupación"** para esa sede aunque la misma pantalla mostraba 55% en la barra de Agosto, un par de columnas más allá — el usuario no tenía forma de saber por qué, salvo leer una nota chica ("Filtro global: Marzo 2026").
+- En Parques, el filtro global de Periodo era la **única** forma de elegir mes (Parques nunca tuvo navegación propia como Hoteles) — quedaba acoplado a un control pensado para comparar sedes en el Dashboard, sin ninguna pista visual en la propia pantalla de Parques.
+
+**Qué cambió:**
+
+- `main.js`: `#globalFilters` solo se renderiza y se enlaza (`bindGlobalFilterHandlers`) cuando `activeView === 'dashboard'`; en cualquier otra vista queda `hidden` y vacío.
+- `hotels.js`: se quitó el *fallback* al filtro global en el cálculo de `activeMonth` — vuelve a depender solo de `activeMonthByHotelId` y `latestMonth(rows)`, exactamente como quedó en `SPRINT-14`. Se quitó el import de `monthLabel` (ya sin uso) y la nota "Filtro global: X" volvió a su texto original ("Una barra por mes; gris indica que falta archivo cargado").
+- `parks.js`: se quitó la dependencia de `appState.filters.period`; `rowsForPeriod(rows, period)` se simplificó a `latestMonthRows(rows)` — vuelve al comportamiento de antes de `SPRINT-17` (siempre el último mes con dato). Parques sigue sin navegación propia de mes — queda como brecha real, no resuelta en este sprint (ver nota abajo).
+- El Dashboard no se tocó: ahí los tres filtros (Periodo/Unidad/Semáforo) sí tienen sentido — es la única pantalla donde se comparan varias sedes a la vez — y siguen funcionando igual que en `SPRINT-17`.
+
+**Brecha que queda pendiente (no es parte de este sprint):** Parques no tiene una navegación de mes propia como la de Hoteles (12 barras). Antes de `SPRINT-17` tampoco la tenía, así que no es una regresión de este sprint — pero vale la pena una HU futura para dar a Parques el mismo patrón de `renderYearMovement` que ya existe en Hoteles.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/src/main.js`, `src/ui/views/hotels.js`, `src/ui/views/parks.js`.
+
+**Validación realizada:** `node --check` sobre todos los módulos JS; servidor local `localhost:8055` responde 200; reproducción del bug original en navegador (filtro global en Marzo → Hoteles decía "Sin dato" con 55% visible en Agosto) confirmada **antes** del fix y **corregida después** (Hoteles vuelve a mostrar Agosto/54.9% sin importar el filtro global dejado en el Dashboard); confirmado que `#globalFilters` queda oculto (`hidden = true`) en Hoteles, Parques, Calendario y Campañas, y visible solo en Dashboard; confirmado que Ecoparque Mario Aramburo sigue mostrando 59.1% en Parques; sin errores de consola.
+
+**Nota de coordinación:** este sprint corrige exclusivamente el sobre-alcance introducido en `SPRINT-17` (Codex). No se tocó nada del ajuste visual de convenciones/layout 50-50 de ese mismo sprint, que queda intacto.
+
+---
+
 ## SPRINT-17 — Filtros globales y ajuste visual de graficas [Estado: Cerrado]
 
 - **Agente(s):** Codex
