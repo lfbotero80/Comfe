@@ -1,18 +1,18 @@
-import { DEMO_BUDGET_ROWS, DEMO_HOTEL_FORECAST, DEMO_PARK_ROWS } from '../data/demo-data.js';
-import { COMMERCIAL_CALENDAR } from '../data/commercial-calendar.js';
-import { CAMPAIGNS } from '../data/campaigns.js';
-
 const DATA_MODE_KEY = 'comfenalco_data_mode_v1';
 const OPERATOR_KEY = 'comfenalco_operator_v1';
 const DECISION_LOG_KEY = 'comfenalco_decision_log_v1';
 const OCCUPANCY_KEY = 'comfenalco_occupancy_rows_v1';
 const BUDGET_KEY = 'comfenalco_budget_rows_v1';
 const REVENUE_KEY = 'comfenalco_revenue_rows_v1';
+const LOADED_FILES_KEY = 'comfenalco_loaded_files_v1';
+const CAMPAIGNS_KEY = 'comfenalco_campaign_rows_v1';
+const STORAGE_SCHEMA_KEY = 'comfenalco_public_storage_schema_v1';
+const STORAGE_SCHEMA_VERSION = 'real-empty-2026-08-19';
 export const DATA_MODES = {
   demo: {
     id: 'demo',
     label: 'Modo demo',
-    description: 'Usa datos semilla para revisar el tablero sin cargar archivos.'
+    description: 'Modo deshabilitado para la URL compartida: no incluye datos de ejemplo.'
   },
   real: {
     id: 'real',
@@ -21,19 +21,22 @@ export const DATA_MODES = {
   }
 };
 
+migrateLegacyDemoStorage();
+
 const initialDataMode = readDataMode();
 const initialModeData = dataForMode(initialDataMode);
 
 export const appState = {
   dataMode: initialDataMode,
   ...initialModeData,
+  loadedFiles: readPersistedRows(LOADED_FILES_KEY) ?? initialModeData.loadedFiles,
   occupancyInventoryRows: readPersistedRows(OCCUPANCY_KEY) ?? initialModeData.occupancyInventoryRows,
   budgetRows: readPersistedRows(BUDGET_KEY) ?? initialModeData.budgetRows,
   revenueRuleRows: readPersistedRows(REVENUE_KEY) ?? initialModeData.revenueRuleRows,
   currentOperator: readCurrentOperator(),
   decisionRows: readDecisionRows(),
-  calendarRows: COMMERCIAL_CALENDAR.slice(),
-  campaignRows: CAMPAIGNS.slice(),
+  calendarRows: [],
+  campaignRows: readPersistedRows(CAMPAIGNS_KEY) ?? [],
   filters: {
     period: 'all',
     unitType: 'all',
@@ -60,9 +63,11 @@ export function setDataMode(mode){
   // Cambiar de modo es un reinicio explicito y deliberado (lo anuncia el propio
   // boton: "datos semilla restaurados" / "cargue archivos para activar metricas"),
   // asi que tambien reinicia lo persistido — no solo la memoria de la sesion.
+  persistRows(LOADED_FILES_KEY, next.loadedFiles);
   persistRows(OCCUPANCY_KEY, next.occupancyInventoryRows);
   persistRows(BUDGET_KEY, next.budgetRows);
   persistRows(REVENUE_KEY, next.revenueRuleRows);
+  persistRows(CAMPAIGNS_KEY, appState.campaignRows);
 }
 
 export function registerLoad({ contractId, filename, acceptedRows, rejectedRows }){
@@ -76,6 +81,7 @@ export function registerLoad({ contractId, filename, acceptedRows, rejectedRows 
     loadedAt,
     loadedBy
   });
+  persistRows(LOADED_FILES_KEY, appState.loadedFiles);
 
   addDecisionLog({
     type: 'Carga de datos',
@@ -125,6 +131,7 @@ export function addCampaign(campaign){
     actualOccupancy: campaign.actualOccupancy ?? null,
     status: campaign.status || 'propuesta'
   });
+  persistRows(CAMPAIGNS_KEY, appState.campaignRows);
 
   addDecisionLog({
     type: 'Campaña',
@@ -170,9 +177,9 @@ export function addDecisionLog(entry){
 
 function readDataMode(){
   try{
-    return localStorage.getItem(DATA_MODE_KEY) === DATA_MODES.real.id ? DATA_MODES.real.id : DATA_MODES.demo.id;
+    return localStorage.getItem(DATA_MODE_KEY) === DATA_MODES.demo.id ? DATA_MODES.demo.id : DATA_MODES.real.id;
   }catch(error){
-    return DATA_MODES.demo.id;
+    return DATA_MODES.real.id;
   }
 }
 
@@ -220,6 +227,24 @@ function persistRows(key, rows){
   }
 }
 
+function migrateLegacyDemoStorage(){
+  try{
+    if(localStorage.getItem(STORAGE_SCHEMA_KEY) === STORAGE_SCHEMA_VERSION) return;
+    [
+      DATA_MODE_KEY,
+      DECISION_LOG_KEY,
+      OCCUPANCY_KEY,
+      BUDGET_KEY,
+      REVENUE_KEY,
+      LOADED_FILES_KEY,
+      CAMPAIGNS_KEY
+    ].forEach(key => localStorage.removeItem(key));
+    localStorage.setItem(STORAGE_SCHEMA_KEY, STORAGE_SCHEMA_VERSION);
+  }catch(error){
+    // If localStorage is unavailable, the app still starts from the in-memory real mode.
+  }
+}
+
 function dataForMode(mode){
   if(mode === DATA_MODES.real.id){
     return {
@@ -231,14 +256,10 @@ function dataForMode(mode){
     };
   }
   return {
-    loadedFiles: [
-      { contractId:'occupancyInventory', filename:'demo-farallones-zeus.csv', acceptedRows:DEMO_HOTEL_FORECAST.length, rejectedRows:0, loadedAt:'2026-08-17T00:00:00.000Z' },
-      { contractId:'occupancyInventory', filename:'demo-parques-inventario.csv', acceptedRows:DEMO_PARK_ROWS.length, rejectedRows:0, loadedAt:'2026-08-17T00:00:00.000Z' },
-      { contractId:'budgetExecution', filename:'demo-presupuesto-cortes-reales.csv', acceptedRows:DEMO_BUDGET_ROWS.length, rejectedRows:0, loadedAt:'2026-08-17T00:00:00.000Z' }
-    ],
-    occupancyInventoryRows: DEMO_HOTEL_FORECAST.concat(DEMO_PARK_ROWS),
-    parkRows: DEMO_PARK_ROWS.slice(),
-    budgetRows: DEMO_BUDGET_ROWS.slice(),
+    loadedFiles: [],
+    occupancyInventoryRows: [],
+    parkRows: [],
+    budgetRows: [],
     revenueRuleRows: []
   };
 }

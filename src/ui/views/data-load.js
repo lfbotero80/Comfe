@@ -3,7 +3,7 @@ import { buildReadinessSummary } from '../../domain/data-readiness.js';
 import { readStructuredFile } from '../../services/file-reader.js';
 import { exportOccupancyRows, sortedOccupancyRows } from '../../services/occupancy-export.js';
 import { validateFileRows } from '../../services/validators.js';
-import { appState, DATA_MODES, registerLoad, setCurrentOperator, setDataMode } from '../../state/app-state.js';
+import { appState, registerLoad, setCurrentOperator } from '../../state/app-state.js';
 import { badge, escapeHTML } from '../html.js';
 
 export function renderDataLoad(){
@@ -60,19 +60,6 @@ export function bindDataLoadHandlers({ rerender, setStatus }){
       exportOccupancyRows(sortedOccupancyRows(appState.occupancyInventoryRows), 'comfenalco-ocupacion-todas-las-sedes');
     });
   }
-
-  document.querySelectorAll('[data-mode-option]').forEach(button => {
-    button.addEventListener('click', () => {
-      const mode = button.dataset.modeOption;
-      if(mode === appState.dataMode) return;
-      setDataMode(mode);
-      const status = mode === DATA_MODES.real.id
-        ? 'Modo datos reales: cargue archivos para activar metricas.'
-        : 'Modo demo: datos semilla restaurados.';
-      setStatus(status, mode === DATA_MODES.real.id ? 'pending' : 'ok');
-      rerender();
-    });
-  });
 
   const responsibleForm = document.querySelector('[data-responsible-form]');
   if(responsibleForm){
@@ -142,19 +129,11 @@ function renderReadinessSummary(){
 }
 
 function renderDataModeControl(){
-  const currentMode = DATA_MODES[appState.dataMode] || DATA_MODES.demo;
   return `
-    <div class="data-mode-panel ${escapeHTML(appState.dataMode)}">
+    <div class="data-mode-panel real">
       <div>
-        <strong>Modo de datos</strong>
-        <span>${escapeHTML(currentMode.description)}</span>
-      </div>
-      <div class="mode-toggle" aria-label="Modo de datos">
-        ${Object.values(DATA_MODES).map(mode => `
-          <button type="button" class="${appState.dataMode === mode.id ? 'active' : ''}" data-mode-option="${escapeHTML(mode.id)}">
-            ${escapeHTML(mode.label)}
-          </button>
-        `).join('')}
+        <strong>Datos reales</strong>
+        <span>Esta URL arranca sin datos precargados. Lo que se suba queda guardado solo en este navegador.</span>
       </div>
     </div>
   `;
