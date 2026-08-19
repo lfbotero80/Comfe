@@ -137,6 +137,9 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-037: Como gerente hotelero, quiero subir directamente el PDF Forecast Zeus de mi sede, para que el tablero cargue automaticamente ocupacion diaria sin convertir manualmente a CSV. — **Hecha**
   - TO-HU-038: Como Diana, quiero que los archivos Zeus de sedes distintas se fusionen sin borrar la data ya cargada, para completar el tablero por hotel progresivamente. — **Hecha**
 
+- **E1-F4 — Auditoría de datos y calidad**
+  - TO-HU-067 *(mediano, requiere revisión completa del código)*: Como Luis Felipe, quiero una auditoría del tablero para confirmar que no hay información quemada en el código (ejemplo señalado: el mes de agosto aparece fijo para Hostería Los Farallones), para asegurar que todo lo que se muestra sale de datos realmente cargados. — **Pendiente**
+
 ### E2 · Control operativo por sede
 
 - **E2-F1 — Dashboard general**
@@ -154,6 +157,11 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-054: Como Diana, quiero que el % de ejecucion del presupuesto aparezca junto a la barra, para asociarlo visualmente al avance y no al valor monetario. — **Hecha**
   - TO-HU-055: Como usuario, quiero filtros globales visibles en el instrumento, para revisar periodo, tipo de unidad y estado sin entrar a cada tabla. — **Hecha**
   - TO-HU-057: Como Luis Felipe, quiero que los filtros globales solo aparezcan y afecten el Dashboard (donde comparo sedes), no las pantallas que ya tienen su propia navegación (Hoteles, Parques) ni las que no filtran nada (Calendario, Campañas), para no ver un control que confunde o esconde datos que sí existen. — **Hecha**
+  - TO-HU-060 *(chico)*: Como jefatura, quiero que el espacio a la derecha de las gráficas de Hoteles/Parques en el dashboard muestre contenido gráfico, no las convenciones de color (hoy ocupan ese lugar), para aprovechar ese espacio como información, no como leyenda. — **Pendiente**
+  - TO-HU-061 *(grande, necesita definir diseño primero)*: Como jefatura, quiero que el filtro de periodo "Todo 2026" muestre una lectura consolidada considerablemente más completa que la de un mes puntual (hoy se ve prácticamente igual), para que el filtro anual aporte algo distinto a mirar mes por mes. — **Pendiente**
+  - TO-HU-062 *(chico)*: Como Diana, quiero que el % de cumplimiento del presupuesto no se repita en el bloque de presupuesto del dashboard (hoy aparece en el badge del encabezado de cada sede y de nuevo junto a la barra "Real cumplido"), para no leer el mismo dato dos veces. — **Pendiente**
+  - TO-HU-063 *(mediano)*: Como jefatura, quiero redistribuir tamaños en los bloques "Ocupación hotelera" y "Ejecución presupuestal" del dashboard (hoy tienen mucho espacio en blanco y la información se ve muy pequeña), para aprovechar mejor el espacio y leer los datos sin esforzarme. — **Pendiente**
+  - TO-HU-064 *(muy chico)*: Como usuaria, quiero que el subtítulo del sidebar diga "Unidad de Turismo" en vez de "Ocupación y presupuesto", para que sea consistente con el encabezado de cada pantalla. — **Pendiente**
 
 - **E2-F2 — Sección Hoteles**
   - TO-HU-011: Como gerente hotelero, quiero una sección de Hoteles con una pestaña por hotel, para revisar solo mi sede sin ruido. — **Hecha**
@@ -161,10 +169,13 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-013: Como Diana, quiero que cada hotel muestre vista diaria y acumulada por periodo, para auditar evolución y cierre mensual. — **Hecha**
   - TO-HU-042: Como gerente hotelero, quiero ver 12 barras mensuales por hotel y el detalle diario solo del mes activo, para entender cómo se mueve el año sin perder el día a día. — **Hecha**
   - TO-HU-047: Como gerente hotelero, quiero que la gráfica de detalle diario sea grande y legible (no un gráfico pequeño), para leer el comportamiento del mes sin acercarme a la pantalla. — **Hecha**
+  - TO-HU-069 *(mediano, reutiliza `domain/budget.js`)*: Como gerente hotelero, quiero ver el seguimiento presupuestal de mi hotel dentro de la misma pestaña de Hoteles (no solo en la pestaña "Presupuesto" separada), para tener toda la información de mi sede en un mismo lugar. — **Pendiente**
 
 - **E2-F3 — Sección Parques / pasadía / camping**
   - TO-HU-014: Como gerente de parque, quiero una sección de Parques con una pestaña por sede, para controlar cupos, sitios o visitantes sin forzar lógica hotelera. — **Hecha**
   - TO-HU-015: Como Diana, quiero que parques y camping tengan métricas equivalentes: capacidad, ocupación/uso, libres, cumplimiento y alarma, para compararlos sin distorsionar su operación. — **Hecha**
+  - TO-HU-065 *(grande)*: Como gerente de parque, quiero que Parques tenga el mismo nivel de detalle que Hoteles (movimiento anual de 12 meses, cumplimiento del mes contra meta, recomendación estratégica), para no quedar con una vista más pobre que la de alojamiento. — **Pendiente**
+  - TO-HU-070 *(mediano, reutiliza `domain/budget.js`)*: Como gerente de parque, quiero ver el seguimiento presupuestal de mi parque dentro de la misma pestaña de Parques, igual que en Hoteles, para tener toda la información de mi sede en un mismo lugar. — **Pendiente**
 
 - **E2-F4 — Estructura visible sin datos**
   - TO-HU-031: Como Diana, quiero ver sedes sin datos en gris, para confirmar que la estructura existe aunque falte cargar informacion. — **Hecha**
@@ -191,9 +202,11 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-059: Como Diana, quiero recuperar la pestaña propia "Seguimiento presupuestal" que existia en v2 (selector de periodo, comparacion de las 9 sedes en una escala comun, desglose empresarial/individual cuando el archivo lo trae, y detalle de 12 meses por sede), para no perder ese nivel de detalle al migrar a la version modular. — **Hecha**
 
 - **E3-F4 — Reportes y trazabilidad**
-  - TO-HU-025: Como Diana, quiero exportar reportes por sede y consolidado, para compartirlos con jefatura o analizarlos en Excel. — **Hecha** (presupuesto; ocupación queda pendiente)
+  - TO-HU-025: Como Diana, quiero exportar reportes por sede y consolidado, para compartirlos con jefatura o analizarlos en Excel. — **Hecha** (presupuesto; ocupación queda pendiente — ver TO-HU-066)
   - TO-HU-026: Como Diana, quiero registrar decisiones y responsables en bitácora, para dar seguimiento a campañas, tarifas y compromisos. — **Pendiente**
   - TO-HU-027: Como administradora, quiero identificar quién cargó o modificó datos, para mantener control operativo mínimo. — **Pendiente**
+  - TO-HU-066 *(chico-mediano, reutiliza `services/csv-export.js`)*: Como Diana, quiero exportar ocupación e inventario por sede y consolidado en CSV, igual que ya existe para presupuesto, para compartir esos datos fuera del tablero. — **Pendiente**
+  - TO-HU-068 *(por definir alcance con Luis Felipe)*: Como Diana, quiero ver un estado de "cumplimiento técnico" de Hoteles y Parques, para saber qué contratos de datos (ocupación, presupuesto, Revenue) están cargados por sede y cuáles faltan. — **Pendiente**
 
 - **E3-F5 — Calendario comercial y catálogo de campañas**
   - TO-HU-028: Como Diana, quiero conservar el calendario comercial como sección propia, para interpretar la ocupación según actividades, temporada y sede. — **Hecha**
@@ -219,8 +232,14 @@ Carpeta: `06-vigilancia-turismo-bienestar/`.
 
 ## Próximas HUs candidatas a paquete de sprint (sugerido, a confirmar con Luis Felipe)
 
-`SPRINT-01` dejó creada la base modular paralela. Los paquetes naturales siguientes son:
+**Lista de correcciones de Luis Felipe (2026-08-19), registrada en el backlog sin desarrollar todavía** — `TO-HU-060` a `TO-HU-070`, agrupadas por tamaño relativo para facilitar priorizar:
 
-1. **FT-05.12** restante (`HU-039`): carga de presupuesto/ejecución por archivo.
-2. **FT-05.14** (`HU-044` a `HU-046`): dashboard decisional y reducción de carga cognitiva.
-3. **FT-05.9** (`HU-030` a `HU-033`): paridad de datos reales de Zeus entre las 4 sedes, una vez lleguen los archivos/fuentes reales y ya exista el contrato de carga.
+- **Rápidas (chico/muy chico):** `TO-HU-064` (texto sidebar), `TO-HU-060` (convenciones vs. gráfica a la derecha), `TO-HU-062` (% repetido en presupuesto).
+- **Medianas:** `TO-HU-063` (redistribuir tamaños del dashboard), `TO-HU-066` (exportar ocupación en CSV), `TO-HU-067` (auditoría de datos quemados), `TO-HU-069` y `TO-HU-070` (presupuesto embebido en Hoteles/Parques).
+- **Grandes o que necesitan definir alcance antes de estimarse:** `TO-HU-061` ("Todo 2026" más potente — falta decidir qué agrega), `TO-HU-065` (Parques al nivel de Hoteles), `TO-HU-068` (estado de cumplimiento técnico — falta definir con Luis Felipe qué significa exactamente).
+
+Candidatos previos, sin desarrollar todavía:
+
+1. **FT-05.9** (`HU-030` a `HU-033`): paridad de datos reales de Zeus entre las 4 sedes, una vez lleguen los archivos/fuentes reales.
+2. **TO-HU-026/027**: bitácora de decisiones y trazabilidad de quién cargó cada dato.
+3. **TO-HU-039**: carga de presupuesto/ejecución por archivo — ya cubierta indirectamente por el contrato `budgetExecution` (`SPRINT-04`/`SPRINT-19`); revisar si sigue aplicando tal como está escrita.
