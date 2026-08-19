@@ -56,7 +56,7 @@ Al terminar, **antes de dar la tarea por cerrada**:
 3. Actualizar `MAPA_CODIGO.md` si el sprint tocó código (ver sección 4).
 4. Si el sprint movió el roadmap (adelantó, atrasó o cambió el objetivo de una semana), actualizar `ROADMAP.md`.
 5. Entregar en la respuesta final del chat un bloque `HANDOFF` breve y auditable, sin referencias a GitHub/repo remoto, con HUs/tickets completos, pendientes, archivos tocados, archivos no tocados relevantes, validación, riesgos residuales y estado DoD.
-6. Confirmar el cierre con un **commit local** (sin push, sin remoto configurado — el repo no tiene ninguno). Mensaje: primera línea `SPRINT-NN — <objetivo corto> (Claude Code | Codex)`, cuerpo con el mismo resumen de cierre ya redactado en el paso 2 (o el bloque `HANDOFF` del paso 5, que trae básicamente el mismo contenido). No hace falta redactar nada nuevo para el commit — es el mismo texto que ya se escribe, solo que ahora también queda versionado con diff real en vez de vivir solo como prosa en `SPRINTS.md`.
+6. Confirmar el cierre con un **commit local**. Mensaje: primera línea `SPRINT-NN — <objetivo corto> (Claude Code | Codex)`, cuerpo con el mismo resumen de cierre ya redactado en el paso 2 (o el bloque `HANDOFF` del paso 5, que trae básicamente el mismo contenido). No hace falta redactar nada nuevo para el commit — es el mismo texto que ya se escribe, solo que ahora también queda versionado con diff real en vez de vivir solo como prosa en `SPRINTS.md`. **No hacer `git push`** al cerrar un sprint — el commit local es suficiente para el registro; subir a `origin/main` requiere que Luis Felipe lo pida explícitamente (ver nota sobre el remoto en la sección 6).
 
 Un sprint no está cerrado si estos 6 pasos no están hechos. No se pasa al siguiente sprint sin cerrar el anterior.
 
@@ -114,7 +114,7 @@ Plantilla de cada entrada (una por sprint, en orden correlativo, más reciente a
 
 ### Plantilla obligatoria de handoff final
 
-Al cerrar cualquier desarrollo, Codex o Claude Code deben entregar en el chat un bloque similar a este. No se incluye repo de GitHub, commit remoto ni push, salvo que Luis Felipe lo pida explícitamente para otra tarea.
+Al cerrar cualquier desarrollo, Codex o Claude Code deben entregar en el chat un bloque similar a este. El repo ya tiene remoto (`origin` → `https://github.com/lfbotero80/Comfe`, privado, rama `main`), pero el handoff no incluye push ni referencias a subir nada — eso solo ocurre si Luis Felipe lo pide explícitamente para esa tarea puntual (ver sección 6).
 
 ```text
 HANDOFF — SPRINT-NN <nombre corto>
@@ -184,6 +184,7 @@ Organiza el trabajo por semana calendario, con el objetivo de esa semana en una 
 - Si dos HUs del mismo sprint tocan el mismo archivo, coordinarlas dentro de la misma entrada de sprint en vez de abrir sprints paralelos sobre el mismo archivo.
 - Ningún agente sobrescribe una versión de trabajo del otro sin decirlo explícitamente en el cierre del sprint. Para documentos: versionar `v1`, `v2`, `v3`... o decir explícitamente que se reemplaza (regla de `CLAUDE.md`). Para código modular: no crear carpetas nuevas por versión — editar in place y dejar el historial en el commit del cierre de sprint (ver 4.1).
 - Cualquier decisión de producto ambigua (qué construir, qué prioridad) se resuelve preguntando a Luis Felipe, no asumiéndola en silencio — mismo criterio que ya rige en este proyecto.
+- **Remoto (desde 2026-08-19):** el repo tiene `origin` → `https://github.com/lfbotero80/Comfe` (privado), rama local `main` en tracking con `origin/main`. Los commits de cierre de sprint (regla 2, paso 6) siguen siendo solo locales — **ningún agente hace `git push` por su cuenta**; subir a GitHub requiere que Luis Felipe lo pida explícitamente para esa tarea puntual, igual que cualquier otra acción que sale del repo local.
 
 ---
 
