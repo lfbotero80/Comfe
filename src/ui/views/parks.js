@@ -1,17 +1,35 @@
 import { PARKS } from '../../domain/sites.js';
 import { appState } from '../../state/app-state.js';
-import { classifyOccupancy } from '../../domain/occupancy.js';
+import { classifyOccupancy, OCCUPANCY_TARGET } from '../../domain/occupancy.js';
 import { badge, escapeHTML, trafficLight } from '../html.js';
+import { renderSiteBudgetPanel } from '../site-budget-panel.js';
 
 let activeParkId = PARKS[0].id;
+const activeMonthByParkId = {};
+const MONTHS = [
+  ['01', 'Ene'],
+  ['02', 'Feb'],
+  ['03', 'Mar'],
+  ['04', 'Abr'],
+  ['05', 'May'],
+  ['06', 'Jun'],
+  ['07', 'Jul'],
+  ['08', 'Ago'],
+  ['09', 'Sep'],
+  ['10', 'Oct'],
+  ['11', 'Nov'],
+  ['12', 'Dic']
+];
 
 export function renderParks(){
   const activePark = PARKS.find(park => park.id === activeParkId) || PARKS[0];
   const rows = rowsForPark(activePark);
-  const monthRows = latestMonthRows(rows);
+  const year = activeYear(rows);
+  const monthSummaries = monthlySummaries(rows, year);
+  const activeMonth = activeMonthByParkId[activePark.id] || latestMonth(rows) || `${year}-08`;
+  const monthRows = rowsForMonth(rows, activeMonth);
   const latest = monthRows[monthRows.length - 1] || rows[rows.length - 1] || null;
   const status = latest ? classifyOccupancy(latest.ocupacion_porcentaje, latest.fecha) : null;
-  const monthLabel = latest ? String(latest.fecha).slice(0, 7) : 'Sin periodo cargado';
 
   return `
     <div class="tabs site-tabs">
@@ -31,8 +49,12 @@ export function renderParks(){
         ${status ? `<div class="alarm-context">${trafficLight(status.severity, 'horizontal')}${badge(status.label, status.severity)}</div>` : '<span class="pending-dot">Sin datos de uso</span>'}
       </div>
 
-      ${latest ? renderParkMetrics(activePark, monthRows, latest, status, monthLabel) : renderMissingState(activePark)}
-      ${latest ? renderDailyDetail(monthRows.length ? monthRows : rows, monthLabel) : ''}
+      ${renderYearMovement(monthSummaries, activeMonth, year)}
+      ${renderCompliance(monthSummaries.find(month => month.period === activeMonth), activeMonth)}
+      ${latest ? renderParkMetrics(activePark, monthRows, latest, status, activeMonth) : renderMissingState(activePark, activeMonth)}
+      ${renderSiteBudgetPanel(activePark, activeMonth)}
+      ${latest ? renderAction(status) : renderMissingAction(activePark)}
+      ${renderDailyDetail(monthRows, activeMonth)}
     </section>
   `;
 }
@@ -41,6 +63,13 @@ export function bindParkHandlers({ rerender }){
   document.querySelectorAll('[data-park-tab]').forEach(button => {
     button.addEventListener('click', () => {
       activeParkId = button.dataset.parkTab;
+      rerender();
+    });
+  });
+
+  document.querySelectorAll('[data-park-month]').forEach(button => {
+    button.addEventListener('click', () => {
+      activeMonthByParkId[activeParkId] = button.dataset.parkMonth;
       rerender();
     });
   });
@@ -53,10 +82,8 @@ function rowsForPark(park){
     .sort((a, b) => String(a.fecha).localeCompare(String(b.fecha)));
 }
 
-function latestMonthRows(rows){
-  if(!rows.length) return [];
-  const latestMonth = String(rows[rows.length - 1].fecha).slice(0, 7);
-  return rows.filter(row => String(row.fecha).startsWith(latestMonth));
+function rowsForMonth(rows, period){
+  return rows.filter(row => String(row.fecha).startsWith(period));
 }
 
 function renderParkMetrics(park, rows, latest, status, monthLabel){
@@ -68,16 +95,13 @@ function renderParkMetrics(park, rows, latest, status, monthLabel){
       ${metric('Usados', summary.occupiedAverage.toFixed(0), `${summary.freeAverage.toFixed(0)} libres promedio`)}
       ${metric('Dia operativo', status.context.dayName, status.context.label)}
     </div>
-    <div class="action-note ${status.severity}">
-      <strong>Accion sugerida:</strong> ${escapeHTML(status.recommendation)}
-    </div>
   `;
 }
 
-function renderMissingState(park){
+function renderMissingState(park, activeMonth){
   return `
     <div class="grid four">
-      ${metric('Uso del mes', 'Pendiente', 'Sin archivo cargado')}
+      ${metric('Uso del mes', 'Pendiente', activeMonth)}
       ${metric('Capacidad vigente', 'Pendiente', park.defaultUnitType)}
       ${metric('Usados', 'Pendiente', 'Libres pendientes')}
       ${metric('Dia operativo', 'Pendiente', 'Sin fecha cargada')}
@@ -89,11 +113,78 @@ function renderMissingState(park){
   `;
 }
 
+function renderYearMovement(monthSummaries, activeMonth, year){
+  return `
+    <section class="year-panel">
+      <div class="section-head compact">
+        <div>
+          <h3>Movimiento anual ${escapeHTML(year)}</h3>
+          <p class="metric-note">Una barra por mes; gris indica que falta archivo cargado.</p>
+        </div>
+      </div>
+      <div class="month-bars">
+        ${monthSummaries.map(month => renderMonthBar(month, activeMonth)).join('')}
+      </div>
+    </section>
+  `;
+}
+
+function renderMonthBar(month, activeMonth){
+  const height = month.hasData ? Math.max(18, month.average * 1.75) : 18;
+  const label = month.hasData ? `${month.average.toFixed(0)}%` : 's/d';
+  return `
+    <button type="button" class="month-bar ${month.severity} ${month.period === activeMonth ? 'active' : ''}" data-park-month="${escapeHTML(month.period)}">
+      <span class="month-value">${escapeHTML(label)}</span>
+      <span class="month-column ${month.severity}" style="height:${height}px"></span>
+      <span class="month-label">${escapeHTML(month.label)}</span>
+    </button>
+  `;
+}
+
+function renderCompliance(month, activeMonth){
+  const hasData = Boolean(month?.hasData);
+  const compliance = hasData ? month.compliance : 0;
+  const severity = hasData ? month.severity : 'gray';
+  return `
+    <section class="compliance-panel">
+      <div class="compliance-head">
+        <div>
+          <strong>Cumplimiento del mes</strong>
+          <span>${escapeHTML(activeMonth)} · meta ${OCCUPANCY_TARGET}% uso</span>
+        </div>
+        ${badge(hasData ? `${compliance.toFixed(0)}%` : 'Pendiente', severity)}
+      </div>
+      <div class="compliance-track">
+        <div class="compliance-fill ${severity}" style="width:${Math.min(compliance, 130)}%"></div>
+        <span class="compliance-target" style="left:${Math.min(100, 100)}%"></span>
+      </div>
+    </section>
+  `;
+}
+
+function renderAction(status){
+  return `
+    <div class="action-note strategic ${status.severity}">
+      <strong>Accion sugerida:</strong> ${escapeHTML(status.recommendation)}
+      <span>Se calcula con el semaforo de uso del mes activo y el calendario operativo.</span>
+    </div>
+  `;
+}
+
+function renderMissingAction(park){
+  return `
+    <div class="action-note strategic gray">
+      <strong>Accion sugerida:</strong> Cargar uso operativo de ${escapeHTML(park.name)}.
+      <span>Sin uso diario no se debe activar ni cerrar comunicacion comercial desde esta sede.</span>
+    </div>
+  `;
+}
+
 function renderDailyDetail(rows, monthLabel){
   return `
     <div class="hotel-series">
       <h3>Detalle diario del mes ${escapeHTML(monthLabel)}</h3>
-      <div class="daily-table-wrap">
+      ${rows.length ? `<div class="daily-table-wrap">
         <table class="data-table compact-table">
           <thead>
             <tr>
@@ -125,7 +216,7 @@ function renderDailyDetail(rows, monthLabel){
             }).join('')}
           </tbody>
         </table>
-      </div>
+      </div>` : '<div class="empty-state"><strong>Sin detalle diario para este mes.</strong><span>Cargue el archivo del parque para activar uso, capacidad, libres y alarma.</span></div>'}
     </div>
   `;
 }
@@ -138,6 +229,36 @@ function monthSummary(rows){
     occupiedAverage: clean.reduce((sum, row) => sum + Number(row.unidades_ocupadas || 0), 0) / divisor,
     freeAverage: clean.reduce((sum, row) => sum + Number(row.unidades_libres || 0), 0) / divisor
   };
+}
+
+function activeYear(rows){
+  const latest = rows[rows.length - 1];
+  return latest ? String(latest.fecha).slice(0, 4) : '2026';
+}
+
+function latestMonth(rows){
+  const latest = rows[rows.length - 1];
+  return latest ? String(latest.fecha).slice(0, 7) : null;
+}
+
+function monthlySummaries(rows, year){
+  return MONTHS.map(([month, label]) => {
+    const period = `${year}-${month}`;
+    const monthRows = rowsForMonth(rows, period);
+    if(!monthRows.length){
+      return { period, label, hasData: false, average: 0, compliance: 0, severity: 'gray' };
+    }
+    const summary = monthSummary(monthRows);
+    const severity = summary.average >= OCCUPANCY_TARGET ? 'green' : summary.average >= 40 ? 'amber' : 'red';
+    return {
+      period,
+      label,
+      hasData: true,
+      average: summary.average,
+      compliance: OCCUPANCY_TARGET ? (summary.average / OCCUPANCY_TARGET) * 100 : 0,
+      severity
+    };
+  });
 }
 
 function metric(label, value, note){

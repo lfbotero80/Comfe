@@ -420,6 +420,29 @@ p{line-height:1.55}
   background:var(--navy);
   opacity:.58;
 }
+.site-budget-panel{
+  display:grid;
+  gap:10px;
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#FBFCFA;
+}
+.site-budget-bars{display:grid; gap:8px}
+.site-budget-bar{
+  display:grid;
+  grid-template-columns:96px 1fr 132px;
+  gap:10px;
+  align-items:center;
+  font-size:12.5px;
+  color:var(--muted);
+}
+.site-budget-bar strong{
+  color:var(--navy);
+  font-weight:800;
+  text-align:right;
+  white-space:nowrap;
+}
 
 .decision-band{
   display:grid;
@@ -737,6 +760,7 @@ p{line-height:1.55}
   .occ-row,.occupancy-chart .occ-row{grid-template-columns:120px 1fr 48px}
   .trend-svg,.trend-empty{display:none}
   .month-bars{grid-template-columns:repeat(6,minmax(42px,1fr)); min-height:260px}
+  .site-budget-bar{grid-template-columns:82px 1fr 96px; font-size:11.5px}
   .budget-compare-bar{grid-template-columns:76px 1fr 44px 88px; font-size:11.5px}
   .budget-report-bar{grid-template-columns:76px 1fr 96px; font-size:11.5px}
   .topbar{align-items:flex-start}

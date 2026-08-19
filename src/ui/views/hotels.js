@@ -4,6 +4,7 @@ import { classifyOccupancy, OCCUPANCY_TARGET } from '../../domain/occupancy.js';
 import { commercialContextForSite } from '../../domain/commercial-context.js';
 import { buildStrategicRecommendation } from '../../domain/strategic-recommendation.js';
 import { badge, escapeHTML, trafficLight } from '../html.js';
+import { renderSiteBudgetPanel } from '../site-budget-panel.js';
 
 let activeHotelId = HOTELS[0].id;
 const activeMonthByHotelId = {};
@@ -61,6 +62,7 @@ export function renderHotels(){
       ${renderYearMovement(monthSummaries, activeMonth, year)}
       ${renderCompliance(monthSummaries.find(month => month.period === activeMonth), activeMonth)}
       ${latest ? renderMetrics(monthRows, latest, status, activeMonth) : renderMissingState(activeHotel, activeMonth)}
+      ${renderSiteBudgetPanel(activeHotel, activeMonth)}
       ${renderAction(strategicRecommendation)}
       ${latest ? renderCommercialContext(activeHotel, latest, status, commercialContext) : ''}
       ${renderDailyDetail(monthRows, activeMonth)}
