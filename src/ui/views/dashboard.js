@@ -71,7 +71,7 @@ function score(label, value, note, severity){
 }
 
 function renderQuadrant(rows){
-  const points = rows.filter(row => row.occupancyPct !== null && row.budgetPct !== null);
+  const points = rows;
   return `
     <section class="panel command-card quadrant-card">
       <div class="section-head">
@@ -90,11 +90,16 @@ function renderQuadrant(rows){
         <span class="quad-label bottom-left">Accion prioritaria</span>
         <span class="quad-label bottom-right">Revisar mix / tarifa</span>
         ${points.map(point => `
-          <span class="quadrant-point ${point.combinedSeverity}" style="left:${point.occupancyPct}%; bottom:${Math.min(point.budgetPct, 120) / 1.2}%">
+          <span class="quadrant-point ${point.combinedSeverity} ${point.kind} ${point.plotIsPartial ? 'partial' : ''}" style="left:${point.plotX}%; bottom:${point.plotY}%">
             <b>${escapeHTML(shortName(point.name))}</b>
           </span>
         `).join('')}
-        ${points.length ? '' : '<div class="empty-state"><strong>Sin puntos suficientes</strong><span>Cargue ocupacion y presupuesto de las sedes.</span></div>'}
+        ${points.length ? '' : '<div class="empty-state"><strong>Sin sedes para el filtro</strong><span>Ajuste filtros para activar el cuadrante.</span></div>'}
+      </div>
+      <div class="quadrant-legend">
+        <span><i class="quadrant-symbol hotel"></i>Hoteles</span>
+        <span><i class="quadrant-symbol parque"></i>Parques</span>
+        <span><i class="quadrant-symbol partial"></i>Dato parcial</span>
       </div>
     </section>
   `;
