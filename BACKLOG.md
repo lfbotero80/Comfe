@@ -87,7 +87,7 @@ Carpeta: `05-tablero-ocupacion/`. La línea más activa del proyecto — ver `MA
   - HU-051: Como Luis Felipe, quiero confirmar si el `project_id` dejado por Codex en `05-tablero-ocupacion/v3-modular/.openai/hosting.json` (`SPRINT-34`, sin registro en su momento) corresponde a un sitio ya publicado, para decidir si se mantiene, se protege o se elimina — el tablero contiene datos reales de negocio y no debería quedar expuesto a un tercero sin decisión consciente. — **Pendiente**
 
 - **FT-05.11 — Actualización diaria/tiempo real (evaluación arquitectónica)**
-  - HU-035: Como Diana, quiero entender qué se necesita para que el tablero se actualice solo desde Zeus (API o export programado), sabiendo que hoy no hay backend. — **Bloqueada** (depende de confirmar con TI/proveedor de Zeus si existe API o exportación programada).
+  - HU-035: Como Diana, quiero entender qué se necesita para que el tablero se actualice solo desde Zeus (API o export programado), sabiendo que hoy no hay backend. — **Bloqueada** (depende de confirmar con TI/proveedor de Zeus si existe API o exportación programada). *Relacionada con `TO-HU-092`/`TO-HU-093` (`E1-F5`): esta HU es sobre traer el dato automáticamente desde Zeus; `TO-HU-092` es sobre que varias personas vean el mismo dato ya cargado, sin importar cómo entró — son dos necesidades de backend distintas, no la misma.*
 
 - **FT-05.12 — Contrato de carga de datos (archivos, no copiar/pegar)**
   - HU-037: Como Luis Felipe, quiero definir el contrato de datos para archivos de hoteles y parques, para que el tablero deje de depender de texto copiado/pegado. — **Hecha**
@@ -128,6 +128,8 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-004: Como Diana, quiero ver errores de carga claros por fila y columna, para corregir el archivo antes de usarlo en decisiones. — **Hecha**
   - TO-HU-045: Como gerente de sede, quiero saber de inmediato si mi archivo se cargó, se rechazó o el formato no es compatible, para confiar en que el dato quedó (o no) sin adivinar. — **Hecha**
   - TO-HU-089: Como usuaria del tablero, quiero que el mensaje con el archivo cargado solo aparezca en el módulo Cargar datos, para no exponer ese detalle en Dashboard, Hoteles, Parques u otras secciones. — **Hecha** (`SPRINT-36`)
+  - TO-HU-090: Como Diana, quiero que el tablero no tenga modo demo residual y opere siempre sobre datos reales cargados por archivo, para evitar confusión entre estructura, prueba y dato operativo. — **Hecha** (`SPRINT-37`)
+  - TO-HU-091: Como usuaria del tablero, quiero que en Cargar datos aparezcan primero los bloques de carga y después el estado consolidado de la información, para seguir el flujo natural de subir, validar y revisar cobertura. — **Hecha** (`SPRINT-37`)
 
 - **E1-F2 — Modelo de datos por sede y unidad**
   - TO-HU-005: Como Diana, quiero que cada sede tenga inventario total, ocupado, libre y % de ocupación, para auditar capacidad real y uso. — **Hecha**
@@ -144,6 +146,12 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-067 *(mediano, requiere revisión completa del código)*: Como Luis Felipe, quiero una auditoría del tablero para confirmar que no hay información quemada en el código (ejemplo señalado: el mes de agosto aparece fijo para Hostería Los Farallones), para asegurar que todo lo que se muestra sale de datos realmente cargados. — **Hecha** (`SPRINT-24`; ver `05-tablero-ocupacion/AUDITORIA_DATOS_QUEMADOS_SPRINT-24.md`)
   - TO-HU-071 *(derivada de `SPRINT-24`)*: Como Luis Felipe, quiero separar el modo demo del modo datos reales, para que el tablero pueda arrancar vacío y no muestre datos semilla como si hubieran sido cargados por el usuario. — **Hecha** (`SPRINT-25`)
   - TO-HU-072 *(derivada de `SPRINT-24`)*: Como gerente de sede, quiero que una sede sin filas cargadas no muestre un mes fijo como agosto, para no confundir un estado vacío con un periodo operativo real. — **Hecha** (`SPRINT-26`)
+
+- **E1-F5 — Persistencia compartida (backend)**
+  Nace de un caso real detectado el 2026-08-19: la URL pública (`SPRINT-35`) guarda todo en `localStorage`, por navegador — si la jefa de Diana abre el tablero en otro computador, no ve nada de lo que Diana ya cargó; tendría que cargarlo de nuevo ella misma. Sin esto, el tablero sirve para uso individual o demo, no como fuente compartida de verdad entre varias personas.
+  - TO-HU-092 *(grande, necesita definición de arquitectura antes de estimarse — mismo criterio de Bloque 3 que `HU-035`)*: Como Luis Felipe, quiero evaluar qué requiere un backend real de persistencia compartida (base de datos, servidor, sincronización) para que el tablero deje de depender de `localStorage` por navegador, para decidir conscientemente si vale la pena construirlo antes de invertir en él. — **Pendiente**
+  - TO-HU-093 *(depende de `TO-HU-092`)*: Como jefatura, quiero ver los mismos datos que carga Diana (o cualquier gerente de sede) sin tener que cargarlos yo también, para que el tablero sea una fuente compartida entre personas y computadores distintos, no una copia aislada por navegador. — **Pendiente** (bloqueada por la decisión de arquitectura de `TO-HU-092`)
+  - **Nota de dependencia:** un backend compartido con varias personas cargando y viendo el mismo dato reabre la necesidad de autenticación real por usuario (no solo el campo de texto libre "Responsable activo" que existe hoy) — conectar con la conversación pendiente sobre restablecer el login/roles que tenía v2, en vez de resolverlo por separado.
   - TO-HU-087: Como Luis Felipe, quiero que la URL pública del tablero arranque sin datos operativos, campañas ni calendario comercial quemados, para compartirla con Diana sin exponer información de negocio en el código. — **Hecha** (`SPRINT-35`)
   - TO-HU-088: Como Diana, quiero que los datos que cargue en la URL pública persistan en mi navegador, incluyendo archivos cargados y campañas agregadas, para poder recargar y seguir revisando sin volver a subir todo. — **Hecha** (`SPRINT-35`)
 

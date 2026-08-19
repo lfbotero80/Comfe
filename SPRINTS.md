@@ -6,6 +6,88 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-37 — Datos reales y flujo de carga [Estado: Cerrado]
+
+- **Agente(s):** Codex
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E1
+- **Objetivo del sprint:** eliminar el modo demo residual y ordenar la vista Cargar datos como flujo operativo: cargar primero, revisar estado después.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-090 | Sin modo demo residual | Codex | Hecha | Estado siempre real/vacio + persistencia local de cargas |
+| TO-HU-091 | Orden operativo en Cargar datos | Codex | Hecha | Cargadores antes del estado consolidado |
+
+### Resumen de cierre
+
+Se elimino el modo demo como concepto ejecutable dentro de la V3 modular. `app-state.js` ya no exporta ni calcula `DATA_MODES`, `dataMode`, `setDataMode()`, `readDataMode()` ni `dataForMode()`: el tablero arranca siempre desde datos reales persistidos en `localStorage` o desde arrays vacios si no hay cargas. La migracion existente mantiene la limpieza de datos heredados y remueve tambien la llave antigua `comfenalco_data_mode_v1`, para que navegadores que alguna vez quedaron en `demo` no arrastren esa configuracion.
+
+Se reordeno la vista `Cargar datos`: despues del encabezado y del responsable activo aparecen primero los bloques de carga de archivos (`.upload-grid`), luego el estado consolidado de informacion por sede, y al final la guia de interpretacion de archivos Zeus. Tambien se retiro el panel "Datos reales" y el CSS muerto asociado a `.data-mode-panel`/`.mode-toggle`.
+
+**Qué cambió:** estado siempre real en `src/state/app-state.js`; orden operativo de `src/ui/views/data-load.js`; limpieza visual en `styles/app.css`.
+
+**HUs trabajadas:** `TO-HU-090` y `TO-HU-091`, ambas `Hecha`.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/src/state/app-state.js`, `05-tablero-ocupacion/v3-modular/src/ui/views/data-load.js`, `05-tablero-ocupacion/v3-modular/styles/app.css`.
+
+**Validación realizada:** `node --check` sobre todos los modulos JS; `git diff --check`; busqueda negativa de `DATA_MODES`, `dataMode`, `setDataMode`, `Modo demo`, `data-mode` y `mode-toggle` en runtime/CSS; servidor local `http://localhost:8055/` respondiendo 200; prueba Playwright con navegador limpio y con `comfenalco_data_mode_v1=demo` simulado confirmando que no aparece modo demo, se borra la llave heredada, no sobreviven filas demo simuladas y los cargadores aparecen antes del estado consolidado; carga real de `Forecast Quirama 1808.pdf` confirmando 15 filas aceptadas y persistidas.
+
+**Decisiones / límites:** no se cambia parser Zeus, contratos de archivo, persistencia local, dashboard, Hoteles, Parques, Presupuesto, Campanas ni Bitacora. La persistencia sigue siendo local por navegador; no sincroniza datos entre usuarios.
+
+**Pendientes para revisar:** si Diana necesita recibir los mismos datos que cargue Luis Felipe, sigue haciendo falta backend o almacenamiento compartido. El texto historico de sprints anteriores conserva referencias a "Modo demo" porque documenta decisiones pasadas; el runtime ya no lo usa.
+
+```text
+HANDOFF — SPRINT-37 Datos reales y flujo de carga
+──────────────────────────────────────
+HUs completas:        TO-HU-090, TO-HU-091
+HUs pendientes:       ninguna dentro del alcance del sprint
+
+Archivos tocados:     BACKLOG.md · SPRINTS.md · ROADMAP.md · MAPA_CODIGO.md
+                      05-tablero-ocupacion/v3-modular/src/state/app-state.js
+                      05-tablero-ocupacion/v3-modular/src/ui/views/data-load.js
+                      05-tablero-ocupacion/v3-modular/styles/app.css
+
+Archivos NO tocados:  tablero-seguimiento-ocupacion.html
+                      tablero-seguimiento-ocupacion-v2.html
+                      tablero-seguimiento-ocupacion-v3-demo.html
+                      v3-modular/src/services/file-reader.js
+                      v3-modular/src/services/zeus-forecast-parser.js
+                      v3-modular/src/domain/data-contracts.js
+                      v3-modular/src/ui/views/dashboard.js
+                      v3-modular/src/ui/views/hotels.js
+                      v3-modular/src/ui/views/parks.js
+
+Datos/contratos:      Sin cambios en contratos, plantillas ni parser Zeus.
+                      Se mantiene persistencia local de archivos cargados.
+
+Decisiones tomadas:   Se elimina el modo demo residual: todo opera como dato real.
+                      En Cargar datos, primero se cargan archivos y luego se revisa
+                      el estado consolidado por sede.
+
+Riesgos residuales:
+- La persistencia sigue siendo local por navegador; Diana no ve datos cargados por
+  Luis Felipe si abre la URL en otro equipo/navegador.
+- Los sprints historicos y algunos documentos de proceso conservan referencias a
+  "Modo demo" como historia del proyecto, no como runtime vigente.
+
+Validación hecha:
+  Sintaxis:           node --check sobre todos los modulos JS -> pass
+  Estatica:           git diff --check -> pass
+  Busqueda runtime:   sin DATA_MODES/dataMode/setDataMode/Modo demo/data-mode -> pass
+  Servidor local:     http://localhost:8055/ responde 200
+  Runtime navegador:  localStorage heredado demo se limpia -> pass
+                      cargadores antes del estado consolidado -> pass
+                      PDF Quirama 15 filas persistidas -> pass
+  Documentación:      BACKLOG.md + SPRINTS.md + ROADMAP.md + MAPA_CODIGO.md actualizados
+
+Auto-reporte DoD:     Completo para TO-HU-090 y TO-HU-091.
+```
+
+---
+
 ## SPRINT-36 — Estado de carga solo en su módulo [Estado: Cerrado]
 
 - **Agente(s):** Codex
