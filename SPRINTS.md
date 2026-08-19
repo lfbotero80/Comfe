@@ -6,6 +6,91 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-31 — Dashboard de mando visual [Estado: Cerrado]
+
+- **Agente(s):** Codex
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E2
+- **Objetivo del sprint:** implementar una primera version del Dashboard de Mando con estado combinado y visualizaciones mixtas, reduciendo la dependencia de barras horizontales.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-079 | Estado general combinado | Codex | Hecha | Ocupacion, presupuesto y cobertura de datos |
+| TO-HU-080 | Matriz de mando por sede | Codex | Hecha | Ocupacion, presupuesto, tendencia, accion y responsable |
+| TO-HU-081 | Cuadrante ocupacion vs presupuesto | Codex | Hecha | Cada sede como punto de riesgo |
+| TO-HU-084 | Lenguaje visual mixto | Codex | Hecha | Barras verticales, lineas, matriz, cuadrante y radar |
+
+### Resumen de cierre
+
+Se implemento la primera version runtime del Dashboard de Mando visual. Se creo `src/domain/dashboard-command.js` como capa de dominio para combinar ocupacion/uso, presupuesto, cobertura de datos, fuente y bitacora en filas directivas por sede. Este modulo calcula estado combinado, prioridad, accion sugerida base, responsable, fuente, tendencia, perfil radar y datos para cuadrante, evitando que `dashboard.js` mezcle reglas de negocio con HTML.
+
+`src/ui/views/dashboard.js` se reescribio sobre esa capa y deja de depender de una lectura dominada por barras horizontales. La pantalla ahora muestra banda de mando, 3 KPIs directivos, cuadrante ocupacion vs presupuesto, prioridad directiva, tendencia anual en lineas, radar de perfil, barras verticales de cumplimiento presupuestal, matriz heatmap por sede y calidad del dato. `styles/app.css` agrega los estilos responsivos para estas visualizaciones. El documento `DISENO_DASHBOARD_MANDO_SPRINT-30.md` se actualizo con la decision de lenguaje visual mixto.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/DISENO_DASHBOARD_MANDO_SPRINT-30.md`, `05-tablero-ocupacion/v3-modular/src/domain/dashboard-command.js`, `src/ui/views/dashboard.js` y `styles/app.css`.
+
+**Validacion realizada:** `node --check` sobre todos los modulos JS; `git diff --check`; servidor local `http://localhost:8055/` respondiendo 200; prueba Playwright desktop/mobile confirmando presencia de banda, cuadrante, radar, linea de tendencia, matriz, barras verticales y prioridad directiva; prueba de filtros verificando que Hoteles no muestra Parques, Parques no muestra Hoteles y Semaforo rerenderiza sin errores JS.
+
+**Decisiones / límites:** `TO-HU-082` no se cierra: el bloque de prioridad directiva existe como primera lectura, pero falta profundizarlo con relacion mas rica a campanas/bitacora. `TO-HU-083` y `TO-HU-061` siguen pendientes: `Todo 2026` ya tiene tendencia anual visible, pero aun no es una experiencia anual completamente distinta a la mensual.
+
+**Pendientes para revisar:** evaluar visualmente con Luis Felipe si el mix cuadrante/radar/linea/matriz ya se siente mas directivo; siguiente sprint recomendado: top 3 acciones con fuente, campana y bitacora (`TO-HU-082`) o lectura anual diferenciada (`TO-HU-083/061`).
+
+```text
+HANDOFF — SPRINT-31 Dashboard de mando visual
+──────────────────────────────────────
+HUs completas:        TO-HU-079, TO-HU-080, TO-HU-081, TO-HU-084
+HUs pendientes:       TO-HU-082 pendiente para profundizar acciones
+                      TO-HU-083 / TO-HU-061 pendientes para lectura anual
+
+Archivos tocados:     BACKLOG.md · SPRINTS.md · ROADMAP.md · MAPA_CODIGO.md
+                      05-tablero-ocupacion/DISENO_DASHBOARD_MANDO_SPRINT-30.md
+                      05-tablero-ocupacion/v3-modular/src/domain/dashboard-command.js
+                      05-tablero-ocupacion/v3-modular/src/ui/views/dashboard.js
+                      05-tablero-ocupacion/v3-modular/styles/app.css
+
+Archivos NO tocados:  tablero-seguimiento-ocupacion.html
+                      tablero-seguimiento-ocupacion-v2.html
+                      tablero-seguimiento-ocupacion-v3-demo.html
+                      v3-modular/src/ui/views/hotels.js
+                      v3-modular/src/ui/views/parks.js
+                      v3-modular/src/ui/views/budget.js
+                      v3-modular/src/services/file-reader.js
+                      v3-modular/src/services/validators.js
+
+Datos/contratos:      No se cambiaron contratos, plantillas ni datos semilla.
+
+Decisiones tomadas:   Se crea una capa de dominio para el mando directivo.
+                      El Dashboard adopta visualizaciones mixtas: cuadrante,
+                      matriz heatmap, lineas, barras verticales y radar.
+                      Las barras horizontales dejan de ser el lenguaje dominante.
+                      El top 3 queda como lectura inicial, no cierre completo
+                      de TO-HU-082.
+
+Riesgos residuales:
+- El radar es util como perfil, pero no como lectura precisa; debe revisarse
+  con Diana para confirmar si aporta o distrae.
+- Si solo hay un mes de ocupacion cargado, la linea de ocupacion anual no
+  aparece completa; es correcto porque no se inventan datos.
+- La matriz en movil requiere scroll horizontal para ver todas las columnas.
+- Falta enriquecer acciones con campanas/bitacora para cerrar TO-HU-082.
+
+Validación hecha:
+  Sintaxis:           node --check sobre todos los modulos JS -> pass
+  Estatica:           git diff --check -> pass
+  Servidor local:     http://localhost:8055/ responde 200
+  Runtime navegador:  desktop/mobile con banda, cuadrante, radar, linea,
+                      matriz, barras verticales y prioridad directiva -> pass
+                      filtros Hoteles/Parques/Semaforo -> pass
+  Documentación:      BACKLOG.md + SPRINTS.md + ROADMAP.md + MAPA_CODIGO.md actualizados
+
+Auto-reporte DoD:     Completo para TO-HU-079, TO-HU-080, TO-HU-081 y TO-HU-084.
+                      Parcial del frente de accion directiva: TO-HU-082 sigue pendiente.
+```
+
+---
+
 ## SPRINT-30 — Especificación Dashboard de Mando [Estado: Cerrado]
 
 - **Agente(s):** Codex

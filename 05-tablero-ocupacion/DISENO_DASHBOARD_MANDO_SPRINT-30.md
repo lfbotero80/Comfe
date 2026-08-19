@@ -242,3 +242,17 @@ Secuencia recomendada:
 3. **SPRINT-33:** lectura anual diferenciada para `Todo 2026`.
 
 Esto evita volver a mover piezas visuales sin una logica directiva compartida.
+
+## 8. Ajuste visual adoptado en SPRINT-31
+
+Luis Felipe marco una tension correcta: un dashboard basado casi solo en barras se vuelve monotono y no ayuda a interpretar el negocio desde distintos angulos.
+
+Decision adoptada para la implementacion inicial:
+
+- Usar **cuadrante** para leer tipo de riesgo: ocupacion/uso vs presupuesto.
+- Usar **matriz heatmap** para decision por sede.
+- Usar **lineas** para tendencia anual.
+- Usar **barras verticales** solo para comparacion presupuestal.
+- Usar **radar** como perfil consolidado, no como metrica de precision.
+
+Regla: no agregar graficas por variedad decorativa. Cada visual debe responder una pregunta distinta del tablero de mando.
