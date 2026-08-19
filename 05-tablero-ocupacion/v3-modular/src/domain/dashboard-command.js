@@ -3,6 +3,7 @@ import { buildReadinessSummary } from './data-readiness.js';
 import { classifyOccupancy, OCCUPANCY_TARGET } from './occupancy.js';
 
 const SEVERITY_RANK = { red: 0, amber: 1, gray: 2, green: 3 };
+const KIND_RANK = { hotel: 0, parque: 1 };
 
 export function buildDashboardCommand(state){
   const sites = budgetSites().filter(site => {
@@ -68,6 +69,9 @@ function siteCommandRow(site, state, readiness){
     source: latestOccupancy?.fuente || readiness?.lastSource || 'Sin fuente cargada',
     missing,
     latestDate: latestOccupancy?.fecha || '',
+    plotX: occupancyPct === null ? 4 : occupancyPct,
+    plotY: budget.hasData ? Math.min(budget.pct, 120) / 1.2 : 4,
+    plotIsPartial: occupancyPct === null || !budget.hasData,
     priority: priorityValue(combinedSeverity, occupancyStatus.severity, budget.severity, missing.length)
   };
 }
@@ -228,7 +232,9 @@ function priorityValue(combined, occupancy, budget, missingCount){
 }
 
 function prioritySort(a, b){
-  return a.priority - b.priority || a.name.localeCompare(b.name);
+  return (KIND_RANK[a.kind] ?? 9) - (KIND_RANK[b.kind] ?? 9)
+    || a.priority - b.priority
+    || a.name.localeCompare(b.name);
 }
 
 function countBy(rows, fn){

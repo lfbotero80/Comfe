@@ -171,6 +171,7 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-082: Como Diana, quiero ver las tres acciones prioritarias del día con responsable y fuente, para convertir el tablero en seguimiento operativo. — **Pendiente**
   - TO-HU-083: Como usuario directivo, quiero que la lectura anual y mensual sean visualmente distintas, para que "Todo 2026" no se vea igual a mirar un mes. — **Pendiente** (evoluciona TO-HU-061)
   - TO-HU-084: Como director, quiero que el dashboard combine barras verticales, líneas de tendencia, cuadrante, matriz y radar de perfil, para evitar una lectura monótona basada solo en barras horizontales. — **Hecha** (`SPRINT-31`)
+  - TO-HU-085: Como director, quiero que el dashboard general priorice primero Hoteles y luego Parques, y que el cuadrante ocupación vs presupuesto incluya ambas familias aun cuando haya datos parciales, para leer la unidad según la importancia real del negocio. — **Hecha** (`SPRINT-32`)
 
 - **E2-F2 — Sección Hoteles**
   - TO-HU-011: Como gerente hotelero, quiero una sección de Hoteles con una pestaña por hotel, para revisar solo mi sede sin ruido. — **Hecha**

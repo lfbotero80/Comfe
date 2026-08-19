@@ -432,6 +432,9 @@ p{line-height:1.55}
   border:3px solid #fff;
   box-shadow:0 5px 16px rgba(0,64,47,.20);
 }
+.quadrant-point.parque{border-radius:8px; transform:translate(-50%,50%) rotate(45deg)}
+.quadrant-point.parque b{transform:rotate(-45deg)}
+.quadrant-point.partial{border-style:dashed; opacity:.85}
 .quadrant-point b{
   position:absolute;
   top:30px;
@@ -444,6 +447,21 @@ p{line-height:1.55}
 .quadrant-point.amber{background:var(--amber)}
 .quadrant-point.green{background:var(--green)}
 .quadrant-point.gray{background:#AAB1AC}
+.quadrant-point.partial{background:#B7BCB8}
+.quadrant-legend{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:10px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:750;
+}
+.quadrant-legend span{display:inline-flex; align-items:center; gap:6px}
+.quadrant-symbol{width:12px; height:12px; display:inline-block; background:var(--navy)}
+.quadrant-symbol.hotel{border-radius:50%}
+.quadrant-symbol.parque{border-radius:3px; transform:rotate(45deg)}
+.quadrant-symbol.partial{border-radius:50%; background:#B7BCB8; border:2px dashed #fff; box-shadow:0 0 0 1px #B7BCB8}
 .priority-list{display:grid; gap:12px; align-content:start}
 .priority-item{
   display:grid;

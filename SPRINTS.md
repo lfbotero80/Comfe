@@ -6,6 +6,83 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-32 — Prioridad Hoteles y cuadrante completo [Estado: Cerrado]
+
+- **Agente(s):** Codex
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E2
+- **Objetivo del sprint:** corregir la prioridad directiva del Dashboard general para que Hoteles aparezca antes que Parques y el cuadrante incluya ambas familias con dato completo o parcial.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-085 | Prioridad Hoteles y cuadrante completo | Codex | Hecha | Hoteles primero; cuadrante muestra Hoteles y Parques, incluso con dato parcial |
+
+### Resumen de cierre
+
+Se corrigio la prioridad directiva del Dashboard general: Hoteles queda como primera familia de lectura y Parques como segunda. La matriz de mando y el bloque de prioridad directiva ordenan por familia antes de ordenar por criticidad interna, de manera que el director lee primero el estado hotelero y luego el de parques.
+
+El cuadrante ocupacion vs presupuesto ya no excluye sedes por falta parcial de datos. Ahora muestra Hoteles y Parques en el mismo plano; las sedes con ocupacion o presupuesto incompleto aparecen en gris y con trazo diferenciado, para indicar estructura presente pero dato parcial. Se agrego convencion visual dentro del cuadrante para distinguir Hoteles, Parques y datos parciales.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/src/domain/dashboard-command.js`, `05-tablero-ocupacion/v3-modular/src/ui/views/dashboard.js` y `05-tablero-ocupacion/v3-modular/styles/app.css`.
+
+**Validacion realizada:** `node --check` sobre todos los modulos JS; `git diff --check`; servidor local `http://localhost:8055/` respondiendo 200; prueba Playwright confirmando que la matriz inicia con las 4 sedes hoteleras y que el cuadrante contiene 9 puntos: 4 Hoteles, 5 Parques y sedes parciales visibles.
+
+**Riesgos / pendientes:** las sedes con datos parciales pueden agruparse visualmente cerca de los bordes del cuadrante cuando faltan ocupacion o presupuesto. `TO-HU-082` sigue pendiente para enriquecer el top de acciones con campanas/bitacora; `TO-HU-083` y `TO-HU-061` siguen pendientes para diferenciar mejor la lectura anual.
+
+```text
+HANDOFF — SPRINT-32 Prioridad Hoteles y cuadrante completo
+──────────────────────────────────────
+HUs completas:        TO-HU-085
+HUs pendientes:       ninguna dentro del alcance del sprint
+
+Archivos tocados:     BACKLOG.md · SPRINTS.md · ROADMAP.md · MAPA_CODIGO.md
+                      05-tablero-ocupacion/v3-modular/src/domain/dashboard-command.js
+                      05-tablero-ocupacion/v3-modular/src/ui/views/dashboard.js
+                      05-tablero-ocupacion/v3-modular/styles/app.css
+
+Archivos NO tocados:  tablero-seguimiento-ocupacion.html
+                      tablero-seguimiento-ocupacion-v2.html
+                      tablero-seguimiento-ocupacion-v3-demo.html
+                      v3-modular/src/ui/views/hotels.js
+                      v3-modular/src/ui/views/parks.js
+                      v3-modular/src/ui/views/budget.js
+                      v3-modular/src/services/file-reader.js
+                      v3-modular/src/services/validators.js
+
+Datos/contratos:      No se cambiaron datos, contratos ni plantillas.
+
+Decisiones tomadas:   La prioridad directiva del Dashboard general ordena por familia:
+                      Hoteles primero, Parques despues; dentro de cada familia
+                      aplica criticidad.
+                      El cuadrante cartesiano ya no esconde sedes con datos parciales:
+                      muestra Hoteles y Parques; parciales quedan en gris/dashed.
+                      El filtro de unidad sigue funcionando; en "Todas las unidades"
+                      el cuadrante contiene ambas familias.
+
+Riesgos residuales:
+- Sedes parciales se agrupan en los bordes del cuadrante; puede haber cercania visual
+  entre etiquetas cuando varias sedes no tienen ocupacion o presupuesto.
+- El top 3 ahora prioriza hoteles primero, pero TO-HU-082 sigue pendiente para enriquecer
+  acciones con campanas/bitacora.
+- La lectura anual diferenciada sigue pendiente en TO-HU-083/TO-HU-061.
+
+Validación hecha:
+  Sintaxis:           node --check sobre todos los modulos JS -> pass
+  Estatica:           git diff --check -> pass
+  Servidor local:     http://localhost:8055/ responde 200
+  Runtime navegador:  matriz con 4 hoteles primero -> pass
+                      cuadrante con 9 puntos, 4 hoteles y 5 parques -> pass
+                      parciales visibles -> pass
+  Documentación:      BACKLOG.md + SPRINTS.md + ROADMAP.md + MAPA_CODIGO.md actualizados
+
+Auto-reporte DoD:     Completo para TO-HU-085.
+```
+
+---
+
 ## SPRINT-31 — Dashboard de mando visual [Estado: Cerrado]
 
 - **Agente(s):** Codex
