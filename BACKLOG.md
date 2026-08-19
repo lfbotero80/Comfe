@@ -131,6 +131,7 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
   - TO-HU-005: Como Diana, quiero que cada sede tenga inventario total, ocupado, libre y % de ocupación, para auditar capacidad real y uso. — **Hecha**
   - TO-HU-006: Como gerente, quiero que el tablero diferencie habitación, cabaña, camping, sitio o cupo, para no mezclar hoteles y parques. — **Hecha**
   - TO-HU-007: Como Diana, quiero conservar la fuente, fecha de corte y periodo cargado, para saber de dónde viene cada dato. — **Hecha**
+  - TO-HU-086: Como Diana, quiero que lo que subo desde un PDF de Zeus (u otro archivo) sobreviva a cerrar o recargar el navegador, para que el tablero sirva como seguimiento real y no solo dentro de la misma sesión. — **Hecha**
 
 - **E1-F3 — Interpretación de archivos Zeus**
   - TO-HU-032: Como gerente hotelero, quiero que el tablero explique como interpreta un PDF Zeus por sede, corte y filas diarias, para saber que pasara al cargar cada hotel. — **Hecha**

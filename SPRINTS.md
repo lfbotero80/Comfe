@@ -6,6 +6,41 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-33 — Persistencia real de datos operativos [Estado: Cerrado]
+
+- **Agente(s):** Claude Code
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E1
+- **Objetivo del sprint:** corregir un bug grave reportado por Luis Felipe — al subir PDFs reales de Zeus, la carga funcionaba pero desaparecía al recargar, mientras los datos semilla (demo) seguían apareciendo siempre, dando la sensación de estar "quemados".
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-086 | Persistencia real de ocupación/presupuesto/Revenue | Claude Code | Hecha | Bug grave: cero persistencia para los datos operativos desde siempre |
+
+### Resumen de cierre
+
+**Diagnóstico (reproducido en navegador antes de tocar código):** `appState.occupancyInventoryRows`, `budgetRows` y `revenueRuleRows` — los datos operativos reales, incluido cualquier PDF/CSV que se suba — **nunca se guardaban en `localStorage`**. Solo se persistían `dataMode`, `currentOperator` y `decisionRows` (bitácora, desde `SPRINT-29`). Reproducido paso a paso: subí un archivo real para Recinto Quirama en "Modo demo" (el modo por defecto) → cargó bien → recargué la página → Quirama volvió a "Sin datos de ocupación", mientras Hostería Los Farallones seguía mostrando su forecast de agosto (54.9%), igual que siempre. Confirmé además que cambiar a "Datos reales" **no** resolvía nada — ese modo solo cambia el punto de partida (vacío vs. semilla), pero tampoco persistía las cargas.
+
+Esto no era una regresión de un sprint reciente — era el estado del proyecto desde que existe `v3-modular/` (ya lo había anotado en mi primera revisión de esta base, hace muchos sprints: "cero persistencia"). 32 sprints de trabajo agregaron persistencia para modo/responsable/bitácora, pero nunca para los datos operativos en sí.
+
+**Qué cambió (`src/state/app-state.js`):**
+
+- Nuevas claves `comfenalco_occupancy_rows_v1`, `comfenalco_budget_rows_v1`, `comfenalco_revenue_rows_v1`, con el mismo patrón ya probado de `decisionRows` (`try/catch`, validación de que el valor es un array antes de usarlo).
+- Al iniciar, `appState` intenta leer estas tres claves primero; si no hay nada guardado, cae al comportamiento anterior (`dataForMode(mode)`: semilla en demo, vacío en real).
+- `registerLoad()` persiste el resultado del merge inmediatamente después de fusionar cada contrato (ocupación, presupuesto, Revenue) — ya no solo en memoria.
+- `setDataMode()` (el botón "Modo demo" / "Datos reales") ahora también persiste el reinicio: cambiar de modo es una acción explícita y deliberada (el propio botón lo anuncia: "datos semilla restaurados" / "cargue archivos para activar métricas"), así que el reinicio se guarda también en `localStorage`, no solo en memoria de sesión.
+
+**Cómo se verificó (con dificultad — vale la pena dejarlo anotado):** el entorno de navegador de este sprint retenía en caché el módulo `app-state.js` entre recargas, incluso con pestaña nueva y hard-refresh — un problema de la infraestructura de prueba, no del código (confirmado leyendo la respuesta HTTP cruda vía `fetch(..., {cache:'no-store'})`, que sí traía el archivo correcto). Se resolvió cambiando a un puerto de servidor nuevo, lo que forzó una carga limpia. Con eso: subí un archivo real para Quirama, confirmé la persistencia en `localStorage` de inmediato, recargué la página real (navegación completa) y Quirama mantuvo el 70% cargado — el bug quedó resuelto y verificado en la UI real, no solo por inspección de código.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/src/state/app-state.js`.
+
+**Validación realizada:** `node --check`; reproducción del bug original confirmada antes del fix; verificación aislada de la lógica vía `import()` con cache-busting (merge + persistencia correctos, incluyendo convivencia de datos semilla y datos reales); verificación end-to-end en UI real con servidor limpio (carga → recarga → dato persiste); verificación de que "Modo demo"/"Datos reales" siguen funcionando como reinicio explícito y ahora también persistido; las 6 vistas (Dashboard, Parques, Presupuesto, Bitácora, Calendario, Campañas) siguen sin errores de consola.
+
+---
+
 ## SPRINT-32 — Prioridad Hoteles y cuadrante completo [Estado: Cerrado]
 
 - **Agente(s):** Codex
