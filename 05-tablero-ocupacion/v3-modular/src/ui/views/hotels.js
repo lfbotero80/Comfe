@@ -32,9 +32,12 @@ export function renderHotels(){
   if(activeHotelId === SUMMARY_ID) return renderHotelsSummary();
   const activeHotel = HOTELS.find(hotel => hotel.id === activeHotelId) || HOTELS[0];
   const rows = rowsForHotel(activeHotel);
-  const year = activeYear(rows);
-  const monthSummaries = monthlySummaries(rows, year);
   const activeMonth = rows.length ? (activeMonthByHotelId[activeHotel.id] || latestMonth(rows)) : null;
+  // El año de "Movimiento anual" sigue al periodo elegido, no siempre al ultimo
+  // dato cargado: si el filtro salta a un mes de otro año, las barras deben
+  // mostrar ESE año, no quedarse mostrando el año mas reciente.
+  const year = activeMonth ? activeMonth.slice(0, 4) : activeYear(rows);
+  const monthSummaries = monthlySummaries(rows, year);
   const monthRows = rowsForMonth(rows, activeMonth);
   const latest = monthRows[monthRows.length - 1] || null;
   const status = latest ? classifyOccupancy(latest.ocupacion_porcentaje, latest.fecha) : null;
@@ -70,7 +73,7 @@ export function renderHotels(){
       ${renderAction(strategicRecommendation)}
       ${renderAIContextPanel(activeHotel, activeMonth)}
       ${latest ? renderCommercialContext(activeHotel, latest, status, commercialContext) : ''}
-      ${renderDailyDetail(monthRows, activeMonth)}
+      ${renderDailyDetail(monthRows, activeMonth, availablePeriods(rows))}
     </section>
   `;
 }
@@ -109,6 +112,13 @@ export function bindHotelHandlers({ rerender }){
   document.querySelectorAll('[data-hotel-month]').forEach(button => {
     button.addEventListener('click', () => {
       activeMonthByHotelId[activeHotelId] = button.dataset.hotelMonth;
+      rerender();
+    });
+  });
+
+  document.querySelectorAll('[data-hotel-period]').forEach(select => {
+    select.addEventListener('change', () => {
+      activeMonthByHotelId[activeHotelId] = select.value;
       rerender();
     });
   });
@@ -258,11 +268,14 @@ function renderContextList(items, mapper){
   `;
 }
 
-function renderDailyDetail(rows, monthLabel){
+function renderDailyDetail(rows, monthLabel, periods){
   const title = monthLabel ? `Detalle diario del mes ${monthLabel}` : 'Detalle diario pendiente';
   return `
     <div class="hotel-series">
-      <h3>${escapeHTML(title)}</h3>
+      <div class="section-head compact">
+        <h3>${escapeHTML(title)}</h3>
+        ${renderPeriodFilter(periods, monthLabel)}
+      </div>
       ${rows.length ? `
         <div class="forecast-strip">
           ${rows.map(row => {
@@ -310,6 +323,33 @@ function renderDailyDetail(rows, monthLabel){
         </div>
       ` : '<div class="empty-state"><strong>Sin detalle diario para este mes.</strong><span>Cargue el forecast de este hotel para activar barras, cumplimiento y accion sugerida.</span></div>'}
     </div>
+  `;
+}
+
+// Todos los meses con al menos un dato cargado para esta sede, sin importar
+// el año — a diferencia de "Movimiento anual", que solo cubre un año a la
+// vez, este filtro es el unico punto donde se puede saltar a un mes de un
+// año distinto al mas reciente cargado.
+function availablePeriods(rows){
+  const set = new Set(rows.map(row => String(row.fecha).slice(0, 7)));
+  return [...set].sort().reverse();
+}
+
+function periodOptionLabel(period){
+  const [year, month] = period.split('-');
+  const found = MONTHS.find(([value]) => value === month);
+  return `${found ? found[1] : month} ${year}`;
+}
+
+function renderPeriodFilter(periods, activeMonth){
+  if(!periods.length) return '';
+  return `
+    <label class="filter-control">
+      <span>Ver otro mes</span>
+      <select data-hotel-period>
+        ${periods.map(period => `<option value="${escapeHTML(period)}" ${period === activeMonth ? 'selected' : ''}>${escapeHTML(periodOptionLabel(period))}</option>`).join('')}
+      </select>
+    </label>
   `;
 }
 

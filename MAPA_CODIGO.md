@@ -1,6 +1,6 @@
 # Mapa de código — Comfenalco IA
 
-Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-46`.
+Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-47`.
 
 ---
 
@@ -578,3 +578,9 @@ Dos sprints sobre el mismo bloque, por dos problemas distintos.
 ### 3.42 — Menu lateral fijo al hacer scroll en `SPRINT-46`
 
 `.sidebar` pasa a `position:sticky` igual que `.topbar` (que ya era fijo desde antes). En vistas largas el menu de navegacion ya no se va con el scroll. Requiere `align-self:start` porque `.sidebar` es un item de grid dentro de `.app-shell` — sin eso un item de grid se estira a todo el alto de la fila y `sticky` queda inerte. En el breakpoint movil (`max-width:900px`) se revierte a `position:static`, porque ahi el layout es una sola columna con el menu apilado arriba del contenido.
+
+### 3.43 — Filtro de periodo cruzando años en Hoteles y Parques, `SPRINT-47`
+
+`src/ui/views/hotels.js` y `src/ui/views/parks.js` ya tenian una forma de cambiar de mes: las barras clickeables de "Movimiento anual". Pero `activeYear()` calculaba el año siempre a partir del ultimo dato cargado, asi que esas barras solo podian mostrar los 12 meses de UN año — si una sede tenia datos de 2025 y 2026, 2025 era invisible. Tampoco se leia como un filtro explicito.
+
+`SPRINT-47` agrega `availablePeriods()` (todos los `YYYY-MM` con dato real para la sede, de cualquier año) y un `<select data-hotel-period>` / `<select data-park-period>` junto al titulo "Detalle diario del mes", con el mismo patron `.filter-control` que ya usaba `budget-family-panel.js`. Reutiliza el mismo estado (`activeMonthByHotelId` / `activeMonthByParkId`) que las barras de mes, asi que no duplica logica: cumplimiento, metricas, presupuesto por sede y detalle diario siguen automaticamente al periodo elegido. `activeYear()` en la vista ahora se deriva de `activeMonth` cuando hay uno activo, para que el encabezado "Movimiento anual" muestre el año del periodo elegido, no siempre el mas reciente.

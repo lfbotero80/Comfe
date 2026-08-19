@@ -30,9 +30,12 @@ export function renderParks(){
   if(activeParkId === SUMMARY_ID) return renderParksSummary();
   const activePark = PARKS.find(park => park.id === activeParkId) || PARKS[0];
   const rows = rowsForPark(activePark);
-  const year = activeYear(rows);
-  const monthSummaries = monthlySummaries(rows, year);
   const activeMonth = rows.length ? (activeMonthByParkId[activePark.id] || latestMonth(rows)) : null;
+  // El año de "Movimiento anual" sigue al periodo elegido, no siempre al ultimo
+  // dato cargado: si el filtro salta a un mes de otro año, las barras deben
+  // mostrar ESE año, no quedarse mostrando el año mas reciente.
+  const year = activeMonth ? activeMonth.slice(0, 4) : activeYear(rows);
+  const monthSummaries = monthlySummaries(rows, year);
   const monthRows = rowsForMonth(rows, activeMonth);
   const latest = monthRows[monthRows.length - 1] || rows[rows.length - 1] || null;
   const status = latest ? classifyOccupancy(latest.ocupacion_porcentaje, latest.fecha) : null;
@@ -59,7 +62,7 @@ export function renderParks(){
       ${renderSiteBudgetPanel(activePark, activeMonth)}
       ${latest ? renderAction(status) : renderMissingAction(activePark)}
       ${renderAIContextPanel(activePark, activeMonth)}
-      ${renderDailyDetail(monthRows, activeMonth)}
+      ${renderDailyDetail(monthRows, activeMonth, availablePeriods(rows))}
     </section>
   `;
 }
@@ -98,6 +101,13 @@ export function bindParkHandlers({ rerender }){
   document.querySelectorAll('[data-park-month]').forEach(button => {
     button.addEventListener('click', () => {
       activeMonthByParkId[activeParkId] = button.dataset.parkMonth;
+      rerender();
+    });
+  });
+
+  document.querySelectorAll('[data-park-period]').forEach(select => {
+    select.addEventListener('change', () => {
+      activeMonthByParkId[activeParkId] = select.value;
       rerender();
     });
   });
@@ -226,11 +236,14 @@ function renderMissingAction(park){
   `;
 }
 
-function renderDailyDetail(rows, monthLabel){
+function renderDailyDetail(rows, monthLabel, periods){
   const title = monthLabel ? `Detalle diario del mes ${monthLabel}` : 'Detalle diario pendiente';
   return `
     <div class="hotel-series">
-      <h3>${escapeHTML(title)}</h3>
+      <div class="section-head compact">
+        <h3>${escapeHTML(title)}</h3>
+        ${renderPeriodFilter(periods, monthLabel)}
+      </div>
       ${rows.length ? `<div class="daily-table-wrap">
         <table class="data-table compact-table">
           <thead>
@@ -281,6 +294,33 @@ function monthSummary(rows){
     occupiedAverage: clean.reduce((sum, row) => sum + Number(row.unidades_ocupadas || 0), 0) / divisor,
     freeAverage: clean.reduce((sum, row) => sum + Number(row.unidades_libres || 0), 0) / divisor
   };
+}
+
+// Todos los meses con al menos un dato cargado para esta sede, sin importar
+// el año — a diferencia de "Movimiento anual", que solo cubre un año a la
+// vez, este filtro es el unico punto donde se puede saltar a un mes de un
+// año distinto al mas reciente cargado.
+function availablePeriods(rows){
+  const set = new Set(rows.map(row => String(row.fecha).slice(0, 7)));
+  return [...set].sort().reverse();
+}
+
+function periodOptionLabel(period){
+  const [year, month] = period.split('-');
+  const found = MONTHS.find(([value]) => value === month);
+  return `${found ? found[1] : month} ${year}`;
+}
+
+function renderPeriodFilter(periods, activeMonth){
+  if(!periods.length) return '';
+  return `
+    <label class="filter-control">
+      <span>Ver otro mes</span>
+      <select data-park-period>
+        ${periods.map(period => `<option value="${escapeHTML(period)}" ${period === activeMonth ? 'selected' : ''}>${escapeHTML(periodOptionLabel(period))}</option>`).join('')}
+      </select>
+    </label>
+  `;
 }
 
 function activeYear(rows){

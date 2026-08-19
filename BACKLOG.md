@@ -75,6 +75,7 @@ Carpeta: `05-tablero-ocupacion/`. La línea más activa del proyecto — ver `MA
 
 - **FT-05.8 — Navegación por hotel**
   - HU-029: Como gerente de sede, quiero que mi hotel viva en su propia sección dentro de "Ocupación y tramos", no apilado con los otros 3. — **Hecha**
+  - HU-053: Como Diana, quiero un filtro explícito para ver el detalle diario de otro mes, incluso de otro año, en Hoteles y Parques, para consultar información histórica sin depender de que el mes ya esté cargado como el más reciente. — **Hecha** (`SPRINT-47`; el selector de mes existente —las barras de "Movimiento anual"— quedaba encadenado al año del último dato cargado y no era reconocible como filtro)
 
 - **FT-05.9 — Datos reales pendientes de otras sedes**
   - HU-030: Como Diana, quiero cargar el forecast real de Zeus de Recinto Quirama. — **Pendiente**

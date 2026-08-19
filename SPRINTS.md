@@ -6,6 +6,67 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-47 — Filtro de período para ver otros meses en Hoteles y Parques [Estado: Cerrado]
+
+- **Agente(s):** Claude Code
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Commit:** `SPRINT-47 — Filtro de periodo para ver otros meses en Hoteles y Parques (Claude Code)`
+
+- **Objetivo del sprint:** Luis Felipe reportó que en Hoteles y Parques "faltan unos filtros cuando se muestra la información diaria del mes... para tener acceso a información histórica de otros meses."
+
+| HU | Título | Agente | Estado | Nota |
+|---|---|---|---|---|
+| HU-053 | Filtro de período para el detalle diario | Claude Code | Hecha | Selector de mes/año, independiente del año del último dato |
+
+**Qué se encontró al revisar.** Sí existía una forma de cambiar de mes — las barras de "Movimiento anual", clickeables — pero con dos límites reales, no solo de presentación:
+
+1. El año mostrado (`activeYear()`) se calculaba siempre a partir de la **fecha del último dato cargado**, tanto en `hotels.js` como en `parks.js`. Si una sede tenía datos de 2025 y 2026, no había manera de ver 2025: las barras de "Movimiento anual" solo dibujaban los 12 meses del año más reciente.
+2. Un gráfico de barras de un año fijo no se lee como un filtro. No hay un control explícito de "elegir período" en ningún punto de la pantalla, y menos aún junto al detalle diario, que es donde Luis Felipe esperaba encontrarlo.
+
+**Qué se hizo:** se agregó un `<select>` de período (mismo patrón visual que ya existía en `budget-family-panel.js`, `.filter-control`) junto al título "Detalle diario del mes", en Hoteles y Parques. A diferencia de las barras de "Movimiento anual", que siguen limitadas a un año, este `<select>` lista **todos los meses con al menos un dato cargado para la sede, de cualquier año**, ordenados del más reciente al más antiguo. Elegir una opción reutiliza el mismo estado (`activeMonthByHotelId` / `activeMonthByParkId`) que ya usaban las barras de mes, así que compliance, métricas, presupuesto por sede y detalle diario siguen automáticamente al período elegido sin lógica nueva. Se corrigió además `activeYear()` para que, una vez hay un período activo, el encabezado "Movimiento anual" muestre el año de **ese** período y no siempre el más reciente — si no, al elegir un mes de 2025 desde el filtro nuevo, las barras de arriba habrían seguido mostrando 2026.
+
+**Archivos tocados**
+
+- `src/ui/views/hotels.js`: `availablePeriods()`, `periodOptionLabel()` y `renderPeriodFilter()` (nuevos); `year` ahora se deriva de `activeMonth` cuando existe; `renderDailyDetail()` recibe la lista de períodos y monta el filtro en su encabezado; binding de `[data-hotel-period]` en `bindHotelHandlers`.
+- `src/ui/views/parks.js`: mismo patrón, con `data-park-period` y `activeMonthByParkId`.
+
+**Validación realizada:** `node --check` sobre ambos módulos. Servidor local sin caché en `http://localhost:8084/` (puerto de prueba, no el 8055 de Luis Felipe). Se cargó a propósito un CSV con datos de Hotel Piedras Blancas en 2025-11, 2025-12, 2026-01 y 2026-08, y de Parque Salados en 2025-12 y 2026-08 — el escenario exacto que el filtro anterior no podía mostrar. Se confirmó por DOM: el `<select>` lista los 4/2 períodos reales; al elegir "Nov 2025" el encabezado pasa a "Movimiento anual 2025", el título del detalle diario a "2025-11" y la tabla muestra la fila `2025-11-10`; la barra de mes activa en "Movimiento anual" también queda marcada en el mes correcto. Repetido en Parques con el mismo resultado. Las 6 vistas renderizan y la consola queda sin errores.
+
+**Riesgos / pendientes:** ninguno identificado. El filtro depende de que el dato ya esté cargado — sigue bloqueado por `HU-030`/`031`/`032`/`033` (PDFs Zeus reales de Quirama, Piedras Blancas y Balandú) para tener historial real que navegar; hoy el escenario multi-año se probó con datos de prueba, no reales.
+
+```
+HANDOFF — SPRINT-47 Filtro de periodo para ver otros meses en Hoteles y Parques
+Agente:             Claude Code
+Estado:             Cerrado
+Commit:             SPRINT-47 — Filtro de periodo para ver otros meses en Hoteles y Parques (Claude Code)
+
+Que quedo listo:    Select "Ver otro mes" junto al Detalle diario, en Hoteles
+                    y Parques. Lista TODOS los meses con dato de la sede, de
+                    cualquier año, no solo el año mas reciente. Reutiliza el
+                    mismo estado que las barras de "Movimiento anual", asi que
+                    todo el resto de la pantalla (cumplimiento, metricas,
+                    presupuesto) sigue al periodo elegido sin logica nueva.
+
+Que NO se toco:     Las barras de "Movimiento anual" siguen mostrando un solo
+                    año a la vez (eso es intencional, es una vista de "un año
+                    de un vistazo"); ahora ese año sigue al periodo activo en
+                    vez de quedar fijo en el mas reciente.
+
+Riesgos abiertos:   Ninguno de codigo. Sigue bloqueado por falta de datos
+                    reales historicos (HU-030/031/032/033) para que el filtro
+                    tenga algo real que mostrar mas alla del mes actual.
+
+Validacion:         node --check: ambos modulos -> pass
+                    CSV de prueba con 2025-11/12 y 2026-01/08 (hotel) y
+                      2025-12 y 2026-08 (parque)
+                    Select lista los periodos reales; elegir 2025-11 cambia
+                      año de barras, titulo de detalle diario y fila mostrada
+                    6 vistas renderizan; consola sin errores
+```
+
+---
+
 ## SPRINT-46 — Menú lateral y header fijos al hacer scroll [Estado: Cerrado]
 
 - **Agente(s):** Claude Code
