@@ -6,6 +6,40 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-42 — Top 3 accionable con campanas y bitacora [Estado: Cerrado]
+
+- **Agente(s):** Claude Code
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E2, E3
+- **Objetivo del sprint:** cerrar `TO-HU-082`, que Codex dejó explícitamente pendiente en `SPRINT-31` y `SPRINT-32`: el bloque "Prioridad directiva" existía como primera lectura, pero le faltaba relación con campañas y bitácora para servir como seguimiento operativo.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-082 | Top 3 acciones con responsable, fuente, campañas y bitácora | Claude Code | Hecha | Cierra el pendiente de `SPRINT-31`/`SPRINT-32` |
+
+### Resumen de cierre
+
+**Qué le faltaba:** el top 3 decía **qué** hacer ("activar campaña de choque"), con responsable y fuente, pero no **con qué** hacerlo ni **qué se había decidido antes**. Sin eso, cada revisión obligaba a salir a Campañas y a Bitácora para reconstruir el contexto.
+
+**Qué cambió:**
+
+- `src/domain/dashboard-command.js`: cada fila del mando expone ahora `campaigns` (campañas aplicables del catálogo) y `lastDecision` (último registro de bitácora de esa sede, completo — antes solo se extraía el responsable).
+- `src/ui/views/dashboard.js`: `renderPriorityItem()` muestra tres capas por sede — la acción, las campañas disponibles con su tarifa, y el último registro de bitácora con responsable, fecha y estado.
+- `styles/app.css`: `.priority-body` y `.priority-line` con acento distinto para campaña (lima) y bitácora (verde).
+
+**Decisión de criterio:** las campañas se sugieren según la **señal comercial** (severidad de ocupación), no según el estado combinado. Si una sede está en rojo por ejecución presupuestal y su ocupación está bien, una campaña no es la respuesta correcta y no se ofrece — la acción ya dice "revisar ejecución presupuestal".
+
+**Ausencias explícitas:** cuando no hay campaña aplicable o no hay registro previo, se dice ("Sin campana aplicable en el catalogo para este tramo", "Sin registro previo en bitacora · responsable por definir") en vez de omitir la línea. La ausencia también es información operativa.
+
+**Validación realizada:** `node --check`; prueba end-to-end en navegador limpio: se cargó ocupación baja de Hotel Piedras Blancas (25-30%), se registró una decisión en Bitácora ("Activar Wellness Passport para septiembre", Sandra Ruiz, En seguimiento) y apareció en el top 3; luego se creó la campaña "Wellness Passport" y apareció como campaña disponible con su tramo. Las sedes sin registro muestran la ausencia explícita. Las 6 vistas cargan sin errores de consola.
+
+**Hallazgo durante la prueba (relevante para el reporte de "solo menú y header"):** una pestaña abierta desde antes de `SPRINT-40` lanzó `The requested module './occupancy.js' does not provide an export named 'classifyOccupancyValue'` — un módulo cacheado viejo junto a uno nuevo. Se confirmó que el export existe en disco y que el servidor lo entrega correctamente; en contexto limpio no ocurre. Es exactamente el modo de falla que `SPRINT-40` corrige de aquí en adelante, y confirma que el síntoma que reportó Luis Felipe era caché y no código.
+
+---
+
 ## SPRINT-41 — Historial de cargas de archivos [Estado: Cerrado]
 
 - **Agente(s):** Claude Code

@@ -1,6 +1,7 @@
 import { budgetSeverity, budgetSites, formatCOP, siteRowsSorted, summarizeSite } from './budget.js';
 import { buildReadinessSummary } from './data-readiness.js';
 import { classifyOccupancyValue, OCCUPANCY_TARGET } from './occupancy.js';
+import { campaignsForSite } from './commercial-context.js';
 import { aggregateOccupancy, coverageLabel, monthExtremes } from './occupancy-aggregate.js';
 
 const SEVERITY_RANK = { red: 0, amber: 1, gray: 2, green: 3 };
@@ -51,6 +52,10 @@ function siteCommandRow(site, state, readiness){
   const combinedSeverity = combinedStatus(occupancyStatus.severity, budget.severity, dataSeverity, occupancyPct, budget.hasData);
   const missing = missingSources(readiness);
   const latestDecision = latestDecisionForSite(state.decisionRows, site.name);
+  // Campanas aplicables segun la senal comercial (ocupacion), no segun el estado
+  // combinado: si la sede esta en rojo por ejecucion presupuestal y no por
+  // ocupacion, una campana no es la respuesta correcta y no se sugiere.
+  const campaigns = campaignsForSite(site.name, occupancyStatus.severity);
   const action = actionForRow({ occupancyStatus, budget, combinedSeverity, missing, site });
 
   return {
@@ -71,6 +76,8 @@ function siteCommandRow(site, state, readiness){
     trend,
     action,
     responsible: latestDecision?.responsible || 'Sin responsable',
+    lastDecision: latestDecision,
+    campaigns,
     source: latestOccupancy?.fuente || readiness?.lastSource || 'Sin fuente cargada',
     missing,
     occupancy,
