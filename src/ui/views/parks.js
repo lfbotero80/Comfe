@@ -27,7 +27,7 @@ export function renderParks(){
   const rows = rowsForPark(activePark);
   const year = activeYear(rows);
   const monthSummaries = monthlySummaries(rows, year);
-  const activeMonth = activeMonthByParkId[activePark.id] || latestMonth(rows) || `${year}-08`;
+  const activeMonth = rows.length ? (activeMonthByParkId[activePark.id] || latestMonth(rows)) : null;
   const monthRows = rowsForMonth(rows, activeMonth);
   const latest = monthRows[monthRows.length - 1] || rows[rows.length - 1] || null;
   const status = latest ? classifyOccupancy(latest.ocupacion_porcentaje, latest.fecha) : null;
@@ -102,6 +102,7 @@ function rowsForPark(park){
 }
 
 function rowsForMonth(rows, period){
+  if(!period) return [];
   return rows.filter(row => String(row.fecha).startsWith(period));
 }
 
@@ -120,7 +121,7 @@ function renderParkMetrics(park, rows, latest, status, monthLabel){
 function renderMissingState(park, activeMonth){
   return `
     <div class="grid four">
-      ${metric('Uso del mes', 'Pendiente', activeMonth)}
+      ${metric('Uso del mes', 'Pendiente', periodLabel(activeMonth))}
       ${metric('Capacidad vigente', 'Pendiente', park.defaultUnitType)}
       ${metric('Usados', 'Pendiente', 'Libres pendientes')}
       ${metric('Dia operativo', 'Pendiente', 'Sin fecha cargada')}
@@ -164,12 +165,15 @@ function renderCompliance(month, activeMonth){
   const hasData = Boolean(month?.hasData);
   const compliance = hasData ? month.compliance : 0;
   const severity = hasData ? month.severity : 'gray';
+  const note = activeMonth
+    ? `${activeMonth} · meta ${OCCUPANCY_TARGET}% uso`
+    : `Sin periodo cargado · meta ${OCCUPANCY_TARGET}% uso`;
   return `
     <section class="compliance-panel">
       <div class="compliance-head">
         <div>
           <strong>Cumplimiento del mes</strong>
-          <span>${escapeHTML(activeMonth)} · meta ${OCCUPANCY_TARGET}% uso</span>
+          <span>${escapeHTML(note)}</span>
         </div>
         ${badge(hasData ? `${compliance.toFixed(0)}%` : 'Pendiente', severity)}
       </div>
@@ -200,9 +204,10 @@ function renderMissingAction(park){
 }
 
 function renderDailyDetail(rows, monthLabel){
+  const title = monthLabel ? `Detalle diario del mes ${monthLabel}` : 'Detalle diario pendiente';
   return `
     <div class="hotel-series">
-      <h3>Detalle diario del mes ${escapeHTML(monthLabel)}</h3>
+      <h3>${escapeHTML(title)}</h3>
       ${rows.length ? `<div class="daily-table-wrap">
         <table class="data-table compact-table">
           <thead>
@@ -258,6 +263,10 @@ function activeYear(rows){
 function latestMonth(rows){
   const latest = rows[rows.length - 1];
   return latest ? String(latest.fecha).slice(0, 7) : null;
+}
+
+function periodLabel(period){
+  return period || 'Sin periodo cargado';
 }
 
 function monthlySummaries(rows, year){

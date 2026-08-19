@@ -4,13 +4,17 @@ import { badge, escapeHTML } from './html.js';
 
 export function renderSiteBudgetPanel(site, activePeriod){
   const rows = siteRowsSorted(appState.budgetRows, site.name);
-  const activeSummary = summarizeSite(site.name, rows, activePeriod);
+  const activeSummary = activePeriod
+    ? summarizeSite(site.name, rows, activePeriod)
+    : { hasData: false };
   const latestSummary = summarizeSite(site.name, rows, 'latest');
   const summary = activeSummary.hasData ? activeSummary : latestSummary;
   const note = activeSummary.hasData
     ? `${monthName(activePeriod)} 2026`
-    : summary.hasData
+    : summary.hasData && activePeriod
       ? `Sin presupuesto para ${activePeriod}; se muestra ultimo periodo cargado`
+      : summary.hasData
+        ? 'Sin periodo de ocupacion cargado; se muestra ultimo presupuesto cargado'
       : 'Sin presupuesto cargado para esta sede';
 
   return `
