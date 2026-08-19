@@ -60,6 +60,7 @@ function renderActiveView(){
   titleEl.textContent = item.title;
   viewEl.innerHTML = viewRenderers[activeView]();
   headerDataLoadButton.classList.toggle('active', activeView === 'data-load');
+  syncStatusVisibility();
 
   if(activeView === 'dashboard'){
     globalFiltersEl.hidden = false;
@@ -101,7 +102,11 @@ function renderActiveView(){
 
 function setStatus(text, type){
   statusEl.textContent = text;
-  statusEl.hidden = !text;
   statusEl.classList.remove('ok', 'warn', 'error', 'pending');
   if(type) statusEl.classList.add(type);
+  syncStatusVisibility();
+}
+
+function syncStatusVisibility(){
+  statusEl.hidden = !statusEl.textContent || activeView !== 'data-load';
 }
