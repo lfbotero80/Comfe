@@ -1,6 +1,7 @@
 import { PARKS } from '../../domain/sites.js';
 import { appState } from '../../state/app-state.js';
 import { classifyOccupancy, OCCUPANCY_TARGET } from '../../domain/occupancy.js';
+import { exportOccupancyRows, occupancyRowsBySite, occupancyRowsByType, slug } from '../../services/occupancy-export.js';
 import { badge, escapeHTML, trafficLight } from '../html.js';
 import { renderSiteBudgetPanel } from '../site-budget-panel.js';
 
@@ -46,7 +47,11 @@ export function renderParks(){
           <h2>${escapeHTML(activePark.name)}</h2>
           <p class="metric-note">${escapeHTML(activePark.role)}</p>
         </div>
-        ${status ? `<div class="alarm-context">${trafficLight(status.severity, 'horizontal')}${badge(status.label, status.severity)}</div>` : '<span class="pending-dot">Sin datos de uso</span>'}
+        <div class="section-actions">
+          <button type="button" class="btn-ghost" data-export-park="${escapeHTML(activePark.name)}" ${rows.length ? '' : 'disabled'}>Exportar parque</button>
+          <button type="button" class="btn-ghost" id="btnExportParksAll">Exportar parques</button>
+          ${status ? `<div class="alarm-context">${trafficLight(status.severity, 'horizontal')}${badge(status.label, status.severity)}</div>` : '<span class="pending-dot">Sin datos de uso</span>'}
+        </div>
       </div>
 
       ${renderYearMovement(monthSummaries, activeMonth, year)}
@@ -73,6 +78,20 @@ export function bindParkHandlers({ rerender }){
       rerender();
     });
   });
+
+  document.querySelectorAll('[data-export-park]').forEach(button => {
+    button.addEventListener('click', () => {
+      const siteName = button.dataset.exportPark;
+      exportOccupancyRows(occupancyRowsBySite(appState.occupancyInventoryRows, siteName), `comfenalco-ocupacion-${slug(siteName)}`);
+    });
+  });
+
+  const exportAllBtn = document.getElementById('btnExportParksAll');
+  if(exportAllBtn){
+    exportAllBtn.addEventListener('click', () => {
+      exportOccupancyRows(occupancyRowsByType(appState.occupancyInventoryRows, 'parque'), 'comfenalco-ocupacion-parques');
+    });
+  }
 }
 
 function rowsForPark(park){
