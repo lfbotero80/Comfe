@@ -1,6 +1,6 @@
 # Mapa de código — Comfenalco IA
 
-Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-44`.
+Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-46`.
 
 ---
 
@@ -574,3 +574,7 @@ Dos sprints sobre el mismo bloque, por dos problemas distintos.
 
 - La clasificacion vive en `src/domain/dashboard-command.js` (`riskGroupFor`, `OCCUPANCY_TARGET`, `BUDGET_TARGET`); la representacion vive en `src/ui/views/dashboard.js` (`renderRiskGroups`, `renderGapRow`, `renderGapBar`) y `styles/app.css` (`.gap-*`). Si cambian las metas, se cambian en el dominio y el grafico las sigue.
 - La escala esta topada en 50 puntos de brecha (`GAP_SCALE`): mas alla, la barra se raya en vez de seguir creciendo, para no sugerir una magnitud que la barra ya no representa.
+
+### 3.42 — Menu lateral fijo al hacer scroll en `SPRINT-46`
+
+`.sidebar` pasa a `position:sticky` igual que `.topbar` (que ya era fijo desde antes). En vistas largas el menu de navegacion ya no se va con el scroll. Requiere `align-self:start` porque `.sidebar` es un item de grid dentro de `.app-shell` — sin eso un item de grid se estira a todo el alto de la fila y `sticky` queda inerte. En el breakpoint movil (`max-width:900px`) se revierte a `position:static`, porque ahi el layout es una sola columna con el menu apilado arriba del contenido.

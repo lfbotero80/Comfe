@@ -104,6 +104,7 @@ Carpeta: `05-tablero-ocupacion/`. La línea más activa del proyecto — ver `MA
   - HU-044: Como Diana, quiero que la primera pantalla sea un dashboard general de decisión, no una página de instrucciones, para saber dónde actuar sin leer explicaciones largas. — **Hecha**
   - HU-045: Como gerente de sede, quiero gráficos visuales de forecast, brechas y alertas, para decidir de un vistazo sin depender de texto explicativo. — **Hecha**
   - HU-046: Como usuario nuevo, quiero ayuda contextual breve en cada flujo, para aprender sin una pestaña larga de instrucciones. — **Pendiente**
+  - HU-052: Como Diana, quiero que el menú lateral y el encabezado se queden fijos al hacer scroll, para no tener que subir hasta arriba cada vez que quiero cambiar de sección en una pantalla larga. — **Hecha** (`SPRINT-46`)
   - HU-048: Como Luis Felipe, quiero que la versión modular conserve el sistema de diseño y los patrones visuales que ya funcionaban en v2, para que modularizar no signifique retroceder en producto. — **Hecha**
   - HU-049: Como Luis Felipe, quiero una versión v3 de demo que abra localmente sin depender de saber levantar un servidor, para poder revisarla fácil y compartirla con otra IA. — **Hecha**
   - HU-050: Como Luis Felipe, quiero que la v3 se parezca visual y funcionalmente al demo v2 mientras se modulariza por debajo, para no revisar una maqueta inferior al tablero existente. — **Hecha**

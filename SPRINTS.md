@@ -6,6 +6,55 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-46 — Menú lateral y header fijos al hacer scroll [Estado: Cerrado]
+
+- **Agente(s):** Claude Code
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Commit:** `SPRINT-46 — Menu lateral y header fijos al hacer scroll (Claude Code)`
+
+- **Objetivo del sprint:** Luis Felipe pidió que "el panel/menú lateral y el header no se muevan". El header (`.topbar`) ya tenía `position:sticky` desde antes; el que se iba con el scroll era el menú lateral (`.sidebar`) — en cualquier vista larga (Dashboard, Hoteles) había que volver arriba para cambiar de sección.
+
+| HU | Título | Agente | Estado | Nota |
+|---|---|---|---|---|
+| HU-052 | Menú lateral fijo al hacer scroll | Claude Code | Hecha | Header ya estaba fijo; se agregó el mismo comportamiento al menú |
+
+**Qué se hizo:** `.sidebar` pasa a `position:sticky; top:0; height:100vh; align-self:start; overflow-y:auto`. El `align-self:start` es necesario porque `.sidebar` es un ítem de grid (`.app-shell{grid-template-columns:252px 1fr}`) — sin eso, un ítem de grid se estira a todo el alto de la fila y `sticky` no tiene margen para desplazarse, queda inerte. `overflow-y:auto` es la salvaguarda para cuando el propio menú crezca más que la pantalla (más ítems de navegación a futuro). En el breakpoint móvil (`max-width:900px`, donde el layout pasa a una sola columna y el menú va apilado arriba del contenido) se revierte explícitamente a `position:static; height:auto; overflow:visible` — fijar el menú ahí no tiene sentido y competiría con el propio scroll de la página.
+
+**Archivos tocados:** `05-tablero-ocupacion/v3-modular/styles/app.css` (regla `.sidebar` y su override dentro de `@media (max-width:900px)`).
+
+**Validación realizada:** `node --check` sobre todos los módulos JS. Servidor local sin caché en `http://localhost:8083/` (puerto de prueba, no el 8055 de Luis Felipe). Medido por `getBoundingClientRect()` en cuatro posiciones de scroll (0, 400, 1200, 2500px sobre una página de ~3300px de alto): menú y header quedan en `top:0` en las cuatro. Prueba funcional: clic en "Parques" con la página desplazada a 1200px cambia de vista correctamente (el menú sigue interactivo, no solo visualmente fijo). Repetido en viewport móvil (375×812): `position:static` confirmado, sin cambio de comportamiento frente a antes del sprint. Consola sin errores.
+
+**Nota de la sesión:** la herramienta de captura de pantalla del navegador quedó atascada (pantalla en blanco) durante la verificación visual, sin relación con el tablero — el DOM cargaba con contenido normal. La verificación se hizo por medición de layout (`getBoundingClientRect`) en vez de por captura, igual de concluyente para este cambio.
+
+```
+HANDOFF — SPRINT-46 Menu lateral y header fijos al hacer scroll
+Agente:             Claude Code
+Estado:             Cerrado
+Commit:             SPRINT-46 — Menu lateral y header fijos al hacer scroll (Claude Code)
+
+Que quedo listo:    .sidebar es sticky igual que .topbar. En vistas largas el
+                    menu y el header ya no se van con el scroll. Revertido a
+                    static en el breakpoint movil (<900px), donde el layout es
+                    de una sola columna.
+
+Que NO se toco:     Nada de logica ni de otras vistas. Cambio puramente de
+                    styles/app.css.
+
+Riesgos abiertos:   Ninguno identificado. Si el menu de navegacion crece mucho
+                    a futuro, `overflow-y:auto` en .sidebar ya lo cubre.
+
+Validacion:         node --check: todos los modulos -> pass
+                    getBoundingClientRect en scroll 0/400/1200/2500px ->
+                      sidebar y topbar siempre en top:0
+                    Clic en "Parques" con pagina scrolleada a 1200px -> cambia
+                      de vista (funcional, no solo visual)
+                    Viewport movil 375x812 -> position:static, sin regresion
+                    Consola sin errores
+```
+
+---
+
 ## SPRINT-45 — Se elimina el hospedaje de OpenAI Sites [Estado: Cerrado]
 
 - **Agente(s):** Claude Code

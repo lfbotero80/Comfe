@@ -54,6 +54,16 @@ button,input,select{font:inherit}
   display:flex;
   flex-direction:column;
   gap:18px;
+  /* El menu acompana el scroll: en vistas largas (Dashboard, Hoteles) el
+     usuario no deberia volver arriba para cambiar de seccion.
+     `align-self:start` es obligatorio — un item de grid estirado a todo el
+     alto de la fila no puede quedarse fijo. */
+  position:sticky;
+  top:0;
+  height:100vh;
+  align-self:start;
+  overflow-y:auto;
+  overscroll-behavior:contain;
 }
 .brand{display:flex; gap:12px; align-items:center}
 .brand-mark{width:38px; height:38px; border-radius:50%; display:grid; place-items:center; background:var(--gold); color:var(--gold-text); font-weight:800}
@@ -1109,7 +1119,7 @@ p{line-height:1.55}
 
 @media (max-width:900px){
   .app-shell{grid-template-columns:1fr}
-  .sidebar{position:static}
+  .sidebar{position:static; height:auto; overflow:visible}
   .topbar{grid-template-columns:1fr}
   .grid.two,.grid.three,.grid.four,.upload-grid,.chart-grid,.score-grid,.form-grid.two,.form-grid.three,.readiness-groups{grid-template-columns:1fr}
   .occupancy-panel-body{grid-template-columns:1fr}
