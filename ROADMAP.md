@@ -86,7 +86,7 @@ Este roadmap organiza el producto `Tablero de ocupación` antes de ejecutar nuev
 
 **HUs candidatas:** TO-HU-007, TO-HU-024, TO-HU-026, TO-HU-027.
 
-**Avance relacionado:** `SPRINT-23` cerro TO-HU-068: estado de informacion por sede dentro de Carga de datos, con cobertura de ocupacion/inventario, presupuesto y Revenue. `SPRINT-24` cerro TO-HU-067 con auditoria de datos quemados y abrio TO-HU-071/TO-HU-072 como correcciones pendientes antes de considerar la V3 como candidata. `SPRINT-25` cerro TO-HU-071: la V3 modular ya puede alternar entre demo con semillas y modo real vacio. `SPRINT-26` cerro TO-HU-072: Hoteles/Parques ya no inventan agosto en sedes sin filas. `SPRINT-27` deja claro que IA real tambien depende de bitacora/responsables. Quedan pendientes bitacora de decisiones (TO-HU-026), usuario que carga/modifica (TO-HU-027) y decision de version candidata.
+**Avance relacionado:** `SPRINT-23` cerro TO-HU-068: estado de informacion por sede dentro de Carga de datos, con cobertura de ocupacion/inventario, presupuesto y Revenue. `SPRINT-24` cerro TO-HU-067 con auditoria de datos quemados y abrio TO-HU-071/TO-HU-072 como correcciones pendientes antes de considerar la V3 como candidata. `SPRINT-25` cerro TO-HU-071: la V3 modular ya puede alternar entre demo con semillas y modo real vacio. `SPRINT-26` cerro TO-HU-072: Hoteles/Parques ya no inventan agosto en sedes sin filas. `SPRINT-27` deja claro que IA real tambien depende de bitacora/responsables. `SPRINT-29` cerro TO-HU-026/027: bitacora local de decisiones y responsable de cargas/modificaciones. Queda pendiente decision de version candidata.
 
 **Criterio de salida:** versión candidata con bitácora, fuentes, usuario que cargó datos, validaciones visibles y decisión pendiente de si reemplaza v2.
 

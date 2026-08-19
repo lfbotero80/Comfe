@@ -740,7 +740,7 @@ p{line-height:1.55}
   font-size:14px;
   line-height:1.15;
 }
-.form-field input{
+.form-field input,.form-field select,.form-field textarea{
   width:100%;
   border:1px solid var(--line);
   border-radius:8px;
@@ -750,13 +750,15 @@ p{line-height:1.55}
   color:var(--ink);
   font-size:14px;
 }
-.form-field input::placeholder{color:#777}
-.form-field input:focus{
+.form-field textarea{resize:vertical; min-height:82px}
+.form-field input::placeholder,.form-field textarea::placeholder{color:#777}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{
   outline:3px solid rgba(196,214,0,.25);
   border-color:var(--navy-soft);
 }
 .form-grid{display:grid; gap:12px}
 .form-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.form-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
 .modal-helper{
   margin:0;
   color:var(--muted);
@@ -800,14 +802,20 @@ p{line-height:1.55}
   transform:none;
 }
 
+.decision-form{display:grid; gap:12px}
+.decision-actions{display:flex; justify-content:flex-end}
+.cell-note{display:block; margin-top:4px; color:var(--muted); font-size:12px; line-height:1.35}
+
 .upload-grid{display:grid; gap:14px; grid-template-columns:repeat(2,minmax(0,1fr))}
 .upload-card{border:1px solid var(--line); background:var(--surface); border-radius:14px; padding:16px; box-shadow:var(--shadow)}
 .upload-card input{width:100%; border:1px dashed var(--line); border-radius:8px; padding:12px; background:var(--bg)}
+.data-load-controls{display:grid; grid-template-columns:minmax(0,1fr) minmax(280px,360px); gap:12px; align-items:stretch}
 .data-mode-panel{display:flex; justify-content:space-between; gap:16px; align-items:center; border:1px solid var(--line); border-radius:12px; padding:12px; background:var(--surface-soft)}
 .data-mode-panel.real{background:#F4F6F4}
 .data-mode-panel.demo{background:#FFFBEA}
 .data-mode-panel strong{display:block; color:var(--navy)}
 .data-mode-panel span{display:block; color:var(--muted); font-size:13px; margin-top:2px}
+.responsible-panel{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:end; border:1px solid var(--line); border-radius:12px; padding:12px; background:#F4F8F2}
 .mode-toggle{display:inline-flex; gap:4px; padding:4px; border-radius:999px; background:#fff; border:1px solid var(--line)}
 .mode-toggle button{border:0; border-radius:999px; background:transparent; padding:7px 12px; color:var(--muted); font-weight:800; cursor:pointer}
 .mode-toggle button.active{background:var(--navy); color:#fff}
@@ -860,7 +868,7 @@ p{line-height:1.55}
   .app-shell{grid-template-columns:1fr}
   .sidebar{position:static}
   .topbar{grid-template-columns:1fr}
-  .grid.two,.grid.three,.grid.four,.upload-grid,.chart-grid,.score-grid,.form-grid.two,.readiness-groups{grid-template-columns:1fr}
+  .grid.two,.grid.three,.grid.four,.upload-grid,.chart-grid,.score-grid,.form-grid.two,.form-grid.three,.readiness-groups,.data-load-controls{grid-template-columns:1fr}
   .occupancy-panel-body{grid-template-columns:1fr}
   .inline-convention,.occupancy-insight{border-left:0; border-top:1px solid var(--line); padding-left:0; padding-top:12px}
   .occ-row,.occupancy-chart .occ-row{grid-template-columns:120px 1fr 48px}
@@ -873,6 +881,7 @@ p{line-height:1.55}
   .data-mode-panel{align-items:stretch; flex-direction:column}
   .mode-toggle{width:100%}
   .mode-toggle button{flex:1}
+  .responsible-panel{grid-template-columns:1fr}
   .ai-context-grid,.ai-context-footer{grid-template-columns:1fr}
   .ai-context-footer details{justify-self:stretch; max-width:none}
   .topbar{align-items:flex-start}

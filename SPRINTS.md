@@ -6,6 +6,88 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-29 — Bitácora y responsables locales [Estado: Cerrado]
+
+- **Agente(s):** Codex
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E3
+- **Objetivo del sprint:** agregar trazabilidad local para cargas, modificaciones y decisiones operativas del tablero.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-026 | Bitácora de decisiones y responsables | Codex | Hecha | Vista propia con formulario manual y tabla de registros persistidos localmente |
+| TO-HU-027 | Identificar quién carga o modifica datos | Codex | Hecha | Responsable activo asociado a cargas aceptadas y campañas nuevas |
+
+### Resumen de cierre
+
+Se agrego trazabilidad local al tablero modular. `src/state/app-state.js` ahora conserva un `currentOperator` persistido en `localStorage` (`comfenalco_operator_v1`) y una `decisionRows` persistida localmente (`comfenalco_decision_log_v1`). Cada carga aceptada desde `registerLoad()` genera un registro automatico con archivo, contrato, sede(s), responsable, filas cargadas y advertencias; cada campana creada desde el catalogo tambien deja registro con responsable, causa y tarifa/producto.
+
+Se creo `src/ui/views/decisions.js` como vista propia `Bitacora de decisiones`, con formulario para registrar sede, tipo de decision, compromiso, responsable, fecha, estado y notas, mas tabla de eventos. `data-load.js` agrega el panel `Responsable activo` para que quien carga o modifica quede identificado antes de subir archivos. `navigation.js` y `main.js` incorporan la nueva vista al menu lateral, y `styles/app.css` agrega estilos para select/textarea, panel de responsable y formulario de bitacora.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/src/state/app-state.js`, `src/ui/views/data-load.js`, `src/ui/views/decisions.js`, `src/config/navigation.js`, `src/main.js` y `styles/app.css`.
+
+**Validacion realizada:** `node --check` sobre todos los modulos JS; `git diff --check`; servidor local `http://localhost:8055/` respondiendo 200; prueba Playwright: registrar decision manual en Bitacora, definir responsable activo en Carga de datos, subir `Forecast Balandú 1808.pdf`, verificar mensaje de 14 filas cargadas con responsable, verificar registro automatico en Bitacora y persistencia tras recargar.
+
+**Decisiones / límites:** La trazabilidad es local al navegador porque el producto sigue como demo local. No hay autenticacion real ni auditoria multiusuario; eso requiere backend. Se usa `Sin responsable definido` cuando alguien carga sin registrar responsable para no bloquear pruebas, pero la bitacora deja visible la omision.
+
+**Pendientes para revisar:** definir si la version candidata necesita obligar responsable antes de cargar, y si `TO-HU-075` debe usar esta misma bitacora cuando exista IA bajo demanda.
+
+```text
+HANDOFF — SPRINT-29 Bitácora y responsables locales
+──────────────────────────────────────
+HUs completas:        TO-HU-026, TO-HU-027
+HUs pendientes:       ninguna dentro del alcance del sprint
+
+Archivos tocados:     BACKLOG.md · SPRINTS.md · ROADMAP.md · MAPA_CODIGO.md
+                      05-tablero-ocupacion/v3-modular/src/state/app-state.js
+                      05-tablero-ocupacion/v3-modular/src/ui/views/data-load.js
+                      05-tablero-ocupacion/v3-modular/src/ui/views/decisions.js
+                      05-tablero-ocupacion/v3-modular/src/config/navigation.js
+                      05-tablero-ocupacion/v3-modular/src/main.js
+                      05-tablero-ocupacion/v3-modular/styles/app.css
+
+Archivos NO tocados:  tablero-seguimiento-ocupacion.html
+                      tablero-seguimiento-ocupacion-v2.html
+                      tablero-seguimiento-ocupacion-v3-demo.html
+                      v3-modular/src/services/file-reader.js
+                      v3-modular/src/services/validators.js
+                      v3-modular/src/domain/ai-recommendation-context.js
+
+Datos/contratos:      No se cambiaron contratos ni plantillas.
+                      La carga Zeus PDF sigue usando el contrato existente.
+
+Decisiones tomadas:   Bitacora y responsable se guardan en localStorage por ser
+                      demo local.
+                      Las cargas aceptadas y campañas nuevas generan eventos
+                      automaticos.
+                      Cargar sin responsable no bloquea, pero queda visible como
+                      "Sin responsable definido".
+
+Riesgos residuales:
+- La bitacora local no sirve como auditoria multiusuario real; en produccion debe
+  ir a backend con usuario autenticado.
+- Si se borra el almacenamiento del navegador, se pierde la bitacora local.
+- TO-HU-075 debe reutilizar o ampliar esta bitacora cuando exista IA bajo demanda.
+
+Validación hecha:
+  Sintaxis:           node --check sobre todos los modulos JS -> pass
+  Estatica:           git diff --check -> pass
+  Servidor local:     http://localhost:8055/ responde 200
+  Runtime navegador:  decision manual registrada -> pass
+                      responsable activo guardado -> pass
+                      Forecast Balandú 1808.pdf carga 14 filas -> pass
+                      evento automatico de carga aparece en Bitacora -> pass
+                      bitacora persiste tras recargar -> pass
+  Documentación:      BACKLOG.md + SPRINTS.md + ROADMAP.md + MAPA_CODIGO.md actualizados
+
+Auto-reporte DoD:     Completo para TO-HU-026 y TO-HU-027.
+```
+
+---
+
 ## SPRINT-28 — Contexto IA por sede [Estado: Cerrado]
 
 - **Agente(s):** Codex

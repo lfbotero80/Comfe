@@ -6,6 +6,7 @@ import { renderParks, bindParkHandlers } from './ui/views/parks.js';
 import { renderBudget, bindBudgetHandlers } from './ui/views/budget.js';
 import { renderCalendar, bindCalendarHandlers } from './ui/views/calendar.js';
 import { renderCampaigns, bindCampaignHandlers } from './ui/views/campaigns.js';
+import { renderDecisions, bindDecisionHandlers } from './ui/views/decisions.js';
 import { renderGlobalFilters, bindGlobalFilterHandlers } from './ui/global-filters.js';
 
 const viewRenderers = {
@@ -15,7 +16,8 @@ const viewRenderers = {
   parks: renderParks,
   budget: renderBudget,
   calendar: renderCalendar,
-  campaigns: renderCampaigns
+  campaigns: renderCampaigns,
+  decisions: renderDecisions
 };
 
 const navEl = document.getElementById('appNav');
@@ -90,6 +92,10 @@ function renderActiveView(){
 
   if(activeView === 'campaigns'){
     bindCampaignHandlers({ rerender: renderActiveView, setStatus });
+  }
+
+  if(activeView === 'decisions'){
+    bindDecisionHandlers({ rerender: renderActiveView, setStatus });
   }
 }
 
