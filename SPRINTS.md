@@ -6,6 +6,73 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-24 — Auditoria de datos quemados [Estado: Cerrado]
+
+- **Agente(s):** Codex
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E1
+- **Objetivo del sprint:** auditar la V3 modular para distinguir datos semilla, datos estructurales y datos quemados riesgosos antes de seguir evolucionando el tablero.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-067 | Auditoria de datos quemados | Codex | Hecha | Informe creado y HUs derivadas en backlog |
+
+### Resumen de cierre
+
+Se audito la V3 modular para ubicar datos operativos quemados, datos semilla y catalogos estructurales. La conclusion principal queda documentada en `05-tablero-ocupacion/AUDITORIA_DATOS_QUEMADOS_SPRINT-24.md`: las vistas ejecutivas no tienen cifras operativas escondidas, pero `appState` arranca precargado desde `src/data/demo-data.js`, por lo que el tablero muestra datos antes de que el usuario cargue archivos en esa sesion. Eso es util para demo, pero riesgoso para lectura real.
+
+Tambien se identifico que el fallback `latestMonth(rows) || \`${year}-08\`` en Hoteles/Parques no inventa cifras, pero si puede reforzar la percepcion de un mes fijo cuando una sede no tiene filas. Se registraron dos HUs derivadas: `TO-HU-071` para separar modo demo / modo datos reales, y `TO-HU-072` para eliminar el fallback visual a agosto en sedes vacias.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md` y `05-tablero-ocupacion/AUDITORIA_DATOS_QUEMADOS_SPRINT-24.md`.
+
+**Validacion realizada:** auditoria por busqueda y lectura de `src/state/app-state.js`, `src/data/demo-data.js`, vistas principales (`dashboard.js`, `hotels.js`, `parks.js`, `budget.js`), dominios (`sites.js`, `occupancy.js`, `budget.js`, `operational-calendar.js`) y datos semilla (`commercial-calendar.js`, `campaigns.js`, `colombia-holidays-2026.js`). Se ejecuto `node --check` sobre modulos JS, `git diff --check` y `curl -I http://localhost:8055/`.
+
+```text
+HANDOFF — SPRINT-24 Auditoria de datos quemados
+──────────────────────────────────────
+HUs completas:        TO-HU-067
+HUs pendientes:       TO-HU-071, TO-HU-072 creadas como derivadas
+
+Archivos tocados:     BACKLOG.md · SPRINTS.md · ROADMAP.md · MAPA_CODIGO.md
+                      05-tablero-ocupacion/AUDITORIA_DATOS_QUEMADOS_SPRINT-24.md
+
+Archivos NO tocados:  tablero-seguimiento-ocupacion.html
+                      tablero-seguimiento-ocupacion-v2.html
+                      tablero-seguimiento-ocupacion-v3-demo.html
+                      v3-modular/src/**/*.js
+                      v3-modular/styles/app.css
+
+Datos/contratos:      No se cambiaron datos, contratos ni comportamiento runtime.
+
+Decisiones tomadas:   La deuda principal no esta en cifras hardcodeadas dentro
+                      de las vistas, sino en que `appState` arranca con
+                      `demo-data.js`.
+                      Se deja pendiente separar modo demo / modo datos reales.
+                      Se deja pendiente quitar el fallback visual a agosto en
+                      sedes sin filas.
+
+Riesgos residuales:
+- Mientras no exista modo datos reales, la V3 modular puede abrir con datos
+  semilla que parecen cargados.
+- Mientras no se corrija el fallback de mes, una sede sin filas puede mostrar
+  `2026-08` como contexto visual aunque no tenga informacion.
+
+Validación hecha:
+  Auditoria:          rg + lectura manual de estado, datos, dominios y vistas -> pass
+  Sintaxis:           node --check sobre todos los modulos JS -> pass
+  Estatica:           git diff --check -> pass
+  Servidor local:     http://localhost:8055/ responde 200
+  Documentación:      BACKLOG.md + SPRINTS.md + ROADMAP.md + MAPA_CODIGO.md
+                      actualizados; informe creado
+
+Auto-reporte DoD:     Completo para TO-HU-067.
+```
+
+---
+
 ## SPRINT-23 — Estado de informacion por sede [Estado: Cerrado]
 
 - **Agente(s):** Codex

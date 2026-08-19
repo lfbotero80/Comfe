@@ -1,6 +1,6 @@
 # Mapa de código — Comfenalco IA
 
-Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-23`.
+Resumen navegable del repositorio para ubicar "¿dónde está X?" sin leer todo el código. Se actualiza en el mismo sprint en que el código cambia (ver `METODOLOGIA_SCRUM.md`). Última actualización: **2026-08-19**, tras `SPRINT-24`.
 
 ---
 
@@ -38,6 +38,7 @@ Versiones principales:
 | `tablero-seguimiento-ocupacion-v2.html` | **Versión de trabajo** — tiene todo lo de `SPRINT-00` (auth, forecast diario, festivos, CSV, sub-navegación por hotel) pendiente de que Luis Felipe la revise y decida si reemplaza a la principal (`HU-034`). |
 | `tablero-seguimiento-ocupacion-v3-demo.html` | **Demo v3 abrible por doble clic** — creado en `SPRINT-03` a partir de v2 para conservar semaforos, seguimientos, metricas y experiencia visual mientras la modularizacion madura. Es el archivo correcto para revision local inmediata. |
 | `abrir-v3-modular.command` | Lanzador macOS para abrir `v3-modular/` con servidor local en `http://localhost:8055/`. |
+| `AUDITORIA_DATOS_QUEMADOS_SPRINT-24.md` | Informe de auditoria de datos quemados de la V3 modular: distingue datos semilla, catalogos estructurales, reglas de negocio y riesgos pendientes (`TO-HU-071`, `TO-HU-072`). |
 | `v3-modular/` | **Base modular paralela** — creada en `SPRINT-01` para dejar de crecer el monolito. No reemplaza producción ni v2. |
 
 Las versiones `tablero-seguimiento-ocupacion.html`, `tablero-seguimiento-ocupacion-v2.html` y `tablero-seguimiento-ocupacion-v3-demo.html` son **un solo archivo HTML autocontenido** (HTML + CSS + JS inline), sin build step, sin backend. Persistencia en `localStorage` del navegador. Sin dependencias externas (se quitó Chart.js — el gráfico de presupuesto es divs+CSS puro — para que el tablero funcione sin internet).
@@ -399,3 +400,11 @@ Plantillas CSV de S1:
 - `src/ui/views/data-load.js`: despues de una carga exitosa, refresca solo `#readinessSummary`, conservando el mensaje de validacion de la tarjeta de carga.
 - `src/ui/views/data-load.js`: corrige el texto de PDF Zeus directo; ya no se dice que esta pendiente.
 - `styles/app.css`: agrega `.readiness-*` para tarjetas, barras y chips responsive.
+
+### 3.25 — Auditoria de datos quemados en `SPRINT-24`
+
+`SPRINT-24` no toca codigo runtime; deja una auditoria documental:
+
+- `AUDITORIA_DATOS_QUEMADOS_SPRINT-24.md`: concluye que las vistas principales calculan desde `appState`, pero `appState` arranca precargado desde `src/data/demo-data.js`.
+- Hallazgo principal: la V3 modular necesita separar modo demo de modo datos reales para no mostrar semillas como si fueran cargas del usuario (`TO-HU-071`).
+- Hallazgo secundario: Hoteles/Parques usan fallback visual a agosto cuando no hay filas (`latestMonth(rows) || \`${year}-08\``); no inventa cifras, pero puede confundir el periodo operativo (`TO-HU-072`).
