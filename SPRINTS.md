@@ -6,6 +6,76 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-26 — Mes activo sin fallback quemado [Estado: Cerrado]
+
+- **Agente(s):** Codex
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / E1, E2
+- **Objetivo del sprint:** evitar que Hoteles y Parques muestren agosto como mes operativo cuando una sede no tiene filas cargadas.
+
+### HUs de este sprint
+
+| HU | Descripción corta | Agente | Estado | Notas |
+|---|---|---|---|---|
+| TO-HU-072 | Quitar fallback visual a agosto en sedes sin filas | Codex | Hecha | Hoteles/Parques muestran estado sin periodo activo hasta cargar datos |
+
+### Resumen de cierre
+
+Se elimino el fallback visual a agosto (`${year}-08`) en `Hoteles` y `Parques`. Ahora, si la sede activa no tiene filas de ocupacion/uso cargadas, no existe mes activo: no se resalta ninguna barra mensual, el cumplimiento dice `Sin periodo cargado`, las metricas muestran `Sin periodo cargado` y el detalle cambia a `Detalle diario pendiente`.
+
+Tambien se ajusto `renderSiteBudgetPanel()` para tolerar `activePeriod` vacio. Si no hay periodo de ocupacion pero si existe presupuesto cargado de la sede, el panel lo muestra como ultimo presupuesto cargado con nota explicita; si tampoco hay presupuesto, mantiene el estado gris `Sin presupuesto cargado`.
+
+**Archivos tocados:** `BACKLOG.md`, `SPRINTS.md`, `ROADMAP.md`, `MAPA_CODIGO.md`, `05-tablero-ocupacion/v3-modular/src/ui/views/hotels.js`, `src/ui/views/parks.js` y `src/ui/site-budget-panel.js`.
+
+**Validacion realizada:** `node --check` sobre todos los modulos JS; `git diff --check`; servidor local `http://localhost:8055/` respondiendo 200; prueba Playwright: en modo real vacio, Hoteles y Parques no muestran `2026-08`, no tienen `.month-bar.active`, muestran `Sin periodo cargado` y `Detalle diario pendiente`; en modo demo, Hosteria Los Farallones conserva un mes activo real; al cargar `Forecast Balandú 1808.pdf`, Balandu activa `2026-08` desde el archivo y no desde fallback.
+
+```text
+HANDOFF — SPRINT-26 Mes activo sin fallback quemado
+──────────────────────────────────────
+HUs completas:        TO-HU-072
+HUs pendientes:       ninguna dentro del alcance del sprint
+
+Archivos tocados:     BACKLOG.md · SPRINTS.md · ROADMAP.md · MAPA_CODIGO.md
+                      05-tablero-ocupacion/v3-modular/src/ui/views/hotels.js
+                      05-tablero-ocupacion/v3-modular/src/ui/views/parks.js
+                      05-tablero-ocupacion/v3-modular/src/ui/site-budget-panel.js
+
+Archivos NO tocados:  tablero-seguimiento-ocupacion.html
+                      tablero-seguimiento-ocupacion-v2.html
+                      tablero-seguimiento-ocupacion-v3-demo.html
+                      v3-modular/src/state/app-state.js
+                      v3-modular/src/ui/views/dashboard.js
+                      v3-modular/src/ui/views/data-load.js
+
+Datos/contratos:      No se cambiaron contratos, plantillas ni datos semilla.
+
+Decisiones tomadas:   Una sede sin filas no tiene periodo activo.
+                      `2026-08` solo aparece si viene de filas cargadas o demo.
+                      El panel presupuestal tolera ausencia de periodo de
+                      ocupacion sin mostrar texto tecnico ni periodo inventado.
+
+Riesgos residuales:
+- Si un usuario selecciona manualmente un mes gris en una sede que si tiene
+  filas en otro mes, la vista puede mostrar ese mes seleccionado sin datos.
+  Eso es intencional: corresponde a una seleccion explicita, no a fallback.
+- La persistencia real de filas cargadas sigue fuera de alcance del HTML local.
+
+Validación hecha:
+  Sintaxis:           node --check sobre todos los modulos JS -> pass
+  Estatica:           git diff --check -> pass
+  Servidor local:     http://localhost:8055/ responde 200
+  Runtime navegador:  modo real vacio en Hoteles/Parques sin 2026-08 visible,
+                      sin barra mensual activa y con textos de periodo pendiente -> pass
+                      modo demo conserva mes activo real -> pass
+                      carga Forecast Balandú 1808.pdf activa 2026-08 desde datos -> pass
+  Documentación:      BACKLOG.md + SPRINTS.md + ROADMAP.md + MAPA_CODIGO.md actualizados
+
+Auto-reporte DoD:     Completo para TO-HU-072.
+```
+
+---
+
 ## SPRINT-25 — Modo demo y datos reales [Estado: Cerrado]
 
 - **Agente(s):** Codex

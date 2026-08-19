@@ -140,7 +140,7 @@ Este bloque organiza el tablero como **producto digital específico**, separado 
 - **E1-F4 — Auditoría de datos y calidad**
   - TO-HU-067 *(mediano, requiere revisión completa del código)*: Como Luis Felipe, quiero una auditoría del tablero para confirmar que no hay información quemada en el código (ejemplo señalado: el mes de agosto aparece fijo para Hostería Los Farallones), para asegurar que todo lo que se muestra sale de datos realmente cargados. — **Hecha** (`SPRINT-24`; ver `05-tablero-ocupacion/AUDITORIA_DATOS_QUEMADOS_SPRINT-24.md`)
   - TO-HU-071 *(derivada de `SPRINT-24`)*: Como Luis Felipe, quiero separar el modo demo del modo datos reales, para que el tablero pueda arrancar vacío y no muestre datos semilla como si hubieran sido cargados por el usuario. — **Hecha** (`SPRINT-25`)
-  - TO-HU-072 *(derivada de `SPRINT-24`)*: Como gerente de sede, quiero que una sede sin filas cargadas no muestre un mes fijo como agosto, para no confundir un estado vacío con un periodo operativo real. — **Pendiente**
+  - TO-HU-072 *(derivada de `SPRINT-24`)*: Como gerente de sede, quiero que una sede sin filas cargadas no muestre un mes fijo como agosto, para no confundir un estado vacío con un periodo operativo real. — **Hecha** (`SPRINT-26`)
 
 ### E2 · Control operativo por sede
 
@@ -237,7 +237,7 @@ Carpeta: `06-vigilancia-turismo-bienestar/`.
 **Lista de correcciones de Luis Felipe (2026-08-19), registrada en el backlog sin desarrollar todavía** — `TO-HU-060` a `TO-HU-070`, agrupadas por tamaño relativo para facilitar priorizar:
 
 - **Rápidas (chico/muy chico):** `TO-HU-064` (texto sidebar), `TO-HU-060` (convenciones vs. gráfica a la derecha), `TO-HU-062` (% repetido en presupuesto).
-- **Medianas:** `TO-HU-072` (quitar fallback visual a agosto en sedes sin filas).
+- **Medianas:** ninguna pendiente de esta tanda.
 - **Grandes o que necesitan definir alcance antes de estimarse:** `TO-HU-061` ("Todo 2026" más potente — falta decidir qué agrega).
 
 Candidatos previos, sin desarrollar todavía:

@@ -29,7 +29,7 @@ export function renderHotels(){
   const rows = rowsForHotel(activeHotel);
   const year = activeYear(rows);
   const monthSummaries = monthlySummaries(rows, year);
-  const activeMonth = activeMonthByHotelId[activeHotel.id] || latestMonth(rows) || `${year}-08`;
+  const activeMonth = rows.length ? (activeMonthByHotelId[activeHotel.id] || latestMonth(rows)) : null;
   const monthRows = rowsForMonth(rows, activeMonth);
   const latest = monthRows[monthRows.length - 1] || null;
   const status = latest ? classifyOccupancy(latest.ocupacion_porcentaje, latest.fecha) : null;
@@ -113,6 +113,7 @@ function rowsForHotel(hotel){
 }
 
 function rowsForMonth(rows, period){
+  if(!period) return [];
   return rows.filter(row => String(row.fecha).startsWith(period));
 }
 
@@ -131,7 +132,7 @@ function renderMetrics(rows, row, status, monthLabel){
 function renderMissingState(hotel, activeMonth){
   return `
     <div class="grid four">
-      ${metric('Ocupacion del mes', 'Pendiente', activeMonth)}
+      ${metric('Ocupacion del mes', 'Pendiente', periodLabel(activeMonth))}
       ${metric('Ocupadas / inventario', 'Pendiente', hotel.defaultUnitType)}
       ${metric('Libres promedio', 'Pendiente', 'Sin archivo cargado')}
       ${metric('Dia operativo', 'Pendiente', 'Sin fecha cargada')}
@@ -175,12 +176,15 @@ function renderCompliance(month, activeMonth){
   const hasData = Boolean(month?.hasData);
   const compliance = hasData ? month.compliance : 0;
   const severity = hasData ? month.severity : 'gray';
+  const note = activeMonth
+    ? `${activeMonth} · meta ${OCCUPANCY_TARGET}% ocupacion`
+    : `Sin periodo cargado · meta ${OCCUPANCY_TARGET}% ocupacion`;
   return `
     <section class="compliance-panel">
       <div class="compliance-head">
         <div>
           <strong>Cumplimiento del mes</strong>
-          <span>${escapeHTML(activeMonth)} · meta ${OCCUPANCY_TARGET}% ocupacion</span>
+          <span>${escapeHTML(note)}</span>
         </div>
         ${badge(hasData ? `${compliance.toFixed(0)}%` : 'Pendiente', severity)}
       </div>
@@ -232,9 +236,10 @@ function renderContextList(items, mapper){
 }
 
 function renderDailyDetail(rows, monthLabel){
+  const title = monthLabel ? `Detalle diario del mes ${monthLabel}` : 'Detalle diario pendiente';
   return `
     <div class="hotel-series">
-      <h3>Detalle diario del mes ${escapeHTML(monthLabel)}</h3>
+      <h3>${escapeHTML(title)}</h3>
       ${rows.length ? `
         <div class="forecast-strip">
           ${rows.map(row => {
@@ -293,6 +298,10 @@ function activeYear(rows){
 function latestMonth(rows){
   const latest = rows[rows.length - 1];
   return latest ? String(latest.fecha).slice(0, 7) : null;
+}
+
+function periodLabel(period){
+  return period || 'Sin periodo cargado';
 }
 
 function monthlySummaries(rows, year){
