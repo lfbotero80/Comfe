@@ -134,6 +134,7 @@ Validación hecha:
   Render/flujo:       <qué se probó> -> pass | pendiente
   Datos:              <qué se validó> -> pass | pendiente
   Documentación:      BACKLOG.md + SPRINTS.md + MAPA_CODIGO.md (+ ROADMAP.md si aplica)
+Commit:               <hash corto> — SPRINT-NN — <mismo mensaje de la primera línea del commit>
 Auto-reporte DoD:     Completo | Parcial
                       <qué queda pendiente para que Luis Felipe u otra IA lo revise>
 ```
@@ -146,6 +147,11 @@ Reglas del handoff:
 - Debe incluir riesgos residuales aunque el sprint esté cerrado.
 - Si no hubo código, reemplazar validación técnica por revisión documental o de fuente.
 - Si el trabajo fue parcial, `Auto-reporte DoD` debe decir `Parcial` y explicar por qué.
+- **`Commit:` es obligatorio y va después de que el commit ya exista** (paso 6 de la regla de cierre) — nunca un hash inventado o "pendiente". Si por algo el commit no se pudo hacer, el HANDOFF debe decirlo explícitamente en vez de omitir la línea.
+
+**Regla dura (2026-08-19, agregada tras un incidente real):** ningún commit entra al repo sin su HANDOFF y su entrada en `SPRINTS.md`. Nada de "commits sueltos" con un mensaje de una línea y sin HU, sin `Resumen de cierre`, sin `HANDOFF` — así sea un archivo de configuración chico. Se originó en un commit de Codex (`c586bec`, "Hosting — Configuracion Sites para demo del tablero") que agregó `.openai/hosting.json` sin ninguna entrada en `SPRINTS.md`/`BACKLOG.md` ni bloque `HANDOFF` — Luis Felipe no tenía forma de saber qué se hizo, por qué, ni si algo del tablero quedó publicado en un servicio de terceros. Si una tarea es demasiado chica para una HU completa, igual necesita como mínimo una entrada breve en `SPRINTS.md` con agente, fecha y qué se hizo — nunca un commit sin rastro en el registro.
+
+**Publicar o desplegar el tablero (o cualquier parte del repo) en un servicio de hosting de terceros — GitHub Pages, Vercel, Netlify, Sites de OpenAI, Cloudflare o cualquier otro — requiere permiso explícito de Luis Felipe antes de hacerlo**, con el mismo criterio que ya rige para `git push`. Esto incluye crear archivos de configuración de despliegue (`hosting.json`, workflows, etc.) como preparación — avisar y pedir confirmación antes, no despues. La razón: el tablero contiene datos reales de negocio (tarifas, presupuesto, ocupación); publicarlo en cualquier lugar fuera del repo local es una decisión de exposición de datos, no una decisión técnica.
 
 Antes de abrir cualquier sprint nuevo, cada agente **debe leer `SPRINTS.md` completo** (al menos las últimas 2-3 entradas) para saber qué hizo el otro agente recientemente y no duplicar ni pisar trabajo.
 

@@ -6,6 +6,30 @@ Registro correlativo de todos los sprints ejecutados en este repositorio, con el
 
 ---
 
+## SPRINT-34 — Documentación retroactiva: commit de hosting sin registro [Estado: Cerrado]
+
+- **Agente(s):** Claude Code (documentación retroactiva de un commit de Codex sin registro)
+- **Fecha apertura:** 2026-08-19
+- **Fecha cierre:** 2026-08-19
+- **Épica(s):** Proyecto Tablero de ocupación / proceso
+- **Objetivo del sprint:** documentar retroactivamente el commit `c586bec` ("Hosting — Configuracion Sites para demo del tablero", Codex) que entró al repo sin HU, sin entrada en `SPRINTS.md`/`BACKLOG.md` y sin bloque `HANDOFF` — y cerrar el hueco de proceso que lo permitió.
+
+### Resumen de cierre
+
+**Qué se encontró:** Luis Felipe pidió revisar qué hizo Codex para subir el repo a GitHub. Al revisar el log, el commit `c586bec` (19:32:54, 2026-08-19) agrega un único archivo — `05-tablero-ocupacion/v3-modular/.openai/hosting.json`, con un `project_id` (`appgprj_6a86049a2e488191bbf7b19548624e9b`) — sin ninguna traza en `SPRINTS.md`, `BACKLOG.md`, `ROADMAP.md` ni `MAPA_CODIGO.md`. El mensaje del commit sugiere que Codex configuró (o empezó a configurar) un despliegue del tablero a un servicio de hosting de OpenAI ("Sites"), aparentemente en respuesta a la advertencia previa de Luis Felipe sobre que GitHub Pages privado no era la vía correcta para compartir con Diana.
+
+**Lo que no se pudo verificar desde aquí (requiere revisión de Luis Felipe):** no hay forma de confirmar desde este entorno si ese `project_id` corresponde a un sitio ya publicado y accesible, ni si contiene datos reales de negocio (tarifas, presupuesto, ocupación de las 9 sedes) expuestos a un tercero. El archivo por sí solo es solo un puntero de configuración — no prueba que algo se haya publicado, pero tampoco lo descarta. **Se recomienda a Luis Felipe verificar directamente en su cuenta si existe un sitio activo asociado a ese `project_id`.**
+
+**Qué se corrigió en el proceso (no en código):** se agregó una regla dura en `METODOLOGIA_SCRUM.md` (sección 2): ningún commit entra al repo sin HANDOFF y entrada en `SPRINTS.md`, sin importar qué tan chico sea. Se agregó también que publicar o desplegar el tablero en cualquier servicio de hosting de terceros (GitHub Pages, Vercel, Netlify, Sites de OpenAI, etc.) requiere permiso explícito de Luis Felipe antes de hacerlo, con el mismo criterio que ya regía para `git push` — incluyendo la preparación (archivos de configuración de despliegue). Se agregó el campo `Commit:` al bloque `HANDOFF` para que cada cierre de sprint quede atado a un hash real, no solo a una promesa de commit.
+
+**No se modificó ni se eliminó `.openai/hosting.json`** — esa decisión (dejarlo, completarlo, o revertirlo) le corresponde a Luis Felipe una vez confirme si el hosting es algo que quiere o no.
+
+**Archivos tocados:** `SPRINTS.md`, `METODOLOGIA_SCRUM.md`.
+
+**Pendientes para revisar (Luis Felipe):** confirmar si el `project_id` de `.openai/hosting.json` corresponde a un sitio publicado y, si es así, decidir si se mantiene, se reconfigura como privado/protegido, o se elimina.
+
+---
+
 ## SPRINT-33 — Persistencia real de datos operativos [Estado: Cerrado]
 
 - **Agente(s):** Claude Code
